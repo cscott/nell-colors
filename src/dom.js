@@ -65,6 +65,9 @@ define([], function() {
             canvas.width = w * r;
             canvas.height = h * r;
             console.log("Resizing canvas", w, h, r);
+            if (canvas.resizeHandler) {
+                canvas.resizeHandler();
+            }
         };
         window.addEventListener('resize', onWindowResize, false);
         onWindowResize();

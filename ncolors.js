@@ -9,15 +9,18 @@ define(['./src/dom', './src/touch'], function(Dom, Touch) {
     var context = canvasElem.getContext('2d');
     console.log(canvasElem.width, canvasElem.height);
 
-    context.shadowOffsetX = 0;
-    context.shadowOffsetY = 0;
-    context.shadowBlur = 6;
-    context.shadowColor = 'rgba(0,0,0,1)';
-    context.strokeStyle = 'rgba(0,0,0,1)';
-    context.lineWidth = 4;
-    context.lineCap = 'round';
-    context.lineJoin = 'round';
-
+    var setLineStyle = function(context) {
+            /*
+        context.shadowOffsetX = 0;
+        context.shadowOffsetY = 0;
+        context.shadowBlur = 6;
+        context.shadowColor = 'rgba(0,0,0,1)';
+            */
+        context.strokeStyle = 'rgba(0,0,0,1)';
+        context.lineWidth = 4;
+        context.lineCap = 'round';
+        context.lineJoin = 'round';
+    };
 
     var drawSegment = function(from, to) {
         context.beginPath();
@@ -82,4 +85,8 @@ define(['./src/dom', './src/touch'], function(Dom, Touch) {
     };
 
     Touch.addTouchEventHandler(canvasElem, handleTouch);
+    setLineStyle(context);
+    canvasElem.resizeHandler = function() {
+        setLineStyle(context);
+    };
 });
