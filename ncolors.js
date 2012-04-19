@@ -3,7 +3,7 @@
   trailing:true, es5:true
  */
 /*global define:false, console:false, document:false, window:false */
-define(['./src/dom', './src/touch', './raf'], function(Dom, Touch, requestAnimationFrame) {
+define(['./src/dom', './src/touch', './src/brush', './src/point', './src/color', './raf'], function(Dom, Touch, Brush, Point, Color, requestAnimationFrame) {
     // get 2d context for canvas.
     var canvasElem = Dom.initial_canvas;
     var context = canvasElem.getContext('2d');
@@ -15,29 +15,65 @@ define(['./src/dom', './src/touch', './raf'], function(Dom, Touch, requestAnimat
         context.lineCap = 'round';
         context.lineJoin = 'round';
     };
+    var brush = new Brush(Color.RED, Brush.Type.SOFT);
+    var brush_stamp = brush.toCanvas();
+    var brush_spacing = 0.225; // of brush size
+    var draw_stamp = function(pos) {
+        var center = Math.floor(brush_stamp.width / 2);
+        context.drawImage(brush_stamp,
+                          pos.x - center, pos.y - center);
+    };
+    var draw_stamps = function(path) {
+        var from = path[0];
+        var i, d;
+        for (i=1; i<path.length; i++) {
+            var to = path[i];
+            // interpolate along path
+            var dist = Point.dist(from, to);
+            var step = brush.size * brush_spacing;
+            for (d = 0; d < dist; d+=step) {
+                var p = Point.interp(from, to, d/dist);
+                draw_stamp(p);
+            }
+            from = to;
+        }
+        draw_stamp(from);
+    };
 
     var finishPath = function(path) {
         console.log('path finished', path);
     };
 
-    var paths = {};
+    var paths = { };
+    var paths_done = [];
 
     var animRequested = false;
+    var DRAW_LINE = false, DRAW_STAMPS = true;
     var refresh = function() {
         // go through and draw all the new stuff.
-        context.beginPath();
+        paths_done.forEach(function(path) {
+            draw_stamps(path.slice(path.lastUpdate));
+        });
+        paths_done.length = 0;
+
+        if (DRAW_LINE) { context.beginPath(); }
         Object.getOwnPropertyNames(paths).forEach(function(id$) {
             var path = paths[id$], i;
             var start = path.lastUpdate, end = path.length-1;
 
             if (start===end) { return; }
-            context.moveTo(path[start].x, path[start].y);
-            for (i=start+1; i<=end; i++) {
-                context.lineTo(path[i].x, path[i].y);
+            if (DRAW_LINE) {
+                context.moveTo(path[start].x, path[start].y);
+                for (i=start+1; i<=end; i++) {
+                    context.lineTo(path[i].x, path[i].y);
+                }
+            }
+            if (DRAW_STAMPS) {
+                draw_stamps(path.slice(start));
             }
             path.lastUpdate = end;
         });
-        context.stroke();
+        if (DRAW_LINE) { context.stroke(); }
         animRequested = false;
     };
 
@@ -83,7 +119,12 @@ define(['./src/dom', './src/touch', './raf'], function(Dom, Touch, requestAnimat
             for (id in ended) {
                 if (ended.hasOwnProperty(id)) {
                     finishPath(paths[id]);
+                    paths_done.push(paths[id]);
                     delete paths[id];
+                    if (!animRequested) {
+                        animRequested = true;
+                        requestAnimationFrame(refresh);
+                    }
                 }
             }
             break;
