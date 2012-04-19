@@ -20,24 +20,31 @@ define(['./src/dom', './src/touch', './src/brush', './src/point', './src/color',
     var brush_spacing = 0.225; // of brush size
     var draw_stamp = function(pos) {
         var center = Math.floor(brush_stamp.width / 2);
-        context.drawImage(brush_stamp,
-                          pos.x - center, pos.y - center);
+        var x = Math.round(pos.x) - center, y = Math.round(pos.y) - center;
+        context.drawImage(brush_stamp, x, y);
     };
-    var draw_stamps = function(path) {
-        var from = path[0];
+    var draw_stamps = function(path, lastUpdate) {
+        if (!('lastPoint' in path)) {
+            path.lastPoint = path[0];
+            draw_stamp(path.lastPoint);
+        }
+
         var i, d;
-        for (i=1; i<path.length; i++) {
+        for (i=lastUpdate; i<path.length; i++) {
+            var from = path.lastPoint;
             var to = path[i];
             // interpolate along path
             var dist = Point.dist(from, to);
-            var step = brush.size * brush_spacing;
-            for (d = 0; d < dist; d+=step) {
-                var p = Point.interp(from, to, d/dist);
-                draw_stamp(p);
+            var step = brush.size * brush_spacing;//brush size could change
+            if (dist < step) {
+                // XXX support 'idle' mode
+                continue;
             }
-            from = to;
+            for (d = step; d < dist; d+=step) {
+                path.lastPoint = Point.interp(from, to, d/dist);
+                draw_stamp(path.lastPoint);
+            }
         }
-        draw_stamp(from);
     };
 
     var finishPath = function(path) {
@@ -52,7 +59,7 @@ define(['./src/dom', './src/touch', './src/brush', './src/point', './src/color',
     var refresh = function() {
         // go through and draw all the new stuff.
         paths_done.forEach(function(path) {
-            draw_stamps(path.slice(path.lastUpdate));
+            draw_stamps(path, path.lastUpdate);
         });
         paths_done.length = 0;
 
@@ -61,20 +68,25 @@ define(['./src/dom', './src/touch', './src/brush', './src/point', './src/color',
             var path = paths[id$], i;
             var start = path.lastUpdate, end = path.length-1;
 
-            if (start===end) { return; }
-            if (DRAW_LINE) {
+            if (DRAW_LINE && start!==end) {
                 context.moveTo(path[start].x, path[start].y);
                 for (i=start+1; i<=end; i++) {
                     context.lineTo(path[i].x, path[i].y);
                 }
             }
             if (DRAW_STAMPS) {
-                draw_stamps(path.slice(start));
+                draw_stamps(path, start);
             }
             path.lastUpdate = end;
         });
         if (DRAW_LINE) { context.stroke(); }
         animRequested = false;
+    };
+    var maybeRequestAnim = function() {
+        if (!animRequested) {
+            animRequested = true;
+            requestAnimationFrame(refresh);
+        }
     };
 
     var handleTouchStart = function(pt) {
@@ -82,6 +94,7 @@ define(['./src/dom', './src/touch', './src/brush', './src/point', './src/color',
         if (id$ in paths) { return; }
         paths[id$] = [ pt ];
         paths[id$].lastUpdate = 0;
+        maybeRequestAnim();
     };
     var handleTouchMove = function(pt) {
         var id$ = '$' + pt.id;
@@ -90,10 +103,7 @@ define(['./src/dom', './src/touch', './src/brush', './src/point', './src/color',
         var last = path[path.length-1];
         if (pt.equals(last)) { return; }
         path.push(pt);
-        if (!animRequested) {
-            animRequested = true;
-            requestAnimationFrame(refresh);
-        }
+        maybeRequestAnim();
     };
     var handleTouch = function(event) {
         switch (event.type) {
@@ -121,10 +131,7 @@ define(['./src/dom', './src/touch', './src/brush', './src/point', './src/color',
                     finishPath(paths[id]);
                     paths_done.push(paths[id]);
                     delete paths[id];
-                    if (!animRequested) {
-                        animRequested = true;
-                        requestAnimationFrame(refresh);
-                    }
+                    maybeRequestAnim();
                 }
             }
             break;
