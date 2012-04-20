@@ -133,6 +133,11 @@ define(['./color'], function(Color) {
 
     Brush.Type = BrushType;
 
+    Brush.prototype.clone = function() {
+        return new Brush(this.color, this.type, this.size, this.opacity,
+                         this.spacing);
+    };
+
     Brush.prototype.toCanvas = function() {
         // XXX should we scale the canvas up based on the devicePixelRatio ?
         var brushwidth = this.size;

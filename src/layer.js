@@ -120,6 +120,9 @@ define(['./drawcommand', './brush', './point'], function(DrawCommand, Brush, Poi
                 c.clearRect(0,0, this.width, this.height);
             }.bind(this));
             this.isDrawingPath = false;
+            // reset brush as well.
+            this.brush = new Brush();
+            this.brush_stamp = null;
         },
         resize: function(width, height, pixel_ratio) {
             var w = width * pixel_ratio, h = height * pixel_ratio;
@@ -128,7 +131,10 @@ define(['./drawcommand', './brush', './point'], function(DrawCommand, Brush, Poi
                 o.height = h;
             });
             this.pixel_ratio = pixel_ratio;
-        }
+        },
+        currentBrush: function() {
+            return this.brush.clone();
+        },
     };
     return Layer;
 });

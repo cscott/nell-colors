@@ -3,7 +3,7 @@
   trailing:true, es5:true
  */
 /*global define:false, console:false, window:false, MessageChannel:false */
-define(['domReady!', './src/dom', './src/postmessage', './hammer'], function(document, Dom, postMessage, Hammer) {
+define(['domReady!', './src/dom', './hammer'], function(document, Dom, Hammer) {
     Dom.insertMeta(document);
 
     var appIframe = document.createElement('iframe');
@@ -90,19 +90,32 @@ define(['domReady!', './src/dom', './src/postmessage', './hammer'], function(doc
         input.id = id;
         input.min = min;
         input.max = max;
-        input.value = value;
         input.step = step;
+        input.value = value;
         toolbarButtons.appendChild(input);
+
+        input.addEventListener('change', function() {
+            sendToolbarEvent({ type: id+'Slider', value: input.value });
+        }, false);
+
         return input;
     };
-    if (false) {
-        /* temporarily disable */
-        var size = addRange('size', 1, 40, 20, 1);
-        var opacity = addRange('opacity', 0, 1, 1, 'any');
-    }
+    var size = addRange('size', 1, 40, 20, 1);
+    var opacity = addRange('opacity', 0, 1, 0.7, 'any');
+    var updateSwatchOpacity = function() {
+        var swatches = document.querySelectorAll('.swatch > span');
+        // swatches is a NodeList, not an Array, so we can't use forEach
+        // directly (sigh)
+        Array.prototype.forEach.call(swatches, function(s) {
+            s.style.opacity = opacity.value;
+        });
+    };
+    opacity.addEventListener('change', updateSwatchOpacity, false);
+    updateSwatchOpacity();
 
     // allow dragging the toolbar left and right
     var toolbar = document.getElementById('toolbar');
+    if (false) { // temporarily disable
     var hammer = new Hammer(toolbar, {
         prevent_default: false,
         drag_vertical: false,
@@ -116,6 +129,7 @@ define(['domReady!', './src/dom', './src/postmessage', './hammer'], function(doc
         toolbarOffset = Math.min(0, toolbarOffsetStart + ev.distanceX);
         toolbarButtons.style.left = toolbarOffset+"px";
     };
+    }
 
     //console.log("in index.js");
     //console.log(MessageChannel);

@@ -27,9 +27,10 @@ define(['domReady!', './src/brush', './src/color', './src/dom', './src/drawcomma
     var commands = [], redoList = [];
     commands.last = 0; // exclusive
     // hack in a brush change and color change
-    commands.push(DrawCommand.create_color_change(Color.BLACK));
-    commands.push(DrawCommand.create_brush_change(Brush.Type.SOFT, 20,
-                                                  0.7, 0.2));
+    var brush = new Brush(Color.BLACK, Brush.Type.SOFT, 20, 0.7, 0.2);
+    commands.push(DrawCommand.create_color_change(brush.color));
+    commands.push(DrawCommand.create_brush_change(brush.type, brush.size,
+                                                  brush.opacity,brush.spacing));
 
     var animRequested = false;
     var refresh = function() {
@@ -79,6 +80,9 @@ define(['domReady!', './src/brush', './src/color', './src/dom', './src/drawcomma
         layer.clear();
         commands.last = 0;
         refresh();
+        // reset current brush from layer
+        brush = layer.currentBrush();
+        // XXX update the toolbar opacity/size to match
     };
     var redo = function() {
         if (redoList.length===0) { return; /* nothing to redo */ }
@@ -86,10 +90,10 @@ define(['domReady!', './src/brush', './src/color', './src/dom', './src/drawcomma
             commands.push(cmd);
         });
         refresh();
+        // reset current brush from layer
+        brush = layer.currentBrush();
+        // XXX update the toolbar opacity/size to match
     };
-    // expose these so we can manually trigger them from the debugging console
-    //window.doUndo = undo;
-    //window.doRedo = redo;
 
     var onWindowResize = function(event) {
         var w = window.innerWidth, h = window.innerHeight;
@@ -125,12 +129,24 @@ define(['domReady!', './src/brush', './src/color', './src/dom', './src/drawcomma
             redo();
             break;
         case 'hardButton':
-            commands.push(DrawCommand.create_brush_change(Brush.Type.HARD,
-                                                          20, 0.7, 0.2));
+            brush.type = Brush.Type.HARD;
+            commands.push(DrawCommand.create_brush_change(
+                brush.type, brush.size, brush.opacity,brush.spacing));
             break;
         case 'softButton':
-            commands.push(DrawCommand.create_brush_change(Brush.Type.SOFT,
-                                                          20, 0.7, 0.2));
+            brush.type = Brush.Type.SOFT;
+            commands.push(DrawCommand.create_brush_change(
+                brush.type, brush.size, brush.opacity,brush.spacing));
+            break;
+        case 'opacitySlider':
+            brush.opacity = +msg.value;
+            commands.push(DrawCommand.create_brush_change(
+                brush.type, brush.size, brush.opacity,brush.spacing));
+            break;
+        case 'sizeSlider':
+            brush.size = +msg.value;
+            commands.push(DrawCommand.create_brush_change(
+                brush.type, brush.size, brush.opacity,brush.spacing));
             break;
         default:
             console.warn("Unhandled toolbar message", evt);
@@ -149,5 +165,5 @@ define(['domReady!', './src/brush', './src/color', './src/dom', './src/drawcomma
 
     // Notify our parent that we're ready to rock!
     var msg = { type: 'childReady' };
-    postMessage(window.parent, msg, '*', [toolbarChannel.port1]);
+    postMessage(window.parent, JSON.stringify(msg), '*', [toolbarChannel.port1]);
 });
