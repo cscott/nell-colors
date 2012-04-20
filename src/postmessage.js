@@ -7,7 +7,7 @@ define([], function() {
         } catch (e) {
             // legacy webkit-proprietary order, needed for iOS 5
             // (also catches implementations which only allow string messages?)
-            if (message!=='string')
+            if (typeof(message)!=='string')
                 message = JSON.stringify(message);
             target.postMessage(message, ports, origin);
         }

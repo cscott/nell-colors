@@ -2,7 +2,7 @@
   eqeqeq:true, curly:true, latedef:true, newcap:true, undef:true,
   trailing:true, es5:true
  */
-/*global define:false, console:false, window:false, MessageChannel:false */
+/*global define:false, console:false, window:false */
 define(['domReady!', './src/dom', './hammer'], function(document, Dom, Hammer) {
     Dom.insertMeta(document);
 
@@ -15,19 +15,53 @@ define(['domReady!', './src/dom', './hammer'], function(document, Dom, Hammer) {
 
     // set up toolbar channel and message handler.
     // (do this before loading the child, to ensure childReady isn't lost)
+    var handleToolbarResponse = function(evt) {
+        var msg = evt.data;
+        if (typeof(msg)==='string') { msg = JSON.parse(msg); }
+
+        switch (msg.type) {
+        case 'brush':
+            console.log("Brush update", msg); // XXX
+            break;
+        default:
+            console.warn("Unexpected parent toolbar message", evt);
+        }
+    };
+
     var handleMessage = function(evt) {
         var msg = evt.data;
         if (typeof(msg)==='string') { msg = JSON.parse(msg); }
 
         switch (msg.type) {
+        case 'toolbar':
+            // synthetic MessageChannel
+            return toolbarPort.dispatchEvent({data:msg.msg});
+
         case 'childReady':
             console.assert(evt.source===appIframe.contentWindow);
-            //console.log("Got toolbar port");
-            toolbarPort = evt.ports[0];
-            toolbarPort.start();
+            //console.log("Got toolbar port", evt);
+            if (evt.ports && evt.ports.length>0) {
+                // use real MessageChannel
+                toolbarPort = evt.ports[0];
+                toolbarPort.addEventListener('message', handleToolbarResponse,
+                                             false);
+                toolbarPort.start();
+            } else {
+                // synthetic MessageChannel
+                console.log("Using emulated MessageChannel");
+                toolbarPort = {
+                    dispatchEvent: function(evt) {
+                        handleToolbarResponse(evt);
+                    },
+                    postMessage: function(msg) {
+                        var m = { type: 'toolbar', msg: msg };
+                        evt.source.postMessage(JSON.stringify(m), evt.origin);
+                    }
+                };
+            }
             break;
         default:
-            console.warn("Unexpected message", evt);
+            console.warn("Unexpected parent message", evt);
             break;
         }
     };
@@ -130,7 +164,4 @@ define(['domReady!', './src/dom', './hammer'], function(document, Dom, Hammer) {
         toolbarButtons.style.left = toolbarOffset+"px";
     };
     }
-
-    //console.log("in index.js");
-    //console.log(MessageChannel);
 });

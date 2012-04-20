@@ -14,6 +14,10 @@ define(['domReady!', './src/brush', './src/color', './src/dom', './src/drawcomma
             };
         };
     }
+    // Android browser doesn't support MessageChannel
+    // -- however, it also has a losing canvas. so don't worry too much.
+    var USE_MESSAGECHANNEL = (typeof(MessageChannel) !== 'undefined');
+    var toolbarPort = null;
 
     // get 2d context for canvas.
     Dom.insertMeta(document);
@@ -60,6 +64,18 @@ define(['domReady!', './src/brush', './src/color', './src/dom', './src/drawcomma
         maybeRequestAnim();
     };
 
+    var updateToolbarBrush = function() {
+        var msg = {
+            type: 'brush',
+            color: brush.color.to_string(),
+            brush_type:  brush.type,
+            size:  brush.size,
+            opacity: brush.opacity,
+            spacing: brush.spacing
+        };
+        toolbarPort.postMessage(JSON.stringify(msg));
+    };
+
     var undo = function() {
         console.assert(!isDragging);
         if (commands.length===0) { return; /* nothing to undo */ }
@@ -82,7 +98,8 @@ define(['domReady!', './src/brush', './src/color', './src/dom', './src/drawcomma
         refresh();
         // reset current brush from layer
         brush = layer.currentBrush();
-        // XXX update the toolbar opacity/size to match
+        // update the toolbar opacity/size to match
+        updateToolbarBrush();
     };
     var redo = function() {
         if (redoList.length===0) { return; /* nothing to redo */ }
@@ -92,7 +109,8 @@ define(['domReady!', './src/brush', './src/color', './src/dom', './src/drawcomma
         refresh();
         // reset current brush from layer
         brush = layer.currentBrush();
-        // XXX update the toolbar opacity/size to match
+        // update the toolbar opacity/size to match
+        updateToolbarBrush();
     };
 
     var onWindowResize = function(event) {
@@ -113,7 +131,6 @@ define(['domReady!', './src/brush', './src/color', './src/dom', './src/drawcomma
     */
 
     // create a channel to listen to toolbar messages.
-    var toolbarChannel = new MessageChannel();
     var handleToolbarMessage = function(evt) {
         if (isDragging) { hammer.ondragend(); }
         var msg = JSON.parse(evt.data);
@@ -149,21 +166,48 @@ define(['domReady!', './src/brush', './src/color', './src/dom', './src/drawcomma
                 brush.type, brush.size, brush.opacity,brush.spacing));
             break;
         default:
-            console.warn("Unhandled toolbar message", evt);
+            console.warn("Unexpected child toolbar message", evt);
             break;
         }
     };
-    toolbarChannel.port2.addEventListener('message', handleToolbarMessage,
-                                          false);
-    toolbarChannel.port2.start();
 
     // listen to other messages from our parent
     var handleMessage = function(evt) {
-        console.warn("Child got message", evt.data, "from", evt.origin);
+        var msg = evt.data;
+        if (typeof(msg)==='string') { msg = JSON.parse(msg); }
+        switch (msg.type) {
+        case 'toolbar':
+            // synthetic MessageChannel
+            return toolbarPort.dispatchEvent({data:msg.msg});
+        default:
+            console.warn("Unexpected child message", evt);
+            break;
+        }
     };
     window.addEventListener('message', handleMessage, false);
 
     // Notify our parent that we're ready to rock!
     var msg = { type: 'childReady' };
-    postMessage(window.parent, JSON.stringify(msg), '*', [toolbarChannel.port1]);
+    if (USE_MESSAGECHANNEL) {
+        var toolbarChannel = new MessageChannel();
+        toolbarPort = toolbarChannel.port1;
+        toolbarPort.addEventListener('message', handleToolbarMessage,
+                                     false);
+        toolbarPort.start();
+        postMessage(window.parent, JSON.stringify(msg), '*',
+                    [toolbarChannel.port2]);
+    } else {
+        toolbarPort = {
+            dispatchEvent: function(evt) {
+                handleToolbarMessage(evt);
+            },
+            postMessage: function(msg) {
+                var m = { type: 'toolbar', msg: msg };
+                postMessage(window.parent, JSON.stringify(m), '*');
+            }
+        };
+        postMessage(window.parent, JSON.stringify(msg), '*');
+    }
+    // finally, update the toolbar opacity/size to match
+    updateToolbarBrush();
 });
