@@ -760,7 +760,8 @@ define([], function() {
             "dark red":          new Color(139, 0, 0, 255),
             "DarkRed":           new Color(139, 0, 0, 255),
             "light green":       new Color(144, 238, 144, 255),
-            "LightGreen":        new Color(144, 238, 144, 255)
+            "LightGreen":        new Color(144, 238, 144, 255),
+            "indigo":            new Color(75, 0, 130, 255)
         };
     };
     return { make_color_table: make_color_table };
