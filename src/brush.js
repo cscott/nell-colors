@@ -10,8 +10,7 @@ define(['./color'], function(Color) {
     var BrushType = {
         HARD: 0,
         SOFT: 1,
-        CURSOR: 2,
-        NUM_BRUSHES: 3
+        NUM_BRUSHES: 2
     };
     Object.freeze(BrushType);
 
@@ -120,31 +119,19 @@ define(['./color'], function(Color) {
     var create_soft_brush = function() {
         return create_brush(0.0, 128);
     };
-    var create_cursor = function() {
-        return { intensity_tbl: null }; // XXX
-    };
 
-    var BrushControl = {
-        NONE: 0,
-        VARIABLE_OPACITY: 1,
-        VARIABLE_SIZE: 2
-    };
-    Object.freeze(BrushControl);
-
-    var Brush = function(color, type, size, control, opacity) {
-        this.color = color || Color.WHITE;
+    var Brush = function(color, type, size, opacity, spacing) {
+        this.color = color || Color.BLACK;
         this.type = type || BrushType.HARD;
         this.size = size || 32;
-        this.control = control || 0;
         this.opacity = opacity || 1.0;
+        this.spacing = spacing || 0.225; // fraction of brush size
     };
     Brush.brush_type = [];
     Brush.brush_type[BrushType.HARD] = create_hard_brush();
     Brush.brush_type[BrushType.SOFT] = create_soft_brush();
-    Brush.brush_type[BrushType.CURSOR] = create_cursor();
 
     Brush.Type = BrushType;
-    Brush.Control = BrushControl;
 
     Brush.prototype.toCanvas = function() {
         // XXX should we scale the canvas up based on the devicePixelRatio ?

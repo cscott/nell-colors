@@ -9,7 +9,7 @@ define([], function() {
      *  These can be reimplemented for a standalone application.
      */
 
-    var insertMeta = function(window) {
+    var insertMeta = function(document) {
         var elements = [
             [ ["charset", "UTF-8" ]],
             [ ["name", "viewport"],
@@ -19,7 +19,7 @@ define([], function() {
             [ ["name", "apple-mobile-web-app-status-bar-style"],
               ["content", "black"]]
         ];
-        var m = window.document.getElementsByTagName("meta");
+        var m = document.getElementsByTagName("meta");
         var i, j, k;
         for (i=0; i<elements.length; i++) {
             var e = elements[i];
@@ -42,7 +42,7 @@ define([], function() {
             for (k=0; k<e.length; k++) {
                 meta.setAttribute(e[k][0], e[k][1]);
             }
-            window.document.head.appendChild(meta);
+            document.head.appendChild(meta);
         }
     };
     var setTitle = function(window, new_title) {
@@ -76,7 +76,7 @@ define([], function() {
 
     // Create initial stage.
     var init = function(window) {
-        insertMeta(window);
+        insertMeta(window.document);
         setTitle(window, "Colors for Nell");
         return insertCanvas(window);
     };
@@ -88,7 +88,8 @@ define([], function() {
     };
 
     return {
-        initial_canvas: init(window),
+        //initial_canvas: init(window),
+        insertMeta: insertMeta,
         new_canvas: function() { return new_window(window); },
         set_title: function(canvas, new_title) {
             canvas.ownerDocument.title = new_title;

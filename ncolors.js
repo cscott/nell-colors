@@ -3,83 +3,28 @@
   trailing:true, es5:true
  */
 /*global define:false, console:false, document:false, window:false */
-define(['./src/dom', './src/touch', './src/brush', './src/point', './src/color', './raf'], function(Dom, Touch, Brush, Point, Color, requestAnimationFrame) {
+define(['./src/brush', './src/color', './src/dom', './src/drawcommand', './src/layer', './hammer', './raf'], function(Brush, Color, Dom, DrawCommand, Layer, Hammer, requestAnimationFrame) {
+
     // get 2d context for canvas.
-    var canvasElem = Dom.initial_canvas;
-    var context = canvasElem.getContext('2d');
-    console.log(canvasElem.width, canvasElem.height);
+    Dom.insertMeta(document);
+    var layer = new Layer();
+    document.body.appendChild(layer.domElement);
+    var hammer = new Hammer(layer.domElement, {
+        prevent_default: true,
+        drag_min_distance: 2
+    });
 
-    var setLineStyle = function(context) {
-        context.strokeStyle = 'rgba(0,0,0,1)';
-        context.lineWidth = 4;
-        context.lineCap = 'round';
-        context.lineJoin = 'round';
-    };
-    var brush = new Brush(Color.RED, Brush.Type.SOFT);
-    var brush_stamp = brush.toCanvas();
-    var brush_spacing = 0.225; // of brush size
-    var draw_stamp = function(pos) {
-        var center = Math.floor(brush_stamp.width / 2);
-        var x = Math.round(pos.x) - center, y = Math.round(pos.y) - center;
-        context.drawImage(brush_stamp, x, y);
-    };
-    var draw_stamps = function(path, lastUpdate) {
-        if (!('lastPoint' in path)) {
-            path.lastPoint = path[0];
-            draw_stamp(path.lastPoint);
-        }
-
-        var i, d;
-        for (i=lastUpdate; i<path.length; i++) {
-            var from = path.lastPoint;
-            var to = path[i];
-            // interpolate along path
-            var dist = Point.dist(from, to);
-            var step = brush.size * brush_spacing;//brush size could change
-            if (dist < step) {
-                // XXX support 'idle' mode
-                continue;
-            }
-            for (d = step; d < dist; d+=step) {
-                path.lastPoint = Point.interp(from, to, d/dist);
-                draw_stamp(path.lastPoint);
-            }
-        }
-    };
-
-    var finishPath = function(path) {
-        console.log('path finished', path);
-    };
-
-    var paths = { };
-    var paths_done = [];
+    var commands = [], redoList = [];
+    commands.last = 0; // exclusive
+    // hack in a brush change
+    commands.push(DrawCommand.create_brush_change(Brush.Type.SOFT, 20,
+                                                  0.7, 0.2));
 
     var animRequested = false;
-    var DRAW_LINE = false, DRAW_STAMPS = true;
     var refresh = function() {
-        // go through and draw all the new stuff.
-        paths_done.forEach(function(path) {
-            draw_stamps(path, path.lastUpdate);
-        });
-        paths_done.length = 0;
-
-        if (DRAW_LINE) { context.beginPath(); }
-        Object.getOwnPropertyNames(paths).forEach(function(id$) {
-            var path = paths[id$], i;
-            var start = path.lastUpdate, end = path.length-1;
-
-            if (DRAW_LINE && start!==end) {
-                context.moveTo(path[start].x, path[start].y);
-                for (i=start+1; i<=end; i++) {
-                    context.lineTo(path[i].x, path[i].y);
-                }
-            }
-            if (DRAW_STAMPS) {
-                draw_stamps(path, start);
-            }
-            path.lastUpdate = end;
-        });
-        if (DRAW_LINE) { context.stroke(); }
+        while (commands.last < commands.length) {
+            layer.execCommand(commands[commands.last++]);
+        }
         animRequested = false;
     };
     var maybeRequestAnim = function() {
@@ -89,63 +34,61 @@ define(['./src/dom', './src/touch', './src/brush', './src/point', './src/color',
         }
     };
 
-    var handleTouchStart = function(pt) {
-        var id$ = '$' + pt.id;
-        if (id$ in paths) { return; }
-        paths[id$] = [ pt ];
-        paths[id$].lastUpdate = 0;
+    var isDragging = false;
+    hammer.ondrag = function(ev) {
+        isDragging = true;
+        commands.push(DrawCommand.create_draw(ev.position));
+        redoList.length = 0;
         maybeRequestAnim();
     };
-    var handleTouchMove = function(pt) {
-        var id$ = '$' + pt.id;
-        console.assert(id$ in paths);
-        var path = paths[id$];
-        var last = path[path.length-1];
-        if (pt.equals(last)) { return; }
-        path.push(pt);
+    hammer.ondragend = function(ev) {
+        isDragging = false;
+        commands.push(DrawCommand.create_draw_end());
+        redoList.length = 0;
         maybeRequestAnim();
-    };
-    var handleTouch = function(event) {
-        switch (event.type) {
-        case 'start': // a new finger is down.
-            event.globalPositions.forEach(handleTouchStart);
-            break;
-        case 'move': // some fingers have moved.
-            event.globalPositions.forEach(handleTouchMove);
-            break;
-        case 'end': // some fingers have lifted
-            var ended = {}, id;
-            for (id in paths) {
-                if (paths.hasOwnProperty(id)) {
-                    ended[id] = true;
-                }
-            }
-            event.globalPositions.forEach(function(pt) {
-                var id$ = '$' + pt.id;
-                handleTouchMove(pt);
-                delete ended[id$];
-            });
-            // now which ones actually ended?
-            for (id in ended) {
-                if (ended.hasOwnProperty(id)) {
-                    finishPath(paths[id]);
-                    paths_done.push(paths[id]);
-                    delete paths[id];
-                    maybeRequestAnim();
-                }
-            }
-            break;
-        case 'cancel':
-            // throw out entire path.
-            paths = {};
-            // XXX reset canvas
-            break;
-        }
     };
 
-    Touch.addTouchEventHandler(canvasElem, handleTouch);
-    setLineStyle(context);
-    canvasElem.resizeHandler = function() {
-        setLineStyle(context);
+    var undo = function() {
+        console.assert(!isDragging);
+        if (commands.length===0) { return; /* nothing to undo */ }
+        var i = commands.length-1;
+        while (i >= 0 && commands[i].type !== DrawCommand.Type.DRAW_END) {
+            i--;
+        }
+        i--;
+        while (i >= 0 && commands[i].type === DrawCommand.Type.DRAW) {
+            i--;
+        }
+        i++;
+        // i should now point to the first DRAW command.
+        console.log(commands, i);
+        redoList.push(commands.slice(i));
+        commands.length = i;
+        // now redraw w/o those commands.
+        layer.clear();
+        commands.last = 0;
+        refresh();
     };
+    var redo = function() {
+        if (redoList.length===0) { return; /* nothing to redo */ }
+        redoList.pop().forEach(function(cmd) {
+            commands.push(cmd);
+        });
+        refresh();
+    };
+    // expose these so we can manually trigger them from the debugging console
+    window.doUndo = undo;
+    window.doRedo = redo;
+
+    var onWindowResize = function(event) {
+        var w = window.innerWidth, h = window.innerHeight;
+        var r = window.devicePixelRatio || 1;
+        console.log("Resizing canvas", w, h, r);
+        layer.resize(w, h, r);
+        // replay existing commands to restore canvas contents.
+        commands.last = 0;
+        refresh();
+    };
+    window.addEventListener('resize', onWindowResize, false);
+    onWindowResize();
 });

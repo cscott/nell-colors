@@ -10,61 +10,39 @@ define(['./color','./brush'], function(Color, Brush) {
         DRAW: 0,
         DRAW_END: 1,
         COLOR_CHANGE: 2,
-        SIZE_CHANGE: 3
+        BRUSH_CHANGE: 3,
+        NUM_COMMAND_TYPES: 4
     };
     Object.freeze(CommandType);
 
-    var DrawCommand = function() {
-        this.type = CommandType.DRAW;
-        this.pos = { x:0, y: 0 };
-        this.color = Color.BLACK;
-        this.pressure = 0;
-        this.flipx = false;
-        this.flipy = false;
-        this.is_text = false;
-        this.text = null;
-        this.brush_control = Brush.Control.NONE;
-        this.brush_type = Brush.Type.HARD;
-        this.size = 0;
-        this.opacity = 0;
+    var DrawCommand = function(type) {
+        console.assert(type >= 0 && type < CommandType.NUM_COMMAND_TYPES);
+        this.type = type;
     };
     DrawCommand.Type = CommandType;
 
-    DrawCommand.create_color_change = function(color) {
-        var cmd = new DrawCommand();
-        cmd.type = CommandType.COLOR_CHANGE;
-        cmd.color = color.copy();
-        return cmd;
-    };
-    DrawCommand.create_draw = function(pos, pressure) {
-        var cmd = new DrawCommand();
-        cmd.type = CommandType.DRAW;
+    DrawCommand.create_draw = function(pos) {
+        var cmd = new DrawCommand(CommandType.DRAW);
         cmd.pos = { x: pos.x, y: pos.y };
-        cmd.pressure = pressure;
         return cmd;
     };
-    DrawCommand.create_end_draw = function(pressure) {
-        var cmd = new DrawCommand();
-        cmd.type = CommandType.DRAW_END;
-        cmd.pressure = pressure;
+    DrawCommand.create_draw_end = function() {
+        var cmd = new DrawCommand(CommandType.DRAW_END);
         return cmd;
 
     };
-    DrawCommand.create_size_change = function(brush_control, brush_type,
-                                              size, opacity) {
-        var cmd = new DrawCommand();
-        cmd.type = CommandType.SIZE_CHANGE;
-        cmd.brush_control = brush_control;
+    DrawCommand.create_color_change = function(color) {
+        var cmd = new DrawCommand(CommandType.COLOR_CHANGE);
+        cmd.color = color.copy();
+        return cmd;
+    };
+    DrawCommand.create_brush_change = function(brush_type, size,
+                                               opacity, spacing) {
+        var cmd = new DrawCommand(CommandType.BRUSH_CHANGE);
         cmd.brush_type = brush_type;
         cmd.size = size;
         cmd.opacity = opacity;
-        return cmd;
-    };
-    DrawCommand.create_flip = function(flipx) {
-        var cmd = new DrawCommand();
-        cmd.type = CommandType.COLOR_CHANGE;
-        cmd.flipx = flipx;
-        cmd.flipy = !flipx;
+        cmd.spacing = spacing;
         return cmd;
     };
 
