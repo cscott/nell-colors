@@ -77,8 +77,8 @@ define(['./src/brush', './src/color', './src/dom', './src/drawcommand', './src/l
         refresh();
     };
     // expose these so we can manually trigger them from the debugging console
-    window.doUndo = undo;
-    window.doRedo = redo;
+    //window.doUndo = undo;
+    //window.doRedo = redo;
 
     var onWindowResize = function(event) {
         var w = window.innerWidth, h = window.innerHeight;
@@ -91,4 +91,9 @@ define(['./src/brush', './src/color', './src/dom', './src/drawcommand', './src/l
     };
     window.addEventListener('resize', onWindowResize, false);
     onWindowResize();
+
+    document.getElementById("loading").style.display="none";
+    /*
+    document.getElementById("loading").innerHTML = "Resized "+window.innerWidth+"x"+window.innerHeight+" "+window.devicePixelRatio;
+    */
 });
