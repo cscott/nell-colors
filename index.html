@@ -5,16 +5,26 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black" />
 <link rel="shortcut icon" href="icons/colors_icon-16x16.ico" />
 <link rel="apple-touch-icon" href="icons/colors_icon-128x128.png" />
+
+<!-- startup image for web apps - iPad - landscape (748x1024)
+     Note: iPad landscape startup image has to be exactly 748x1024
+     pixels (portrait, with contents rotated).-->
 <link rel="apple-touch-startup-image"
-      sizes="320x460" href="images/turtle_splash-320x460.png" />
+      href="icons/colors_splash-748x1024.png"
+      media="screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:landscape)" />
+<!-- startup image for web apps - iPad - portrait (768x1004) -->
 <link rel="apple-touch-startup-image"
-      sizes="640x920" href="images/turtle_splash-640x920.png" />
+      href="icons/colors_splash-768x1004.png"
+      media="screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:portrait)" />
+<!-- startup image for web apps - iPhone (320x460) -->
 <link rel="apple-touch-startup-image"
-      sizes="768x1004" href="images/turtle_splash-768x1004.png" />
-<!--
+      href="icons/colors_splash-320x460.png"
+      media="screen and (max-device-width: 320px)" />
+<!-- startup image for web apps - iPhone retina -->
 <link rel="apple-touch-startup-image"
-      sizes="1024x748" href="images/turtle_splash-1024x748.png" />
--->
+      href="icons/colors_splash-640x920.png"
+      media="screen and (max-device-width: 480px) and (-webkit-min-device-pixel-ratio: 2)" />
+
 <title>Colors for Nell</title>
 <style type="text/css">
 html,body { width:100%; height:100%; margin:0px; border:none;}
