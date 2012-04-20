@@ -7,6 +7,11 @@ define(['./color'], function(Color) {
     // Brush-related functions.
     // Ported from canvas.h of Colors! XO activity, GPL license.
     
+    // Workaround for Android Honeycomb (on Xoom)
+    if (typeof(Uint8Array)==='undefined') {
+        Uint8Array = function() { }; // hack hack hack
+    }
+
     var BrushType = {
         HARD: 0,
         SOFT: 1,
