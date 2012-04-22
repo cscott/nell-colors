@@ -2,8 +2,9 @@
   eqeqeq:true, curly:true, latedef:true, newcap:true, undef:true,
   trailing:true, es5:true
  */
-/*global define:false, console:false, MessageChannel:false, window:false */
-define(['domReady!', './src/brush', './src/color', './src/dom', './src/drawcommand', './src/layer', './hammer', './src/postmessage', './raf'], function(document, Brush, Color, Dom, DrawCommand, Layer, Hammer, postMessage, requestAnimationFrame) {
+/*global define:false, console:false, MessageChannel:false, window:false,
+         setTimeout:false, clearTimeout:false */
+define(['domReady!', './src/brush', './src/color', './src/dom', './src/drawcommand', './src/layer', './hammer', './src/postmessage', './raf', './src/recog'], function(document, Brush, Color, Dom, DrawCommand, Layer, Hammer, postMessage, requestAnimationFrame, Recog) {
     // Because Safari 5.1 doesn't have Function.bind (sigh)
     // (xxx this is a lame implementation that only allows 1 arg to bind)
     if (typeof(Function.prototype.bind) === 'undefined') {
@@ -18,6 +19,9 @@ define(['domReady!', './src/brush', './src/color', './src/dom', './src/drawcomma
     // -- however, it also has a losing canvas. so don't worry too much.
     var USE_MESSAGECHANNEL = (typeof(MessageChannel) !== 'undefined');
     var toolbarPort = null;
+
+    // How long to allow between strokes of a letter
+    var RECOG_TIMEOUT = 1000;
 
     // get 2d context for canvas.
     Dom.insertMeta(document);
@@ -35,6 +39,33 @@ define(['domReady!', './src/brush', './src/color', './src/dom', './src/drawcomma
     commands.push(DrawCommand.create_color_change(brush.color));
     commands.push(DrawCommand.create_brush_change(brush.type, brush.size,
                                                   brush.opacity,brush.spacing));
+    commands.recog = commands.length; // where to start looking for a letter
+
+    var recog_timer_id = null;
+    // cancel any running recog timer (ie, if stroke in progress)
+    var recog_timer_cancel = function() {
+        if (recog_timer_id) {
+            clearTimeout(recog_timer_id);
+            recog_timer_id = null;
+        }
+    };
+    // ignore all strokes to date; start recognition with next stroke.
+    var recog_reset = function() {
+        commands.recog = commands.length;
+        recog_timer_cancel();
+    };
+    // timeout function to call recog_reset automatically after a delay
+    var recog_timer = function() {
+        recog_timer_id = null;
+        recog_reset();
+    };
+    // manually start/reset the recog_timer (ie, stroke ended)
+    var recog_timer_reset = function() {
+        if (recog_timer_id) {
+            clearTimeout(recog_timer_id);
+        }
+        recog_timer_id = setTimeout(recog_timer, RECOG_TIMEOUT);
+    };
 
     var animRequested = false;
     var refresh = function() {
@@ -56,12 +87,24 @@ define(['domReady!', './src/brush', './src/color', './src/dom', './src/drawcomma
         commands.push(DrawCommand.create_draw(ev.position));
         redoList.length = 0;
         maybeRequestAnim();
+        // stroke in progress, don't try to recognize
+        recog_timer_cancel();
     };
     hammer.ondragend = function(ev) {
         isDragging = false;
         commands.push(DrawCommand.create_draw_end());
         redoList.length = 0;
         maybeRequestAnim();
+        if (ev) {
+            /*
+            console.log("Attempt recog from", commands.recog,
+                        "to", commands.length);
+            */
+            Recog.attemptRecognition(commands, commands.recog,
+                                     commands.length);
+        }
+        // start recog reset timer
+        recog_timer_reset();
     };
 
     var updateToolbarBrush = function() {
@@ -100,6 +143,8 @@ define(['domReady!', './src/brush', './src/color', './src/dom', './src/drawcomma
         brush = layer.currentBrush();
         // update the toolbar opacity/size to match
         updateToolbarBrush();
+        // stop recognition and cancel timer
+        recog_reset();
     };
     var redo = function() {
         if (redoList.length===0) { return; /* nothing to redo */ }
@@ -111,6 +156,8 @@ define(['domReady!', './src/brush', './src/color', './src/dom', './src/drawcomma
         brush = layer.currentBrush();
         // update the toolbar opacity/size to match
         updateToolbarBrush();
+        // don't repeat recognition (and cancel timer)
+        recog_reset();
     };
 
     var onWindowResize = function(event) {
