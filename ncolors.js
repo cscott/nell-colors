@@ -137,7 +137,9 @@ define(['domReady!', './src/brush', './src/color', './src/dom', './src/drawcomma
         switch(msg.type) {
         case 'swatchButton':
             var color = Color.from_string(msg.color);
-            commands.push(DrawCommand.create_color_change(color));
+            if (Color.equal(brush.color, color)) { break; }
+            brush.color = color;
+            commands.push(DrawCommand.create_color_change(brush.color));
             break;
         case 'undoButton':
             undo();
@@ -146,21 +148,25 @@ define(['domReady!', './src/brush', './src/color', './src/dom', './src/drawcomma
             redo();
             break;
         case 'hardButton':
+            if (brush.type === Brush.Type.HARD) { break; }
             brush.type = Brush.Type.HARD;
             commands.push(DrawCommand.create_brush_change(
                 brush.type, brush.size, brush.opacity,brush.spacing));
             break;
         case 'softButton':
+            if (brush.type === Brush.Type.SOFT) { break; }
             brush.type = Brush.Type.SOFT;
             commands.push(DrawCommand.create_brush_change(
                 brush.type, brush.size, brush.opacity,brush.spacing));
             break;
         case 'opacitySlider':
+            if (brush.opacity === +msg.value) { break; }
             brush.opacity = +msg.value;
             commands.push(DrawCommand.create_brush_change(
                 brush.type, brush.size, brush.opacity,brush.spacing));
             break;
         case 'sizeSlider':
+            if (brush.size === +msg.value) { break; }
             brush.size = +msg.value;
             commands.push(DrawCommand.create_brush_change(
                 brush.type, brush.size, brush.opacity,brush.spacing));

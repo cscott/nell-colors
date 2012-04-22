@@ -15,13 +15,20 @@ define(['domReady!', './src/dom', './hammer'], function(document, Dom, Hammer) {
 
     // set up toolbar channel and message handler.
     // (do this before loading the child, to ensure childReady isn't lost)
+    var size, opacity;
     var handleToolbarResponse = function(evt) {
         var msg = evt.data;
         if (typeof(msg)==='string') { msg = JSON.parse(msg); }
 
         switch (msg.type) {
         case 'brush':
-            console.log("Brush update", msg); // XXX
+            //console.log("Brush update", msg);
+            if (opacity.value !== msg.opacity) {
+                opacity.value = msg.opacity;
+            }
+            if (size.value !== msg.size) {
+                size.value = msg.size;
+            }
             break;
         default:
             console.warn("Unexpected parent toolbar message", evt);
@@ -134,8 +141,8 @@ define(['domReady!', './src/dom', './hammer'], function(document, Dom, Hammer) {
 
         return input;
     };
-    var size = addRange('size', 1, 40, 20, 1);
-    var opacity = addRange('opacity', 0, 1, 0.7, 'any');
+    size = addRange('size', 1, 40, 20, 1);
+    opacity = addRange('opacity', 0, 1, 0.7, 'any');
     var updateSwatchOpacity = function() {
         var swatches = document.querySelectorAll('.swatch > span');
         // swatches is a NodeList, not an Array, so we can't use forEach
