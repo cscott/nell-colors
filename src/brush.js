@@ -4,15 +4,13 @@
  */
 /*global define:false, console:false, document:false, window:false,
          Uint8Array:false, Array:false */
-define(['./color'], function(Color) {
+define(['./color', './compat'], function(Color, Compat) {
     'use strict';
     // Brush-related functions.
     // Ported from canvas.h of Colors! XO activity, GPL license.
     
     // Workaround for Android Honeycomb (on Xoom)
-    if (typeof(Uint8Array)==='undefined') {
-        window.Uint8Array = Array; // hack hack hack
-    }
+    var Uint8Array = Compat.Uint8Array;
 
     var BrushType = {
         HARD: 0,

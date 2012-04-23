@@ -9,12 +9,10 @@
 if (typeof define !== 'function') {
     var define = require('amdefine')(module);
 }
-define(['../point'], function(Point) {
+define(['../point', '../compat'], function(Point, Compat) {
     'use strict';
     // Workaround for iPhone, which is missing Float64Array
-    if (typeof(Float64Array)==='undefined') {
-        window.Float64Array = Array; // hack hack hack
-    }
+    var Float64Array = Compat.Float64Array;
 
     // tunable parameters
     var SMOOTH_N = 3, SMOOTH_ALPHA = 0.25;

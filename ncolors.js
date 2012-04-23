@@ -4,18 +4,8 @@
  */
 /*global define:false, console:false, MessageChannel:false, window:false,
          setTimeout:false, clearTimeout:false */
-define(['domReady!', './src/brush', './src/color', './src/dom', './src/drawcommand', './src/layer', './hammer', './src/postmessage', './raf', './src/recog'], function(document, Brush, Color, Dom, DrawCommand, Layer, Hammer, postMessage, requestAnimationFrame, Recog) {
+define(['domReady!', './src/brush', './src/color', './src/compat', './src/dom', './src/drawcommand', './src/layer', './hammer', './src/postmessage', './raf', './src/recog'], function(document, Brush, Color, Compat, Dom, DrawCommand, Layer, Hammer, postMessage, requestAnimationFrame, Recog) {
     'use strict';
-    // Because Safari 5.1 doesn't have Function.bind (sigh)
-    // (xxx this is a lame implementation that only allows 1 arg to bind)
-    if (typeof(Function.prototype.bind) === 'undefined') {
-        Function.prototype.bind = function(context) {
-            var oldRef = this;
-            return function() {
-                return oldRef.apply(context || null, Array.prototype.slice.call(arguments));
-            };
-        };
-    }
     // Android browser doesn't support MessageChannel
     // -- however, it also has a losing canvas. so don't worry too much.
     var USE_MESSAGECHANNEL = (typeof(MessageChannel) !== 'undefined');
