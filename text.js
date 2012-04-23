@@ -86,6 +86,22 @@
                 }
                 callback(content);
             };
+        } else if (typeof XMLHttpRequest !== 'undefined') {
+            // web worker
+            get = function (url, callback) {
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', url, true);
+                xhr.onreadystatechange = function (evt) {
+                    //Do not explicitly handle errors, those should be
+                    //visible via console output in the browser.
+                    if (xhr.readyState === 4) {
+                        callback(xhr.responseText);
+                    }
+                };
+                xhr.send(null);
+            };
+        } else {
+            console.warn("No GET implementation found for text plugin.");
         }
 
         text = {
