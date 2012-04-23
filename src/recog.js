@@ -3,7 +3,7 @@
   trailing:true, es5:true
  */
 /*global define:false, console:false, setTimeout:false, clearTimeout:false */
-define(['./drawcommand.js', './hand/features.js','./hand/hmm.js', 'json!./hand/8s2a256-64-16d.json'], function(DrawCommand, Features, HMM, hmmdef) {
+define(['./drawcommand', './hand/features','./hand/hmm', 'json!./hand/8s2a256-64-16d.json'], function(DrawCommand, Features, HMM, hmmdef) {
     'use strict';
     /* Handwriting recognition! */
     var config = { };

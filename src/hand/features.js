@@ -9,7 +9,7 @@
 if (typeof define !== 'function') {
     var define = require('amdefine')(module);
 }
-define(['../point.js'], function(Point) {
+define(['../point'], function(Point) {
     'use strict';
     // Workaround for iPhone, which is missing Float64Array
     if (typeof(Float64Array)==='undefined') {
