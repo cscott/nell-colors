@@ -2,14 +2,10 @@
   eqeqeq:true, curly:true, latedef:true, newcap:true, undef:true,
   trailing:true, es5:true
  */
-/*global define:false, console:false, setTimeout:false, clearTimeout:false */
-define(['./drawcommand', './hand/features','./hand/hmm', 'json!./hand/8s2a256-64-16d.json'], function(DrawCommand, Features, HMM, hmmdef) {
+/*global define:false, console:false, setTimeout:false, clearTimeout:false,
+         Worker:false */
+define(['./drawcommand', './hand/features',], function(DrawCommand, Features, HMM, hmmdef) {
     'use strict';
-    /* Handwriting recognition! */
-    var config = { };
-    var recog = HMM.make_recog(hmmdef, config);
-    console.log("Handwriting model loaded.");
-    hmmdef = null; // free memory
 
     var extractDataSet = function(commands, start, end) {
         var i, cmd;
@@ -45,15 +41,47 @@ define(['./drawcommand', './hand/features','./hand/hmm', 'json!./hand/8s2a256-64
         Features.delta_and_accel(data_set);
         return data_set;
     };
+    // Make a web worker
+    var worker = new Worker('src/worker.js'); // XXX make location relative.
+    var nextRecogAttempt = null, recogPending = true;
+    var maybeMakeRecogAttempt = function() {
+        if (recogPending || nextRecogAttempt===null) { return; }
+        var message = { type: 'recog', data_set: nextRecogAttempt };
+        worker.postMessage(JSON.stringify(message));
+        nextRecogAttempt = null;
+        recogPending = true;
+    };
+    worker.addEventListener('message', function(evt) {
+        var data = JSON.parse(evt.data);
+        switch (data.type) {
+        case 'debug':
+            console.log.apply(console, data.args);
+            break;
+        case 'ready': // worker is ready
+            recogPending = false;
+            maybeMakeRecogAttempt();
+            break;
+        case 'recog': // recognition results
+            console.log("Got results", data.model, "prob", data.prob);
+            recogPending = false;
+            maybeMakeRecogAttempt();
+            break;
+        default:
+            console.error("Unexpected message from worker", evt);
+            break;
+        }
+    });
+    worker.postMessage('start');
+
     var attemptRecognition = function(commands, start, end) {
         if (typeof(start)!=='number') { start=0; }
         if (typeof(end)  !=='number') { end = commands.length; }
         var data_set = extractDataSet(commands, start, end);
-        if (!data_set) { return null; /* no character here to look at */ }
-        // XXX do recog in a web worker?
-        var model = recog(data_set);
-        console.log("Recognized", model[0], "prob", model[1]);
-        return { model: model[0], prob: model[1] };
+        if (!data_set) { return; /* no character here to look at */ }
+        // do recog in a web worker?
+        nextRecogAttempt = data_set;
+        maybeMakeRecogAttempt();
+        return;
     };
     return {
         attemptRecognition: attemptRecognition

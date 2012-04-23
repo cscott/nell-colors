@@ -87,12 +87,10 @@ define(['domReady!', './src/brush', './src/color', './src/compat', './src/dom', 
         redoList.length = 0;
         maybeRequestAnim();
         if (ev) {
-            /*
-            console.log("Attempt recog from", commands.recog,
-                        "to", commands.length);
+            //console.log("Attempt recog from", commands.recog,
+            //            "to", commands.length);
             Recog.attemptRecognition(commands, commands.recog,
                                      commands.length);
-            */
         }
         // start recog reset timer
         recog_timer_reset();
