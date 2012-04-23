@@ -1,0 +1,36 @@
+x double buffer to implement transparency mechanism.
+x tool bar at top
+x undo/redo
+replay
+refactor into a 'drawing' class
+recognize letters:
+ - draw box over bb
+ - draw letter over bb
+ - animation
+   (maybe animate by playing an ncolors document?
+    open up new layer, draw on that.
+    allow dragging layers to new positions, this might help "run".
+    microphone button, record audio snippets that play at the
+    appropriate times during the replay)
+    audio snippets ought to have text as well.  use HMM recognizer
+    to segment speech, highlight appropriate words.
+
+dump drawings to local storage
+  - sync w/ google app engine
+select backgrounds: letter/primer pictures
+implement gallery (preload with letter images)
+lasso strokes and then drag them around -- simple animation
+  plays well with layers -- draw background, then draw foreground and drag it
+  around
+play back audio tagged with word positions.
+two pane ui -- text interaction on right?
+
+--
+implement arbitrary brush images (128x128)
+implement color wheel chooser
+implement image rotation along path
+implement variable brush spacing, brush size
+implement layers (then draggable layers?)
+implement audio snippets
+zoom canvas, two finger scroll to drag zoomed version
+implement color picker
