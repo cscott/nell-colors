@@ -3,8 +3,8 @@
   trailing:true, es5:true, globalstrict:true
  */
 /*global define:false, console:false, document:false, window:false */
-'use strict';
 define([], function() {
+    'use strict';
     /** Export a limited set of functions for working with the DOM.
      *  These can be reimplemented for a standalone application.
      */

@@ -4,8 +4,8 @@
  */
 /*global define:false, console:false */
 /** @namespace */
-'use strict';
 define([], function() {
+    'use strict';
     var make_color_table = function(Color) {
         return {
             "snow":              new Color(255, 250, 250, 255),

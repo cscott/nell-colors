@@ -3,9 +3,9 @@
   trailing:true, es5:true, globalstrict:true
  */
 /*global define:false, console:false */
-'use strict';
 /** @namespace */
 define(['./color-x11'], function(X11) {
+    'use strict';
     /**
      * @short_description: Color management and manipulation.
      *

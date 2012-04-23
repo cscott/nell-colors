@@ -1,4 +1,10 @@
+/*jshint
+  eqeqeq:true, curly:true, latedef:true, newcap:true, undef:true,
+  trailing:true, es5:true
+ */
+/*global define:false, console:false, MessageChannel:false, window:false */
 define([], function() {
+    'use strict';
     // robust poly fill for window.requestAnimationFrame
     var lastTime = 0;
     var vendors = ['ms', 'moz', 'webkit', 'o'];
@@ -21,10 +27,11 @@ define([], function() {
         };
     }
  
-    if (!window.cancelAnimationFrame)
+    if (!window.cancelAnimationFrame) {
         window.cancelAnimationFrame = function(id) {
             clearTimeout(id);
         };
+    }
     
     return window.requestAnimationFrame;
 });

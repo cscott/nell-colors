@@ -2,14 +2,16 @@
   eqeqeq:true, curly:true, latedef:true, newcap:true, undef:true,
   trailing:true, es5:true
  */
-/*global define:false, console:false, Uint8Array:false, document:false */
+/*global define:false, console:false, document:false, window:false,
+         Uint8Array:false, Array:false */
 define(['./color'], function(Color) {
+    'use strict';
     // Brush-related functions.
     // Ported from canvas.h of Colors! XO activity, GPL license.
     
     // Workaround for Android Honeycomb (on Xoom)
     if (typeof(Uint8Array)==='undefined') {
-        Uint8Array = function() { }; // hack hack hack
+        window.Uint8Array = Array; // hack hack hack
     }
 
     var BrushType = {

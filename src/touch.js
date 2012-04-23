@@ -4,6 +4,7 @@
  */
 /*global define:false, console:false, document:false, window:false */
 define([], function() {
+    'use strict';
     var TouchEvent = function(type) { this.type = type; };
     TouchEvent.prototype = {
         toString: function() {

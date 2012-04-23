@@ -3,11 +3,11 @@
   trailing:true, es5:true, globalstrict:true
  */
 /*global define:true, console:false, require:false, module:false */
-'use strict';
 if (typeof define !== 'function') {
     var define = require('amdefine')(module);
 }
 define(['./features'], function(Features) {
+    'use strict';
     var tolog = function(x) {
         return -Math.log(x)*2371.8;
     };

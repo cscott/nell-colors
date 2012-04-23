@@ -3,14 +3,11 @@
   trailing:true, es5:true, globalstrict:true
  */
 /*global define:true, console:false, require:false, module:false */
-'use strict';
-if (typeof define !== 'function') {
-    var define = require('amdefine')(module);
-}
 if (typeof define !== 'function') {
     var define = require('amdefine')(module);
 }
 define([], function() {
+    'use strict';
     var Point = function(x, y, isUp) {
         this.x = x; this.y = y; this.isUp = isUp || false;
     };

@@ -4,6 +4,7 @@
  */
 /*global define:false, console:false, document:false */
 define(['./drawcommand', './brush', './point'], function(DrawCommand, Brush, Point) {
+    'use strict';
     // Each 'layer' in a drawing is a <div><canvas/><canvas/></div>.
     // The top canvas is for real-time drawing, and its opacity corresponds
     // to the current pen opacity.  The bottom canvas displays all

@@ -5,6 +5,7 @@
 /*global define:false, console:false, MessageChannel:false, window:false,
          setTimeout:false, clearTimeout:false */
 define(['domReady!', './src/brush', './src/color', './src/dom', './src/drawcommand', './src/layer', './hammer', './src/postmessage', './raf', './src/recog'], function(document, Brush, Color, Dom, DrawCommand, Layer, Hammer, postMessage, requestAnimationFrame, Recog) {
+    'use strict';
     // Because Safari 5.1 doesn't have Function.bind (sigh)
     // (xxx this is a lame implementation that only allows 1 arg to bind)
     if (typeof(Function.prototype.bind) === 'undefined') {
@@ -99,9 +100,9 @@ define(['domReady!', './src/brush', './src/color', './src/dom', './src/drawcomma
             /*
             console.log("Attempt recog from", commands.recog,
                         "to", commands.length);
-            */
             Recog.attemptRecognition(commands, commands.recog,
                                      commands.length);
+            */
         }
         // start recog reset timer
         recog_timer_reset();

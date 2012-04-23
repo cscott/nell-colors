@@ -3,14 +3,18 @@
   trailing:true, es5:true, globalstrict:true
  */
 /*global
-  define:true, console:false, require:false, module:false,
+  define:true, console:false, require:false, module:false, window:false,
   Float64Array:false, Uint16Array:false
  */
-'use strict';
 if (typeof define !== 'function') {
     var define = require('amdefine')(module);
 }
 define(['../point.js'], function(Point) {
+    'use strict';
+    // Workaround for iPhone, which is missing Float64Array
+    if (typeof(Float64Array)==='undefined') {
+        window.Float64Array = Array; // hack hack hack
+    }
 
     // tunable parameters
     var SMOOTH_N = 3, SMOOTH_ALPHA = 0.25;

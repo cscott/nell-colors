@@ -4,6 +4,7 @@
  */
 /*global define:false, console:false, window:false */
 define(['domReady!', './src/dom', './hammer'], function(document, Dom, Hammer) {
+    'use strict';
     Dom.insertMeta(document);
 
     var appIframe = document.createElement('iframe');

@@ -4,6 +4,8 @@
  */
 /*global define:false, console:false, Uint8Array:false */
 define(['./color','./brush'], function(Color, Brush) {
+    'use strict';
+
     // draw commands
 
     var CommandType = {
