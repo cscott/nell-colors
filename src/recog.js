@@ -71,7 +71,8 @@ define(['./drawcommand', './hand/features',], function(DrawCommand, Features, HM
             break;
         }
     });
-    worker.postMessage('start');
+    // start web worker.
+    worker.postMessage(JSON.stringify({type:'start'}));
 
     var attemptRecognition = function(commands, start, end) {
         if (typeof(start)!=='number') { start=0; }

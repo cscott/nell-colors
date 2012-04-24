@@ -22,6 +22,9 @@ define(['./hand/hmm', 'json!./hand/8s2a256-64-16d.json'], function(HMM, hmmdef) 
         addEventListener('message', function(evt) {
             var data = JSON.parse(evt.data);
             switch (data.type) {
+            case 'start':
+                /* this is the startup message; ignore it. */
+                break;
             case 'recog':
                 // recognition request
                 handleRecog(data.data_set, postMessage);
