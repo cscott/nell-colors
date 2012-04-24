@@ -71,8 +71,7 @@ define(['domReady!', './src/brush', './src/color', './src/compat', './src/dom', 
         animRequested = false;
         commands.isPlaying = false;
         toolbarPort.postMessage(JSON.stringify({type:'stopped'}));
-        layer.clear();
-        commands.last = 0;
+        commands.last = commands.playback.pos;
         refresh();
         recog_reset();
     };
@@ -239,8 +238,12 @@ define(['domReady!', './src/brush', './src/color', './src/compat', './src/dom', 
         //console.log("Resizing canvas", w, h, r);
         layer.resize(w, h, r);
         // replay existing commands to restore canvas contents.
-        commands.last = 0;
-        refresh();
+        if (commands.isPlaying) {
+            commands.playback.pos = 0;
+        } else {
+            commands.last = 0;
+            refresh();
+        }
     };
     window.addEventListener('resize', onWindowResize, false);
     onWindowResize();
@@ -263,9 +266,11 @@ define(['domReady!', './src/brush', './src/color', './src/compat', './src/dom', 
             commands.push(DrawCommand.create_color_change(brush.color));
             break;
         case 'undoButton':
+            removeRecogCanvas();
             undo();
             break;
         case 'redoButton':
+            removeRecogCanvas();
             redo();
             break;
         case 'hardButton':
@@ -298,7 +303,7 @@ define(['domReady!', './src/brush', './src/color', './src/compat', './src/dom', 
                 break;
             }
             commands.isPlaying = true;
-            commands.playback = { pos:0, time:Date.now(), speed:2 };
+            commands.playback = { pos:0, time:Date.now(), speed:4 };
             layer.clear();
             removeRecogCanvas();
             maybeRequestAnim();
