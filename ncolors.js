@@ -25,6 +25,7 @@ define(['domReady!', './src/brush', './src/color', './src/compat', './src/dom', 
 
     var commands = [], redoList = [];
     commands.last = 0; // exclusive
+    commands.isPlaying = false;
     // hack in a brush change and color change
     var brush = new Brush(Color.BLACK, Brush.Type.SOFT, 20, 0.7, 0.2);
     commands.push(DrawCommand.create_color_change(brush.color));
@@ -65,15 +66,55 @@ define(['domReady!', './src/brush', './src/color', './src/compat', './src/dom', 
         }
         animRequested = false;
     };
+    var maybeHaltPlayback = function() {
+        if (!commands.isPlaying) { return; }
+        animRequested = false;
+        commands.isPlaying = false;
+        toolbarPort.postMessage(JSON.stringify({type:'stopped'}));
+        layer.clear();
+        commands.last = 0;
+        refresh();
+        recog_reset();
+    };
+    var playback = function() {
+        if (!commands.isPlaying) { return; }
+
+        // play some frames.
+        var curtime = Date.now();
+        var timeIncrement = curtime - commands.playback.time;
+        while (commands.playback.pos < commands.length && timeIncrement > 0) {
+            layer.execCommand(commands[commands.playback.pos++]);
+            if (commands.playback.pos < commands.length) {
+                var c1 = commands[commands.playback.pos-1];
+                var c2 = commands[commands.playback.pos];
+                if (c1.type===DrawCommand.Type.DRAW &&
+                    c2.type===DrawCommand.Type.DRAW) {
+                    timeIncrement -=
+                        (c2.time - c1.time) / commands.playback.speed;
+                }
+            }
+        }
+        commands.playback.time = curtime;
+
+        // are we done, or do we need to schedule another animation frame?
+        if (commands.playback.pos < commands.length) {
+            requestAnimationFrame(playback);
+        } else {
+            animRequested = false;
+            commands.isPlaying = false;
+            toolbarPort.postMessage(JSON.stringify({type:'stopped'}));
+        }
+    };
     var maybeRequestAnim = function() {
         if (!animRequested) {
             animRequested = true;
-            requestAnimationFrame(refresh);
+            requestAnimationFrame(commands.isPlaying ? playback : refresh);
         }
     };
 
     var isDragging = false;
     hammer.ondrag = function(ev) {
+        maybeHaltPlayback();
         isDragging = true;
         commands.push(DrawCommand.create_draw(ev.position));
         redoList.length = 0;
@@ -213,6 +254,7 @@ define(['domReady!', './src/brush', './src/color', './src/compat', './src/dom', 
     var handleToolbarMessage = function(evt) {
         if (isDragging) { hammer.ondragend(); }
         var msg = JSON.parse(evt.data);
+        if (msg.type !== 'playButton') { maybeHaltPlayback(); }
         switch(msg.type) {
         case 'swatchButton':
             var color = Color.from_string(msg.color);
@@ -249,6 +291,18 @@ define(['domReady!', './src/brush', './src/color', './src/compat', './src/dom', 
             brush.size = +msg.value;
             commands.push(DrawCommand.create_brush_change(
                 brush.type, brush.size, brush.opacity,brush.spacing));
+            break;
+        case 'playButton':
+            if (commands.isPlaying) {
+                commands.playback.speed *= 4;
+                break;
+            }
+            commands.isPlaying = true;
+            commands.playback = { pos:0, time:Date.now(), speed:2 };
+            layer.clear();
+            removeRecogCanvas();
+            maybeRequestAnim();
+            toolbarPort.postMessage(JSON.stringify({type:'playing'}));
             break;
         default:
             console.warn("Unexpected child toolbar message", evt);

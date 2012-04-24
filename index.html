@@ -68,10 +68,16 @@ iframe {
   width: 30px;
   height: 30px;
   border: none;
-  opacity: 0.95;
+  opacity: 0.9;
 }
 #toolbar .icon:hover {
   opacity: 1.0;
+}
+#toolbar .play {
+  background: url('icons/play.png');
+}
+#toolbar .play.playing {
+  background: url('icons/forward.png');
 }
 #toolbar .undo {
   background: url('icons/undo.png');
@@ -86,7 +92,7 @@ iframe {
   background: url('icons/soft.png');
 }
 
-#toolbar .hard, #toolbar .red, #toolbar input {
+#toolbar .hard, #toolbar .play, #toolbar .red, #toolbar input {
   margin-left: 10px;
 }
 

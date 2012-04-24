@@ -31,6 +31,12 @@ define(['domReady!', './src/dom', './hammer'], function(document, Dom, Hammer) {
                 size.value = msg.size;
             }
             break;
+        case 'playing':
+            document.querySelector('#toolbar .play').classList.add('playing');
+            break;
+        case 'stopped':
+            document.querySelector('#toolbar .play').classList.remove('playing');
+            break;
         default:
             console.warn("Unexpected parent toolbar message", evt);
         }
@@ -103,6 +109,7 @@ define(['domReady!', './src/dom', './hammer'], function(document, Dom, Hammer) {
     };
     var undo = addButton('undo');
     var redo = addButton('redo');
+    var play = addButton('play');
     var hard = addButton('hard');
     var soft = addButton('soft');
 

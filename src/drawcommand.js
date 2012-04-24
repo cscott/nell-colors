@@ -23,9 +23,11 @@ define(['./color','./brush'], function(Color, Brush) {
     };
     DrawCommand.Type = CommandType;
 
-    DrawCommand.create_draw = function(pos) {
+    DrawCommand.create_draw = function(pos, time) {
+        if (!time) { time = Date.now(); }
         var cmd = new DrawCommand(CommandType.DRAW);
         cmd.pos = { x: pos.x, y: pos.y };
+        cmd.time = time;
         return cmd;
     };
     DrawCommand.create_draw_end = function() {
