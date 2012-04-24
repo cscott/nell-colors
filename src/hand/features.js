@@ -434,6 +434,9 @@ define(['../point', '../compat'], function(Point, Compat) {
         SMOOTH_N: SMOOTH_N,
         SMOOTH_ALPHA: SMOOTH_ALPHA,
         RESAMPLE_INTERVAL: RESAMPLE_INTERVAL,
+        // useful classes
+        Box: Box,
+        Point: Point,
         // stroke processing functions
         normalize: normalize,
         smooth: smooth,

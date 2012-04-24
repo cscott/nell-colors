@@ -11,12 +11,19 @@ define(['./drawcommand', './hand/features',], function(DrawCommand, Features, HM
         var i, cmd;
         var strokes = [];
         var currentStroke = [];
+        var bbox = null, pt;
         for (i=start; i<end; i++) {
             cmd = commands[i];
             switch (cmd.type) {
             case DrawCommand.Type.DRAW:
                 // canvas x/y is upside-down wrt training data y
                 currentStroke.push([cmd.pos.x, -cmd.pos.y]);
+                if (bbox) {
+                    bbox.unionPt(cmd.pos);
+                } else {
+                    pt = new Features.Point(cmd.pos.x, cmd.pos.y);
+                    bbox = new Features.Box(pt.clone(), pt.clone());
+                }
                 break;
             case DrawCommand.Type.DRAW_END:
                 if (currentStroke.length > 0) {
@@ -30,7 +37,7 @@ define(['./drawcommand', './hand/features',], function(DrawCommand, Features, HM
             }
         }
         if (strokes.length===0) { return null; /* no character here. */ }
-        var data_set = { strokes: strokes, ppmm: {x:1, y:1} };
+        var data_set = { strokes: strokes, ppmm: {x:1, y:1}, bbox: bbox };
         Features.normalize(data_set);
         Features.smooth(data_set);
         Features.singleStroke(data_set);
@@ -40,6 +47,12 @@ define(['./drawcommand', './hand/features',], function(DrawCommand, Features, HM
         if (data_set.features.length===0) { return null; /* no features */ }
         Features.delta_and_accel(data_set);
         return data_set;
+    };
+    // callback infra
+    var recogCallback = null;
+    var registerCallback = function(callback) {
+        console.assert(recogCallback === null);
+        recogCallback = callback;
     };
     // Make a web worker
     var worker = new Worker('src/worker.js'); // XXX make location relative.
@@ -62,9 +75,15 @@ define(['./drawcommand', './hand/features',], function(DrawCommand, Features, HM
             maybeMakeRecogAttempt();
             break;
         case 'recog': // recognition results
-            console.log("Got results", data.model, "prob", data.prob);
+            /*
+            console.log("Got result: "+data.model,
+                        "prob", data.prob, "bbox", data.bbox);
+            */
             recogPending = false;
             maybeMakeRecogAttempt();
+            if (recogCallback) {
+                recogCallback(data.model, data.prob, data.bbox);
+            }
             break;
         default:
             console.error("Unexpected message from worker", evt);
@@ -85,6 +104,7 @@ define(['./drawcommand', './hand/features',], function(DrawCommand, Features, HM
         return;
     };
     return {
-        attemptRecognition: attemptRecognition
+        attemptRecognition: attemptRecognition,
+        registerCallback: registerCallback
     };
 });

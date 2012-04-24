@@ -96,6 +96,34 @@ define(['domReady!', './src/brush', './src/color', './src/compat', './src/dom', 
         recog_timer_reset();
     };
 
+    var lastRecogCanvas = null;
+    var handleRecog = function(model, prob, bbox) {
+        var r = window.devicePixelRatio || 1;
+        var w = bbox.br.x - bbox.tl.x, h = bbox.br.y - bbox.tl.y;
+        var c = document.createElement('canvas');
+        c.style.border="1px dashed #ccc";
+        c.style.position='absolute';
+        c.style.top = bbox.tl.y+'px';
+        c.style.left = bbox.tl.x+'px';
+        c.style.width = w+'px';
+        c.style.height = h+'px';
+        c.width = w*r;
+        c.height = h*r;
+        var ctxt = c.getContext('2d');
+        ctxt.font = (c.height)+"px sans";
+        ctxt.textAlign = "center";
+        ctxt.textBaseline = "bottom";
+        ctxt.fillStyle = "red";
+        ctxt.fillText(model.charAt(0), c.width/2, c.height, c.width);
+        if (lastRecogCanvas) {
+            layer.domElement.removeChild(lastRecogCanvas);
+        }
+        lastRecogCanvas = c;
+        layer.domElement.appendChild(lastRecogCanvas);
+        //console.log(model);
+    };
+    Recog.registerCallback(handleRecog);
+
     var updateToolbarBrush = function() {
         var msg = {
             type: 'brush',
