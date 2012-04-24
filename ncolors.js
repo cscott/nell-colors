@@ -4,7 +4,7 @@
  */
 /*global define:false, console:false, MessageChannel:false, window:false,
          setTimeout:false, clearTimeout:false */
-define(['domReady!', './src/brush', './src/color', './src/compat', './src/dom', './src/drawcommand', './src/layer', './hammer', './src/postmessage', './raf', './src/recog', 'font!google,families:[Delius]'], function(document, Brush, Color, Compat, Dom, DrawCommand, Layer, Hammer, postMessage, requestAnimationFrame, Recog) {
+define(['domReady!', './src/brush', './src/color', './src/compat', './src/dom', './src/drawcommand', './src/layer', './hammer', './src/postmessage', './raf', './src/recog', 'json!./intro.json', 'font!google,families:[Delius]'], function(document, Brush, Color, Compat, Dom, DrawCommand, Layer, Hammer, postMessage, requestAnimationFrame, Recog, input_drawing) {
     'use strict';
     // Android browser doesn't support MessageChannel
     // -- however, it also has a losing canvas. so don't worry too much.
@@ -26,7 +26,25 @@ define(['domReady!', './src/brush', './src/color', './src/compat', './src/dom', 
     var commands = [], redoList = [];
     commands.last = 0; // exclusive
     commands.isPlaying = false;
+    if (true) {
+        // load a drawing
+        input_drawing.commands.forEach(function(c) {
+            var cmd = new DrawCommand(c.type), name;
+            for (name in c) {
+                if (c.hasOwnProperty(name)) {
+                    if (name==='color') {
+                        cmd[name] = new Color();
+                        cmd[name].set_from_color(c[name]);
+                    } else {
+                        cmd[name] = c[name];
+                    }
+                }
+            }
+            commands.push(cmd);
+        });
+    }
     // hack in a brush change and color change
+    // XXX we should have a different way to synchronize brush after load
     var brush = new Brush(Color.BLACK, Brush.Type.SOFT, 20, 0.7, 0.2);
     commands.push(DrawCommand.create_color_change(brush.color));
     commands.push(DrawCommand.create_brush_change(brush.type, brush.size,
