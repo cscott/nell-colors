@@ -100,21 +100,29 @@ define(['domReady!', './src/brush', './src/color', './src/compat', './src/dom', 
     var handleRecog = function(model, prob, bbox) {
         var r = window.devicePixelRatio || 1;
         var w = bbox.br.x - bbox.tl.x, h = bbox.br.y - bbox.tl.y;
+        // offset by current brush width (this is a bit hackity)
+        w += brush.size; h += brush.size;
         var c = document.createElement('canvas');
         c.style.border="1px dashed #ccc";
         c.style.position='absolute';
-        c.style.top = bbox.tl.y+'px';
-        c.style.left = bbox.tl.x+'px';
+        c.style.top = (bbox.tl.y-(brush.size/2))+'px';
+        c.style.left = (bbox.tl.x-(brush.size/2))+'px';
         c.style.width = w+'px';
         c.style.height = h+'px';
         c.width = w*r;
         c.height = h*r;
         var ctxt = c.getContext('2d');
-        ctxt.font = (c.height)+"px sans";
+        ctxt.font = (c.height*1.2)+"px Delius"; // 1.2 is fudge factor
         ctxt.textAlign = "center";
-        ctxt.textBaseline = "bottom";
+        ctxt.textBaseline = "middle";
         ctxt.fillStyle = "red";
-        ctxt.fillText(model.charAt(0), c.width/2, c.height, c.width);
+        ctxt.translate(c.width/2, c.height/2);
+        // measure the expected width
+        var metrics = ctxt.measureText(model.charAt(0));
+        if (metrics.width < c.width) {
+            ctxt.scale(c.width/metrics.width, 1); // scale up to fit
+        }
+        ctxt.fillText(model.charAt(0), 0, 0, c.width);
         if (lastRecogCanvas) {
             layer.domElement.removeChild(lastRecogCanvas);
         }
