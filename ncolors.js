@@ -4,7 +4,7 @@
  */
 /*global define:false, console:false, MessageChannel:false, window:false,
          setTimeout:false, clearTimeout:false */
-define(['domReady!', './src/brush', './src/color', './src/compat', './src/dom', './src/drawcommand', './src/layer', './hammer', './src/postmessage', './raf', './src/recog'], function(document, Brush, Color, Compat, Dom, DrawCommand, Layer, Hammer, postMessage, requestAnimationFrame, Recog) {
+define(['domReady!', './src/brush', './src/color', './src/compat', './src/dom', './src/drawcommand', './src/layer', './hammer', './src/postmessage', './raf', './src/recog', 'font!google,families:[Delius]'], function(document, Brush, Color, Compat, Dom, DrawCommand, Layer, Hammer, postMessage, requestAnimationFrame, Recog) {
     'use strict';
     // Android browser doesn't support MessageChannel
     // -- however, it also has a losing canvas. so don't worry too much.
@@ -12,7 +12,7 @@ define(['domReady!', './src/brush', './src/color', './src/compat', './src/dom', 
     var toolbarPort = null;
 
     // How long to allow between strokes of a letter
-    var RECOG_TIMEOUT = 1000;
+    var RECOG_TIMEOUT = 750;
 
     // get 2d context for canvas.
     Dom.insertMeta(document);
@@ -97,7 +97,14 @@ define(['domReady!', './src/brush', './src/color', './src/compat', './src/dom', 
     };
 
     var lastRecogCanvas = null;
+    var removeRecogCanvas = function() {
+        if (lastRecogCanvas) {
+            layer.domElement.removeChild(lastRecogCanvas);
+            lastRecogCanvas = null;
+        }
+    };
     var handleRecog = function(model, prob, bbox) {
+        if (prob < 400) { removeRecogCanvas(); return; }
         var r = window.devicePixelRatio || 1;
         var w = bbox.br.x - bbox.tl.x, h = bbox.br.y - bbox.tl.y;
         // offset by current brush width (this is a bit hackity)
@@ -109,13 +116,15 @@ define(['domReady!', './src/brush', './src/color', './src/compat', './src/dom', 
         c.style.left = (bbox.tl.x-(brush.size/2))+'px';
         c.style.width = w+'px';
         c.style.height = h+'px';
+        c.style.opacity = 0.25;
         c.width = w*r;
         c.height = h*r;
         var ctxt = c.getContext('2d');
+        // Patrick+Hand is a good alternative to Delius
         ctxt.font = (c.height*1.2)+"px Delius"; // 1.2 is fudge factor
         ctxt.textAlign = "center";
         ctxt.textBaseline = "middle";
-        ctxt.fillStyle = "red";
+        ctxt.fillStyle = brush.color.to_string().replace(/..$/,'');
         ctxt.translate(c.width/2, c.height/2);
         // measure the expected width
         var metrics = ctxt.measureText(model.charAt(0));
@@ -123,9 +132,7 @@ define(['domReady!', './src/brush', './src/color', './src/compat', './src/dom', 
             ctxt.scale(c.width/metrics.width, 1); // scale up to fit
         }
         ctxt.fillText(model.charAt(0), 0, 0, c.width);
-        if (lastRecogCanvas) {
-            layer.domElement.removeChild(lastRecogCanvas);
-        }
+        removeRecogCanvas();
         lastRecogCanvas = c;
         layer.domElement.appendChild(lastRecogCanvas);
         //console.log(model);
