@@ -36,7 +36,8 @@ define(['./drawcommand', './brush', './point'], function(DrawCommand, Brush, Poi
     Layer.prototype = {
         _getBrushStamp: function(brush) {
             if (this.brush_stamp === null) {
-                this.brush_stamp = brush.toCanvas();
+                var b = brush.clone(); b.size *= this.pixel_ratio;
+                this.brush_stamp = b.toCanvas();
                 this.progressCanvas.style.opacity = brush.opacity;
             }
             return this.brush_stamp;
