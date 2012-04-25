@@ -132,6 +132,7 @@ define(['./color', './compat'], function(Color, Compat) {
         this.opacity = opacity || 1.0;
         this.spacing = spacing || 0.225; // fraction of brush size
     };
+    Brush.prototype = {};
     Brush.brush_type = [];
     Brush.brush_type[BrushType.HARD] = create_hard_brush();
     Brush.brush_type[BrushType.SOFT] = create_soft_brush();
@@ -144,6 +145,15 @@ define(['./color', './compat'], function(Color, Compat) {
         color.set_from_color(brush.color);
         return new Brush(color, brush.type, brush.size, brush.opacity,
                          brush.spacing);
+    };
+
+    Brush.prototype.equals = function(b) {
+        if (this===b) { return true; }
+        return Color.equal(this.color, b.color) &&
+            this.type === b.type &&
+            this.size === b.size &&
+            this.opacity === b.opacity &&
+            this.spacing === b.spacing;
     };
 
     Brush.prototype.clone = function() {

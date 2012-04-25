@@ -117,13 +117,18 @@ define(['./brush','./color','./drawcommand','./layer'], function(Brush, Color, D
             break;
         case DrawCommand.Type.DRAW:
         case DrawCommand.Type.DRAW_END:
-            this.layers[this.layers.current].execCommand(cmd);
+            this.layers[this.layers.current].execCommand(cmd, this.brush);
             break;
         case DrawCommand.Type.COLOR_CHANGE:
-        case DrawCommand.Type.BRUSH_CHANGE:
-            // XXX we should really move the brush state out of the layer
+            this.brush.color = cmd.color;
             this.layers.forEach(function(l) { l.execCommand(cmd); });
-            this.brush = this.layers[0].brush.clone();
+            break;
+        case DrawCommand.Type.BRUSH_CHANGE:
+            this.brush.type = cmd.brush_type;
+            this.brush.size = cmd.size;
+            this.brush.opacity = cmd.opacity;
+            this.brush.spacing = cmd.spacing;
+            this.layers.forEach(function(l) { l.execCommand(cmd); });
             break;
         default:
             console.assert(false, "Unknown drawing command", cmd);
