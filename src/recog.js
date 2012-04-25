@@ -4,7 +4,7 @@
  */
 /*global define:false, console:false, setTimeout:false, clearTimeout:false,
          Worker:false */
-define(['./drawcommand', './hand/features',], function(DrawCommand, Features, HMM, hmmdef) {
+define(['./compat', './drawcommand', './hand/features',], function(Compat, DrawCommand, Features, HMM, hmmdef) {
     'use strict';
 
     var extractDataSet = function(commands, start, end) {
@@ -55,7 +55,7 @@ define(['./drawcommand', './hand/features',], function(DrawCommand, Features, HM
         recogCallback = callback;
     };
     // Make a web worker
-    var worker = new Worker('src/worker.js'); // XXX make location relative.
+    var worker = new Compat.Worker('src/worker.js'); // XXX make location relative.
     var nextRecogAttempt = null, recogPending = true;
     var maybeMakeRecogAttempt = function() {
         if (recogPending || nextRecogAttempt===null) { return; }

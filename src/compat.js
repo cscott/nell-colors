@@ -19,8 +19,16 @@ define([], function() {
             };
         };
     }
+    // Android non-Chrome doesn't have Web Workers
+    var FakeWorker = function() { };
+    FakeWorker.prototype = {
+        postMessage: function(msg) { },
+        addEventListener: function(msg, func) { }
+    };
 
     return {
+        // Android non-Chrome browser doesn't have Web Workers
+        Worker: typeof(Worker)==='undefined' ? FakeWorker : Worker,
         // Android Honeycomb doesn't have Uint8Array
         Uint8Array: typeof(Uint8Array)==='undefined' ? Array : Uint8Array,
         // iOS 5 doesn't have Float64Array
