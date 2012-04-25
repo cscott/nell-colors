@@ -75,21 +75,23 @@ define(['./brush','./color','./drawcommand','./layer'], function(Brush, Color, D
         return (this.commands.last < this.commands.end);
     };
     Drawing.prototype.setCmdTime = function(timeDelta) {
-        // this version doesn't cache, it's meant for animation
-        while (this.commands.last < this.commands.end) {
-            this._execCommand(this.commands[this.commands.last++]);
-            if (this.commands.last < this.commands.end) {
-                var c1 = this.commands[this.commands.last-1];
-                var c2 = this.commands[this.commands.last  ];
-                if (c1.type===DrawCommand.Type.DRAW &&
-                    c2.type===DrawCommand.Type.DRAW) {
-                    timeDelta -= (c2.time - c1.time);
-                }
-            }
-            if (timeDelta <= 0) { break; }
+        // scan ahead looking for the proper end point
+        var i = this.commands.last;
+        if (i === this.commands.end) {
+            return false; // no more commands to draw
         }
+        var lastCmd = this.commands[i++]; // always execute at least one cmd
+        while (i < this.commands.end && timeDelta > 0) {
+            var thisCmd = this.commands[i++];
+            if (lastCmd.type===DrawCommand.Type.DRAW &&
+                thisCmd.type===DrawCommand.Type.DRAW) {
+                timeDelta -= (thisCmd.time - lastCmd.time);
+            }
+            lastCmd = thisCmd;
+        }
+        // okay, execute to this location
         // returns 'true' if there are more commands not yet drawn
-        return (this.commands.last < this.commands.end);
+        return this.setCmdPos(i);
     };
 
     Drawing.prototype.undo = function() {
