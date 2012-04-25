@@ -51,9 +51,11 @@ define(['./drawcommand', './brush', './point'], function(DrawCommand, Brush, Poi
         },
         execDraw: function(x, y, brush) {
             var pos = { x:x, y:y };
+            var drawn = false;
             if (!this.isDrawingPath) {
                 this._drawStamp(pos, brush);
                 this.isDrawingPath = true;
+                drawn = true;
             } else {
                 var from = this.lastPoint;
                 var to = pos;
@@ -65,9 +67,11 @@ define(['./drawcommand', './brush', './point'], function(DrawCommand, Brush, Poi
                 } else {
                     for (d = step; d < dist; d+= step) {
                         this._drawStamp(Point.interp(from, to, d/dist), brush);
+                        drawn = true;
                     }
                 }
             }
+            return drawn;
         },
         execDrawEnd: function() {
             console.assert(this.isDrawingPath);
@@ -76,25 +80,25 @@ define(['./drawcommand', './brush', './point'], function(DrawCommand, Brush, Poi
             this.completedContext.drawImage(this.progressCanvas, 0, 0);
             this.progressContext.clearRect(0,0, this.width, this.height);
             this.isDrawingPath = false;
+            return false;
         },
+        // returns true iff we actually made a change to the canvas
         execCommand: function(draw_command, brush) {
             switch(draw_command.type) {
             case DrawCommand.Type.DRAW_START:
                 console.assert(!this.isDrawingPath);
-                break;
+                return false;
             case DrawCommand.Type.DRAW:
-                this.execDraw(draw_command.pos.x * this.pixel_ratio,
-                              draw_command.pos.y * this.pixel_ratio,
-                              brush);
-                break;
+                return this.execDraw(draw_command.pos.x * this.pixel_ratio,
+                                     draw_command.pos.y * this.pixel_ratio,
+                                     brush);
             case DrawCommand.Type.DRAW_END:
-                this.execDrawEnd();
-                break;
+                return this.execDrawEnd();
             case DrawCommand.Type.COLOR_CHANGE:
             case DrawCommand.Type.BRUSH_CHANGE:
                 console.assert(!this.isDrawingPath);
                 this.brush_stamp = null;
-                break;
+                return false;
             default:
                 console.assert(false, draw_command);
             }

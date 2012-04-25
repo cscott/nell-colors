@@ -154,27 +154,26 @@ define(['./brush','./color','./drawcommand','./layer'], function(Brush, Color, D
     Drawing.prototype._clear = function() {
         this.layers.forEach(function(l) { l.clear(); });
     };
+    // returns true iff a visible change to the canvas was made
     Drawing.prototype._execCommand = function(cmd) {
         switch(cmd.type) {
         case DrawCommand.Type.DRAW_START:
             this.layers.current = cmd.layer;
-            this.layers[this.layers.current].execCommand(cmd);
-            break;
+            return this.layers[this.layers.current].execCommand(cmd);
         case DrawCommand.Type.DRAW:
         case DrawCommand.Type.DRAW_END:
-            this.layers[this.layers.current].execCommand(cmd, this.brush);
-            break;
+            return this.layers[this.layers.current].execCommand(cmd,this.brush);
         case DrawCommand.Type.COLOR_CHANGE:
             this.brush.color = cmd.color;
             this.layers.forEach(function(l) { l.execCommand(cmd); });
-            break;
+            return false;
         case DrawCommand.Type.BRUSH_CHANGE:
             this.brush.type = cmd.brush_type;
             this.brush.size = cmd.size;
             this.brush.opacity = cmd.opacity;
             this.brush.spacing = cmd.spacing;
             this.layers.forEach(function(l) { l.execCommand(cmd); });
-            break;
+            return false;
         default:
             console.assert(false, "Unknown drawing command", cmd);
             break;
