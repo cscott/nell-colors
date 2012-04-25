@@ -4,7 +4,7 @@
  */
 /*global define:false, console:false, MessageChannel:false, window:false,
          setTimeout:false, clearTimeout:false */
-define(['domReady!', './src/brush', './src/color', './src/compat', './src/dom', './src/drawcommand', './src/layer', './hammer', './src/postmessage', './raf', './src/recog', 'json!./intro.json', 'font!google,families:[Delius]'], function(document, Brush, Color, Compat, Dom, DrawCommand, Layer, Hammer, postMessage, requestAnimationFrame, Recog, input_drawing) {
+define(['domReady!', './src/brush', './src/color', './src/compat', './src/dom', './src/drawcommand', './src/drawing', './src/layer', './hammer', './src/postmessage', './raf', './src/recog', 'json!./lounge.json', 'font!google,families:[Delius]'], function(document, Brush, Color, Compat, Dom, DrawCommand, Drawing, Layer, Hammer, postMessage, requestAnimationFrame, Recog, input_drawing) {
     'use strict';
     // Android browser doesn't support MessageChannel
     // -- however, it also has a losing canvas. so don't worry too much.
@@ -16,40 +16,19 @@ define(['domReady!', './src/brush', './src/color', './src/compat', './src/dom', 
 
     // get 2d context for canvas.
     Dom.insertMeta(document);
-    var layer = new Layer();
-    document.body.appendChild(layer.domElement);
-    var hammer = new Hammer(layer.domElement, {
+    var drawingElem = document.getElementById('drawing');
+    var drawing = new Drawing(drawingElem);
+    var hammer = new Hammer(drawingElem, {
         prevent_default: true,
         drag_min_distance: 2
     });
 
-    var commands = [], redoList = [];
-    commands.last = 0; // exclusive
-    commands.isPlaying = false;
-    if (true) {
+    if (input_drawing) {
         // load a drawing
-        input_drawing.commands.forEach(function(c) {
-            var cmd = new DrawCommand(c.type), name;
-            for (name in c) {
-                if (c.hasOwnProperty(name)) {
-                    if (name==='color') {
-                        cmd[name] = new Color();
-                        cmd[name].set_from_color(c[name]);
-                    } else {
-                        cmd[name] = c[name];
-                    }
-                }
-            }
-            commands.push(cmd);
-        });
+        drawing.loadJSON(input_drawing);
     }
-    // hack in a brush change and color change
-    // XXX we should have a different way to synchronize brush after load
-    var brush = new Brush(Color.BLACK, Brush.Type.SOFT, 20, 0.7, 0.2);
-    commands.push(DrawCommand.create_color_change(brush.color));
-    commands.push(DrawCommand.create_brush_change(brush.type, brush.size,
-                                                  brush.opacity,brush.spacing));
-    commands.recog = commands.length; // where to start looking for a letter
+
+    var maybeRequestAnim, removeRecogCanvas;
 
     var recog_timer_id = null;
     // cancel any running recog timer (ie, if stroke in progress)
@@ -61,7 +40,7 @@ define(['domReady!', './src/brush', './src/color', './src/compat', './src/dom', 
     };
     // ignore all strokes to date; start recognition with next stroke.
     var recog_reset = function() {
-        commands.recog = commands.length;
+        drawing.commands.recog = drawing.commands.end;
         recog_timer_cancel();
     };
     // timeout function to call recog_reset automatically after a delay
@@ -79,85 +58,84 @@ define(['domReady!', './src/brush', './src/color', './src/compat', './src/dom', 
 
     var animRequested = false;
     var refresh = function() {
-        while (commands.last < commands.length) {
-            layer.execCommand(commands[commands.last++]);
-        }
+        drawing.setCmdPos(Drawing.END); // draw to end
         animRequested = false;
     };
+    var playbackInfo = { isPlaying: false, lastFrameTime: 0, speed: 4 };
     var maybeHaltPlayback = function() {
-        if (!commands.isPlaying) { return; }
+        if (!playbackInfo.isPlaying) { return; }
         animRequested = false;
-        commands.isPlaying = false;
+        playbackInfo.isPlaying = false;
         toolbarPort.postMessage(JSON.stringify({type:'stopped'}));
-        commands.last = commands.playback.pos;
-        refresh();
+        drawing.setCmdPos(Drawing.END); // skip to the end of playback
         recog_reset();
     };
+    var startPlayback = function() {
+        playbackInfo.lastFrameTime = Date.now();
+        playbackInfo.speed = 4;
+        playbackInfo.isPlaying = true;
+        drawing.setCmdPos(0);
+        removeRecogCanvas();
+        maybeRequestAnim();
+        toolbarPort.postMessage(JSON.stringify({type:'playing'}));
+    };
     var playback = function() {
-        if (!commands.isPlaying) { return; }
+        if (!playbackInfo.isPlaying) { return; }
 
         // play some frames.
         var curtime = Date.now();
-        var timeIncrement = curtime - commands.playback.time;
-        while (commands.playback.pos < commands.length && timeIncrement > 0) {
-            layer.execCommand(commands[commands.playback.pos++]);
-            if (commands.playback.pos < commands.length) {
-                var c1 = commands[commands.playback.pos-1];
-                var c2 = commands[commands.playback.pos];
-                if (c1.type===DrawCommand.Type.DRAW &&
-                    c2.type===DrawCommand.Type.DRAW) {
-                    timeIncrement -=
-                        (c2.time - c1.time) / commands.playback.speed;
-                }
-            }
-        }
-        commands.playback.time = curtime;
+        var timeDelta = curtime - playbackInfo.lastFrameTime;
+        var isMore = drawing.setCmdTime(timeDelta * playbackInfo.speed);
+        playbackInfo.lastFrameTime = curtime;
 
         // are we done, or do we need to schedule another animation frame?
-        if (commands.playback.pos < commands.length) {
+        if (isMore) {
             requestAnimationFrame(playback);
         } else {
             animRequested = false;
-            commands.isPlaying = false;
+            playbackInfo.isPlaying = false;
             toolbarPort.postMessage(JSON.stringify({type:'stopped'}));
         }
     };
-    var maybeRequestAnim = function() {
+    maybeRequestAnim = function() {
         if (!animRequested) {
             animRequested = true;
-            requestAnimationFrame(commands.isPlaying ? playback : refresh);
+            requestAnimationFrame(playbackInfo.isPlaying ? playback : refresh);
         }
     };
 
     var isDragging = false;
     hammer.ondrag = function(ev) {
         maybeHaltPlayback();
+        if (!isDragging) {
+            // XXX fill in current layer here
+            drawing.addCmd(DrawCommand.create_draw_start(0));
+        }
         isDragging = true;
-        commands.push(DrawCommand.create_draw(ev.position));
-        redoList.length = 0;
+        drawing.addCmd(DrawCommand.create_draw(ev.position));
         maybeRequestAnim();
         // stroke in progress, don't try to recognize
         recog_timer_cancel();
     };
     hammer.ondragend = function(ev) {
         isDragging = false;
-        commands.push(DrawCommand.create_draw_end());
-        redoList.length = 0;
+        drawing.addCmd(DrawCommand.create_draw_end());
         maybeRequestAnim();
         if (ev) {
             //console.log("Attempt recog from", commands.recog,
             //            "to", commands.length);
-            Recog.attemptRecognition(commands, commands.recog,
-                                     commands.length);
+            Recog.attemptRecognition(drawing.commands,
+                                     drawing.commands.recog,
+                                     drawing.commands.end);
         }
         // start recog reset timer
         recog_timer_reset();
     };
 
     var lastRecogCanvas = null;
-    var removeRecogCanvas = function() {
+    removeRecogCanvas = function() {
         if (lastRecogCanvas) {
-            layer.domElement.removeChild(lastRecogCanvas);
+            drawingElem.removeChild(lastRecogCanvas);
             lastRecogCanvas = null;
         }
     };
@@ -166,12 +144,12 @@ define(['domReady!', './src/brush', './src/color', './src/compat', './src/dom', 
         var r = window.devicePixelRatio || 1;
         var w = bbox.br.x - bbox.tl.x, h = bbox.br.y - bbox.tl.y;
         // offset by current brush width (this is a bit hackity)
-        w += brush.size; h += brush.size;
+        w += drawing.brush.size; h += drawing.brush.size;
         var c = document.createElement('canvas');
         c.style.border="1px dashed #ccc";
         c.style.position='absolute';
-        c.style.top = (bbox.tl.y-(brush.size/2))+'px';
-        c.style.left = (bbox.tl.x-(brush.size/2))+'px';
+        c.style.top = (bbox.tl.y-(drawing.brush.size/2))+'px';
+        c.style.left = (bbox.tl.x-(drawing.brush.size/2))+'px';
         c.style.width = w+'px';
         c.style.height = h+'px';
         c.style.opacity = 0.25;
@@ -182,7 +160,7 @@ define(['domReady!', './src/brush', './src/color', './src/compat', './src/dom', 
         ctxt.font = (c.height*1.2)+"px Delius"; // 1.2 is fudge factor
         ctxt.textAlign = "center";
         ctxt.textBaseline = "middle";
-        ctxt.fillStyle = brush.color.to_string().replace(/..$/,'');
+        ctxt.fillStyle = drawing.brush.color.to_string().replace(/..$/,'');
         ctxt.translate(c.width/2, c.height/2);
         // measure the expected width
         var metrics = ctxt.measureText(model.charAt(0));
@@ -192,7 +170,7 @@ define(['domReady!', './src/brush', './src/color', './src/compat', './src/dom', 
         ctxt.fillText(model.charAt(0), 0, 0, c.width);
         removeRecogCanvas();
         lastRecogCanvas = c;
-        layer.domElement.appendChild(lastRecogCanvas);
+        drawingElem.appendChild(lastRecogCanvas);
         //console.log(model);
     };
     Recog.registerCallback(handleRecog);
@@ -200,50 +178,26 @@ define(['domReady!', './src/brush', './src/color', './src/compat', './src/dom', 
     var updateToolbarBrush = function() {
         var msg = {
             type: 'brush',
-            color: brush.color.to_string(),
-            brush_type:  brush.type,
-            size:  brush.size,
-            opacity: brush.opacity,
-            spacing: brush.spacing
+            color: drawing.brush.color.to_string(),
+            brush_type:  drawing.brush.type,
+            size:  drawing.brush.size,
+            opacity: drawing.brush.opacity,
+            spacing: drawing.brush.spacing
         };
         toolbarPort.postMessage(JSON.stringify(msg));
     };
 
-    var undo = function() {
+    var doUndo = function() {
         console.assert(!isDragging);
-        if (commands.length===0) { return; /* nothing to undo */ }
-        var i = commands.length-1;
-        while (i >= 0 && commands[i].type !== DrawCommand.Type.DRAW_END) {
-            i--;
-        }
-        if (i<0) { return; /* nothing but color changes to undo */ }
-        i--;
-        while (i >= 0 && commands[i].type === DrawCommand.Type.DRAW) {
-            i--;
-        }
-        i++;
-        // i should now point to the first DRAW command.
-        redoList.push(commands.slice(i));
-        commands.length = i;
-        // now redraw w/o those commands.
-        layer.clear();
-        commands.last = 0;
-        refresh();
-        // reset current brush from layer
-        brush = layer.currentBrush();
+        drawing.undo();
         // update the toolbar opacity/size to match
         updateToolbarBrush();
         // stop recognition and cancel timer
         recog_reset();
     };
-    var redo = function() {
-        if (redoList.length===0) { return; /* nothing to redo */ }
-        redoList.pop().forEach(function(cmd) {
-            commands.push(cmd);
-        });
-        refresh();
-        // reset current brush from layer
-        brush = layer.currentBrush();
+    var doRedo = function() {
+        console.assert(!isDragging);
+        drawing.redo();
         // update the toolbar opacity/size to match
         updateToolbarBrush();
         // don't repeat recognition (and cancel timer)
@@ -254,13 +208,12 @@ define(['domReady!', './src/brush', './src/color', './src/compat', './src/dom', 
         var w = window.innerWidth, h = window.innerHeight;
         var r = window.devicePixelRatio || 1;
         //console.log("Resizing canvas", w, h, r);
-        layer.resize(w, h, r);
+        drawing.resize(w, h, r);
         // replay existing commands to restore canvas contents.
-        if (commands.isPlaying) {
-            commands.playback.pos = 0;
+        if (playbackInfo.isPlaying) {
+            drawing.setCmdPos(0); // restart playback from start
         } else {
-            commands.last = 0;
-            refresh();
+            drawing.setCmdPos(Drawing.END); // refresh
         }
     };
     window.addEventListener('resize', onWindowResize, false);
@@ -279,53 +232,52 @@ define(['domReady!', './src/brush', './src/color', './src/compat', './src/dom', 
         switch(msg.type) {
         case 'swatchButton':
             var color = Color.from_string(msg.color);
-            if (Color.equal(brush.color, color)) { break; }
-            brush.color = color;
-            commands.push(DrawCommand.create_color_change(brush.color));
+            if (Color.equal(drawing.brush.color, color)) { break; }
+            drawing.addCmd(DrawCommand.create_color_change(color));
+            drawing.setCmdPos(Drawing.END); // update drawing.brush
             break;
         case 'undoButton':
             removeRecogCanvas();
-            undo();
+            doUndo();
             break;
         case 'redoButton':
             removeRecogCanvas();
-            redo();
+            doRedo();
             break;
         case 'hardButton':
-            if (brush.type === Brush.Type.HARD) { break; }
-            brush.type = Brush.Type.HARD;
-            commands.push(DrawCommand.create_brush_change(
-                brush.type, brush.size, brush.opacity,brush.spacing));
+            if (drawing.brush.type === Brush.Type.HARD) { break; }
+            drawing.addCmd(DrawCommand.create_brush_change(
+                Brush.Type.HARD, drawing.brush.size, drawing.brush.opacity,
+                drawing.brush.spacing));
+            drawing.setCmdPos(Drawing.END); // update drawing.brush
             break;
         case 'softButton':
-            if (brush.type === Brush.Type.SOFT) { break; }
-            brush.type = Brush.Type.SOFT;
-            commands.push(DrawCommand.create_brush_change(
-                brush.type, brush.size, brush.opacity,brush.spacing));
+            if (drawing.brush.type === Brush.Type.SOFT) { break; }
+            drawing.addCmd(DrawCommand.create_brush_change(
+                Brush.Type.SOFT, drawing.brush.size, drawing.brush.opacity,
+                drawing.brush.spacing));
+            drawing.setCmdPos(Drawing.END); // update drawing.brush
             break;
         case 'opacitySlider':
-            if (brush.opacity === +msg.value) { break; }
-            brush.opacity = +msg.value;
-            commands.push(DrawCommand.create_brush_change(
-                brush.type, brush.size, brush.opacity,brush.spacing));
+            if (drawing.brush.opacity === +msg.value) { break; }
+            drawing.addCmd(DrawCommand.create_brush_change(
+                drawing.brush.type, drawing.brush.size, +msg.value,
+                drawing.brush.spacing));
+            drawing.setCmdPos(Drawing.END); // update drawing.brush
             break;
         case 'sizeSlider':
-            if (brush.size === +msg.value) { break; }
-            brush.size = +msg.value;
-            commands.push(DrawCommand.create_brush_change(
-                brush.type, brush.size, brush.opacity,brush.spacing));
+            if (drawing.brush.size === +msg.value) { break; }
+            drawing.addCmd(DrawCommand.create_brush_change(
+                drawing.brush.type, +msg.value, drawing.brush.opacity,
+                drawing.brush.spacing));
+            drawing.setCmdPos(Drawing.END); // update drawing.brush
             break;
         case 'playButton':
-            if (commands.isPlaying) {
-                commands.playback.speed *= 4;
-                break;
+            if (playbackInfo.isPlaying) {
+                playbackInfo.speed *= 4;
+            } else {
+                startPlayback();
             }
-            commands.isPlaying = true;
-            commands.playback = { pos:0, time:Date.now(), speed:4 };
-            layer.clear();
-            removeRecogCanvas();
-            maybeRequestAnim();
-            toolbarPort.postMessage(JSON.stringify({type:'playing'}));
             break;
         default:
             console.warn("Unexpected child toolbar message", evt);

@@ -62,6 +62,9 @@ define(['./drawcommand', './brush', './point'], function(DrawCommand, Brush, Poi
             var x = Math.round(pos.x) - center, y = Math.round(pos.y) - center;
             this.progressContext.drawImage(stamp, x, y);
         },
+        execDrawStart: function(layer) {
+            console.assert(!this.isDrawingPath);
+        },
         execDraw: function(x, y) {
             var pos = { x:x, y:y };
             if (!this.isDrawingPath) {
@@ -92,6 +95,9 @@ define(['./drawcommand', './brush', './point'], function(DrawCommand, Brush, Poi
         },
         execCommand: function(draw_command) {
             switch(draw_command.type) {
+            case DrawCommand.Type.DRAW_START:
+                this.execDrawStart(draw_command.layer);
+                break;
             case DrawCommand.Type.DRAW:
                 this.execDraw(draw_command.pos.x * this.pixel_ratio,
                               draw_command.pos.y * this.pixel_ratio);
@@ -136,6 +142,51 @@ define(['./drawcommand', './brush', './point'], function(DrawCommand, Brush, Poi
         currentBrush: function() {
             return this.brush.clone();
         },
+        saveCheckpoint: function() {
+            console.assert(!this.isDrawingPath);
+            var nbrush = this.brush.clone();
+            var ncanvas = document.createElement('canvas');
+            ncanvas.width = this.completedCanvas.width;
+            ncanvas.height = this.completedCanvas.height;
+            ncanvas.getContext('2d').drawImage(this.completedCanvas, 0, 0);
+            return new Layer.Checkpoint(nbrush, ncanvas);
+        },
+        restoreCheckpoint: function(checkpoint) {
+            console.assert(!this.isDrawingPath);
+            console.assert(typeof(checkpoint)!=='string',
+                           'need to decode checkpoint before restoring');
+            this.clear();
+            this.brush = checkpoint.brush.clone();
+            this.completedContext.globalAlpha = 1.0;
+            this.completedContext.drawImage(checkpoint.canvas, 0, 0);
+        }
     };
+    Layer.Checkpoint = function(brush, canvas) {
+        this.brush = brush;
+        this.canvas = canvas;
+    };
+    Layer.Checkpoint.prototype = {};
+    Layer.Checkpoint.prototype.toJSON = function() {
+        return {
+            brush: JSON.stringify(this.brush),
+            canvas: this.canvas.toDataURL('image/png')
+        };
+    };
+    Layer.Checkpoint.fromJSON = function(str, callback) {
+        var checkpoint = JSON.parse(str);
+        console.log(checkpoint.canvas);
+        var image = document.createElement('img');
+        // xxx can't load image from data: url synchronously
+        image.onload = function() {
+            var canvas = document.createElement('canvas');
+            canvas.width = image.width;
+            canvas.height = image.height;
+            canvas.getContext('2d').drawImage(image, 0, 0);
+            var brush = Brush.fromJSON(checkpoint.brush);
+            callback(new Layer.Checkpoint(brush, canvas));
+        };
+        image.src = checkpoint.canvas;
+    };
+
     return Layer;
 });

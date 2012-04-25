@@ -42,6 +42,7 @@ requirejs(['commander', 'fs', '../src/brush', '../src/color', '../src/drawcomman
 
     var commands = [];
     var now = Date.now();
+    var inStroke = false;
     var parse_cmd0 = function(cmd) {
         // TYPE_DRAW
         var pressure = cmd & 0xFF; cmd >>= 8; /* pressure is unused */
@@ -49,14 +50,25 @@ requirejs(['commander', 'fs', '../src/brush', '../src/color', '../src/drawcomman
         var y = cmd & 0x7FF; cmd >>= 11;
         var pos = { x: (x-512)/1024, y: (y-512)/1024 };
         pos.x *= program.scale; pos.y *= program.scale;
+        var layer = 0;
+        if (!inStroke) {
+            commands.push(DrawCommand.create_draw_start(layer));
+            inStroke = true;
+        }
         commands.push(DrawCommand.create_draw(pos, now));
     };
     var parse_cmd1 = function(cmd) {
+        if (!inStroke) {
+            console.warn("Extraneous DRAW_END, ignoring.");
+            return;
+        }
         // TYPE_DRAWEND
         var pressure = cmd & 0xFF; cmd >>= 8; /* pressure is unused */
         commands.push(DrawCommand.create_draw_end());
+        inStroke = false;
     };
     var parse_cmd2 = function(cmd) {
+        console.assert(!inStroke);
         // TYPE_COLORCHANGE
         var b = cmd & 0xFF; cmd >>= 8;
         var g = cmd & 0xFF; cmd >>= 8;
@@ -70,6 +82,7 @@ requirejs(['commander', 'fs', '../src/brush', '../src/color', '../src/drawcomman
         commands.push(DrawCommand.create_color_change(new Color(r,g,b,255)));
     };
     var parse_cmd3 = function(cmd) {
+        console.assert(!inStroke);
         // TYPE_SIZECHANGE
         var size = cmd & 0xFFFF; cmd >>= 16;
         var brushcontrol = cmd & 3; cmd >>= 2;

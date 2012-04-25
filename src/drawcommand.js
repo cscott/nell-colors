@@ -13,7 +13,8 @@ define(['./color','./brush'], function(Color, Brush) {
         DRAW_END: 1,
         COLOR_CHANGE: 2,
         BRUSH_CHANGE: 3,
-        NUM_COMMAND_TYPES: 4
+        DRAW_START: 4,
+        NUM_COMMAND_TYPES: 5
     };
     Object.freeze(CommandType);
 
@@ -23,6 +24,12 @@ define(['./color','./brush'], function(Color, Brush) {
     };
     DrawCommand.Type = CommandType;
 
+    DrawCommand.create_draw_start = function(layer) {
+        if (!layer) { layer = 0; }
+        var cmd = new DrawCommand(CommandType.DRAW_START);
+        cmd.layer = layer;
+        return cmd;
+    };
     DrawCommand.create_draw = function(pos, time) {
         if (!time) { time = Date.now(); }
         var cmd = new DrawCommand(CommandType.DRAW);

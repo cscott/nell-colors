@@ -138,6 +138,14 @@ define(['./color', './compat'], function(Color, Compat) {
 
     Brush.Type = BrushType;
 
+    Brush.fromJSON = function(str) {
+        var brush = JSON.parse(str);
+        var color = new Color();
+        color.set_from_color(brush.color);
+        return new Brush(color, brush.type, brush.size, brush.opacity,
+                         brush.spacing);
+    };
+
     Brush.prototype.clone = function() {
         return new Brush(this.color, this.type, this.size, this.opacity,
                          this.spacing);
