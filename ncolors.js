@@ -15,6 +15,8 @@ define(['domReady!', './src/brush', './src/color', './src/compat', './src/dom', 
     var RECOG_TIMEOUT = 750;
     // show frame rate overlay
     var SHOW_FRAME_RATE = true;
+    // limit touch event frequency (set to 0 to disable rate limiting)
+    var TOUCH_EVENT_INTERVAL_MS = 25; /* 40 Hz */
 
     // get 2d context for canvas.
     Dom.insertMeta(document);
@@ -127,13 +129,30 @@ define(['domReady!', './src/brush', './src/color', './src/compat', './src/dom', 
     };
 
     var isDragging = false;
+    var lastpos = { x: null, y: null, time: 0 };
     hammer.ondrag = function(ev) {
         maybeHaltPlayback();
         if (!isDragging) {
             // XXX fill in current layer here
             drawing.addCmd(DrawCommand.create_draw_start(0));
+            lastpos.x = lastpos.y = null; // force emit next point
+            lastpos.time = 0;
         }
         isDragging = true;
+        if (ev.position.x === lastpos.x &&
+            ev.position.y === lastpos.y) {
+            // nothing to do here.
+            return;
+        }
+        // rate limit touch updates -- this is needed for good performance
+        // on Android/Xoom.
+        var now = Date.now();
+        if (now - lastpos.time < TOUCH_EVENT_INTERVAL_MS) {
+            return;
+        }
+        lastpos.x = ev.position.x;
+        lastpos.y = ev.position.y;
+        lastpos.time = now;
         drawing.addCmd(DrawCommand.create_draw(ev.position));
         maybeRequestAnim();
         // stroke in progress, don't try to recognize
