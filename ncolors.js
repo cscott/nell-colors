@@ -4,7 +4,7 @@
  */
 /*global define:false, console:false, MessageChannel:false, window:false,
          setTimeout:false, clearTimeout:false */
-define(['domReady!', './src/brush', './src/color', './src/compat', './src/dom', './src/drawcommand', './src/drawing', './src/layer', './hammer', './src/postmessage', './raf', './src/recog', 'json!./lounge.json', 'font!google,families:[Delius]'], function(document, Brush, Color, Compat, Dom, DrawCommand, Drawing, Layer, Hammer, postMessage, requestAnimationFrame, Recog, input_drawing) {
+define(['domReady!', './src/brush', './src/color', './src/compat', './src/dom', './src/drawcommand', './src/drawing', './src/layer', './hammer', './src/postmessage', './raf', './src/recog', 'drw!./lounge.json', 'font!google,families:[Delius]'], function(document, Brush, Color, Compat, Dom, DrawCommand, Drawing, Layer, Hammer, postMessage, requestAnimationFrame, Recog, input_drawing) {
     'use strict';
     // Android browser doesn't support MessageChannel
     // -- however, it also has a losing canvas. so don't worry too much.
@@ -17,16 +17,12 @@ define(['domReady!', './src/brush', './src/color', './src/compat', './src/dom', 
     // get 2d context for canvas.
     Dom.insertMeta(document);
     var drawingElem = document.getElementById('drawing');
-    var drawing = new Drawing(drawingElem);
+    var drawing = input_drawing || new Drawing();
+    drawing.attachToContainer(drawingElem);
     var hammer = new Hammer(drawingElem, {
         prevent_default: true,
         drag_min_distance: 2
     });
-
-    if (input_drawing) {
-        // load a drawing
-        drawing.loadJSON(input_drawing);
-    }
 
     var maybeRequestAnim, removeRecogCanvas;
 

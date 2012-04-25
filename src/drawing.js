@@ -2,7 +2,7 @@
   eqeqeq:true, curly:true, latedef:true, newcap:true, undef:true,
   trailing:true, es5:true
  */
-/*global define:false, console:false, Uint8Array:false */
+/*global define:false, console:false, document:false */
 define(['./brush','./color','./drawcommand','./layer'], function(Brush, Color, DrawCommand, Layer) {
 
     // A Drawing is a sequence of DrawCommands and a set of layer.
@@ -10,18 +10,17 @@ define(['./brush','./color','./drawcommand','./layer'], function(Brush, Color, D
 
     var CHECKPOINT_INTERVAL = 300;
 
-    var Drawing = function(container) {
+    var Drawing = function() {
+        this.domElement = document.createElement('div');
         this.commands = [];
         this.commands.last = 0;
         // .end might not == .length if we've got a redo buffer at the end
         this.commands.end = 0;
-        this.layers = [ new Layer() ];
-        this.layers.current = 0;
-        this.layers.forEach(function(l) {
-            container.appendChild(l.domElement);
-        });
+        this.layers = [ ];
         // checkpoint list, for fast undo
         this.checkpoints = [];
+        this.resize(100,100,1); // default size
+        this.layers.current = this.addLayer(); // one default layer
         // hack in a brush change and color change
         // XXX we should have a different way to synchronize brush after load
         this.brush = new Brush(Color.BLACK, Brush.Type.SOFT, 20, 0.7, 0.2);
@@ -35,6 +34,19 @@ define(['./brush','./color','./drawcommand','./layer'], function(Brush, Color, D
         this.commands.recog = this.commands.end;
     };
     Drawing.prototype = { };
+    Drawing.prototype.attachToContainer = function(container) {
+        container.appendChild(this.domElement);
+    };
+    Drawing.prototype.removeFromContainer = function(container) {
+        container.removeChild(this.domElement);
+    };
+    Drawing.prototype.addLayer = function() {
+        var l = new Layer();
+        l.resize(this.width, this.height, this.pixelRatio);
+        this.layers.push(l);
+        this.domElement.appendChild(l.domElement);
+        return this.layers.length - 1; // index of new layer
+    };
     Drawing.prototype.addCmd = function(cmd) {
         this.commands[this.commands.end++] = cmd;
         // truncate any redo buffer
@@ -129,6 +141,15 @@ define(['./brush','./color','./drawcommand','./layer'], function(Brush, Color, D
             l.resize(width, height, pixelRatio);
         });
         this.commands.last = 0;
+        this.width = width;
+        this.height = height;
+        this.pixelRatio = pixelRatio;
+        // invalidate any checkpoints which are too small for the new size
+        this.checkpoints = this.checkpoints.filter(function(c) {
+            return c.width >= width &&
+                c.height >= height &&
+                c.pixelRatio===pixelRatio;
+        });
     };
     Drawing.prototype._clear = function() {
         this.layers.forEach(function(l) { l.clear(); });
@@ -160,13 +181,16 @@ define(['./brush','./color','./drawcommand','./layer'], function(Brush, Color, D
         }
     };
     Drawing.prototype.saveCheckpoint = function() {
-        return {
+        return new Drawing.Checkpoint({
             pos: this.commands.last,
             brush: this.brush.clone(),
             layers: this.layers.map(function(layer) {
                 return layer.saveCheckpoint();
-            })
-        };
+            }),
+            width: this.width,
+            height: this.height,
+            pixelRatio: this.pixelRatio
+        });
     };
     Drawing.prototype.restoreCheckpoint = function(checkpoint) {
         this.commands.last = checkpoint.pos;
@@ -252,52 +276,80 @@ define(['./brush','./color','./drawcommand','./layer'], function(Brush, Color, D
         this.checkpoints = nc;
     };
 
-    Drawing.Checkpoint = function(brush, layer_checkpoints) {
-        this.brush = brush;
-        this.layers = layer_checkpoints;
+    Drawing.Checkpoint = function(props) {
+        var name;
+        for (name in props) {
+            if (props.hasOwnProperty(name)) {
+                this[name] = props[name];
+            }
+        }
     };
     Drawing.Checkpoint.prototype = {};
-    Drawing.Checkpoint.toJSON = function() {
-        return {
-            brush: JSON.stringify(this.brush),
-            layers: this.layers
-        };
-    };
     Drawing.Checkpoint.fromJSON = function(str, callback) {
-        var json = JSON.parse(str);
-        var brush = Brush.fromJSON(json.brush);
-        var layers = [];
-        var completed = 0;
-        var mkcb = function(i) {
-            return function(lc) {
-                layers[i] = lc;
-                completed++;
-                if (completed === json.layers.length) {
-                    callback(new Drawing.Checkpoint(brush, layers));
-                }
-            };
-        };
-        json.layers.forEach(function(l, i) {
-            Layer.Checkpoint.fromJSON(l, mkcb(i));
-        });
+        var json = (typeof(str)==='string') ? JSON.parse(str) : str;
+        json.brush = Brush.fromJSON(json.brush);
+        if (json.layers.length===0) {
+            callback(new Drawing.Checkpoint(json));
+        } else {
+            var completed = 0;
+            json.layers.forEach(function(l, i) {
+                Layer.Checkpoint.fromJSON(l, function(lc) {
+                    json.layers[i] = lc;
+                    completed++;
+                    if (completed === json.layers.length) {
+                        callback(new Drawing.Checkpoint(json));
+                    }
+                });
+            });
+        }
     };
 
-    Drawing.prototype.loadJSON = function(input_drawing) {
-        input_drawing.commands.forEach(function(c) {
-            var cmd = new DrawCommand(c.type), name;
-            for (name in c) {
-                if (c.hasOwnProperty(name)) {
-                    if (name==='color') {
-                        cmd[name] = new Color();
-                        cmd[name].set_from_color(c[name]);
-                    } else {
-                        cmd[name] = c[name];
+    Drawing.prototype.toJSON = function() {
+        // save only the 1st and last checkpoints to save space.
+        var ncheckpoints = [];
+        if (this.checkpoints.length>0) {
+            ncheckpoints.push(this.checkpoints[0]);
+        }
+        if (this.checkpoints.length>1) {
+            ncheckpoints.push(this.checkpoints[this.checkpoints.length-1]);
+        }
+        return {
+            commands: this.commands,
+            end: this.commands.end, // save redo buffer
+            nlayers: this.layers.length,
+            width: this.width,
+            height: this.height,
+            pixelRatio: this.pixelRatio,
+            checkpoints: ncheckpoints
+        };
+    };
+    Drawing.fromJSON = function(str, callback) {
+        var json = (typeof(str)==='string') ? JSON.parse(str) : str;
+        var drawing = new Drawing();
+        while (drawing.layers.length < json.nlayers) {
+            drawing.addLayer();
+        }
+        drawing.commands.length=drawing.commands.end=drawing.commands.last = 0;
+        json.commands.forEach(function(c) {
+            drawing.addCmd(DrawCommand.fromJSON(c));
+        });
+        drawing.commands.end = drawing.commands.recog = json.end;
+        drawing.resize(json.width, json.height, json.pixelRatio || 1);
+        // restore checkpoints
+        if (json.checkpoints.length===0) {
+            callback(drawing);
+        } else {
+            var completed = 0;
+            json.checkpoints.forEach(function(c, i) {
+                Drawing.Checkpoint.fromJSON(c, function(chk) {
+                    drawing.checkpoints[i] = chk;
+                    completed++;
+                    if (completed === json.checkpoints.length) {
+                        callback(drawing);
                     }
-                }
-            }
-            this.addCmd(cmd);
-        }.bind(this));
-        this.commands.recog = this.commands.end;
+                });
+            });
+        }
     };
 
     return Drawing;

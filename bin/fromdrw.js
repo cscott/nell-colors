@@ -43,6 +43,7 @@ requirejs(['commander', 'fs', '../src/brush', '../src/color', '../src/drawcomman
     var commands = [];
     var now = Date.now();
     var inStroke = false;
+    var maxx, maxy, minx, miny;
     var parse_cmd0 = function(cmd) {
         // TYPE_DRAW
         var pressure = cmd & 0xFF; cmd >>= 8; /* pressure is unused */
@@ -50,6 +51,10 @@ requirejs(['commander', 'fs', '../src/brush', '../src/color', '../src/drawcomman
         var y = cmd & 0x7FF; cmd >>= 11;
         var pos = { x: (x-512)/1024, y: (y-512)/1024 };
         pos.x *= program.scale; pos.y *= program.scale;
+        maxx = Math.max(maxx, pos.x);
+        maxy = Math.max(maxy, pos.y);
+        minx = Math.min(minx, pos.x);
+        miny = Math.min(miny, pos.y);
         var layer = 0;
         if (!inStroke) {
             commands.push(DrawCommand.create_draw_start(layer));
@@ -124,7 +129,16 @@ requirejs(['commander', 'fs', '../src/brush', '../src/color', '../src/drawcomman
     }
 
     // emit the output file in a different format.
-    var jsonout = { header: header, commands: commands };
+    var jsonout = {
+        header: header,
+        commands: commands,
+        end: commands.length,
+        nlayers: 1,
+        width: maxx,
+        height: maxy,
+        pixelRatio: 1,
+        checkpoints: []
+    };
     output.write(JSON.stringify(jsonout));
     if (program.output) { output.end(); }
 });

@@ -146,7 +146,7 @@ define(['./drawcommand', './brush', './point'], function(DrawCommand, Brush, Poi
         };
     };
     Layer.Checkpoint.fromJSON = function(str, callback) {
-        var checkpoint = JSON.parse(str);
+        var json = (typeof(str)==='string') ? JSON.parse(str) : str;
         var image = document.createElement('img');
         // xxx can't load image from data: url synchronously
         image.onload = function() {
@@ -156,7 +156,7 @@ define(['./drawcommand', './brush', './point'], function(DrawCommand, Brush, Poi
             canvas.getContext('2d').drawImage(image, 0, 0);
             callback(new Layer.Checkpoint(canvas));
         };
-        image.src = checkpoint.canvas;
+        image.src = json.canvas;
     };
 
     return Layer;

@@ -22,7 +22,23 @@ define(['./color','./brush'], function(Color, Brush) {
         console.assert(type >= 0 && type < CommandType.NUM_COMMAND_TYPES);
         this.type = type;
     };
+    DrawCommand.prototype = {};
     DrawCommand.Type = CommandType;
+    DrawCommand.fromJSON = function(str) {
+        var json = (typeof(str)==='string') ? JSON.parse(str) : str;
+        var cmd = new DrawCommand(json.type), name;
+        for (name in json) {
+            if (json.hasOwnProperty(name)) {
+                if (name==='color') {
+                    cmd[name] = new Color();
+                    cmd[name].set_from_color(json[name]);
+                } else {
+                    cmd[name] = json[name];
+                }
+            }
+        }
+        return cmd;
+    };
 
     DrawCommand.create_draw_start = function(layer) {
         if (!layer) { layer = 0; }

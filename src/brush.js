@@ -140,11 +140,11 @@ define(['./color', './compat'], function(Color, Compat) {
     Brush.Type = BrushType;
 
     Brush.fromJSON = function(str) {
-        var brush = JSON.parse(str);
+        var json = (typeof(str)==='string') ? JSON.parse(str) : str;
         var color = new Color();
-        color.set_from_color(brush.color);
-        return new Brush(color, brush.type, brush.size, brush.opacity,
-                         brush.spacing);
+        color.set_from_color(json.color);
+        return new Brush(color, json.type, json.size, json.opacity,
+                         json.spacing);
     };
 
     Brush.prototype.equals = function(b) {
