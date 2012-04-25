@@ -13,6 +13,8 @@ define(['domReady!', './src/brush', './src/color', './src/compat', './src/dom', 
 
     // How long to allow between strokes of a letter
     var RECOG_TIMEOUT = 750;
+    // show frame rate overlay
+    var SHOW_FRAME_RATE = true;
 
     // get 2d context for canvas.
     Dom.insertMeta(document);
@@ -52,9 +54,32 @@ define(['domReady!', './src/brush', './src/color', './src/compat', './src/dom', 
         recog_timer_id = setTimeout(recog_timer, RECOG_TIMEOUT);
     };
 
+    var updateFrameRate = function() { };
+    if (SHOW_FRAME_RATE) {
+        updateFrameRate = (function() {
+            var fr = document.getElementById('framerate');
+            var num = fr.children[0];
+            var frametimes = [Date.now()];
+            fr.style.display = 'block'; // make visible
+            return function() {
+                // average last 20 frame times to smooth display
+                frametimes.push(Date.now());
+                while (frametimes.length > 20) {
+                    frametimes.shift();
+                }
+                var elapsed =
+                    (frametimes[frametimes.length-1] - frametimes[0]) /
+                    (frametimes.length-1);
+                var fps = 1000/elapsed;
+                num.textContent = Math.round(fps);
+            };
+        })();
+    }
+
     var animRequested = false;
     var refresh = function() {
         drawing.setCmdPos(Drawing.END); // draw to end
+        updateFrameRate();
         animRequested = false;
     };
     var playbackInfo = { isPlaying: false, lastFrameTime: 0, speed: 4 };
@@ -76,6 +101,7 @@ define(['domReady!', './src/brush', './src/color', './src/compat', './src/dom', 
         toolbarPort.postMessage(JSON.stringify({type:'playing'}));
     };
     var playback = function() {
+        updateFrameRate();
         if (!playbackInfo.isPlaying) { return; }
 
         // play some frames.
