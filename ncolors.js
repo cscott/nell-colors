@@ -4,7 +4,7 @@
  */
 /*global define:false, console:false, MessageChannel:false, window:false,
          setTimeout:false, clearTimeout:false */
-define(['domReady!', './src/brush', './src/color', './src/compat', './src/dom', './src/drawcommand', './src/drawing', './src/layer', './hammer', './src/postmessage', './raf', './src/recog', 'drw!./lounge.json', 'font!google,families:[Delius]'], function(document, Brush, Color, Compat, Dom, DrawCommand, Drawing, Layer, Hammer, postMessage, requestAnimationFrame, Recog, input_drawing) {
+define(['domReady!', './src/brush', './src/color', './src/compat', './src/dom', './src/drawcommand', './src/drawing', './src/layer', './hammer', './src/postmessage', './raf', './src/recog', 'drw!./intro.json', 'font!google,families:[Delius]'], function(document, Brush, Color, Compat, Dom, DrawCommand, Drawing, Layer, Hammer, postMessage, requestAnimationFrame, Recog, input_drawing) {
     'use strict';
     // Android browser doesn't support MessageChannel
     // -- however, it also has a losing canvas. so don't worry too much.
@@ -206,6 +206,10 @@ define(['domReady!', './src/brush', './src/color', './src/compat', './src/dom', 
         //console.log("Resizing canvas", w, h, r);
         drawing.resize(w, h, r);
         // replay existing commands to restore canvas contents.
+        if (!playbackInfo.isPlaying && drawing.checkpoints.length===0) {
+            startPlayback();
+            playbackInfo.speed *= 10;
+        }
         if (playbackInfo.isPlaying) {
             drawing.setCmdPos(0); // restart playback from start
         } else {
@@ -213,12 +217,6 @@ define(['domReady!', './src/brush', './src/color', './src/compat', './src/dom', 
         }
     };
     window.addEventListener('resize', onWindowResize, false);
-    onWindowResize();
-
-    document.getElementById("loading").style.display="none";
-    /*
-    document.getElementById("loading").innerHTML = "Resized "+window.innerWidth+"x"+window.innerHeight+" "+window.devicePixelRatio;
-    */
 
     // create a channel to listen to toolbar messages.
     var handleToolbarMessage = function(evt) {
@@ -320,4 +318,6 @@ define(['domReady!', './src/brush', './src/color', './src/compat', './src/dom', 
     }
     // finally, update the toolbar opacity/size to match
     updateToolbarBrush();
+    onWindowResize();
+    document.getElementById("loading").style.display="none";
 });
