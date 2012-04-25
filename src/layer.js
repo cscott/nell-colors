@@ -128,10 +128,10 @@ define(['./drawcommand', './brush', './point'], function(DrawCommand, Brush, Poi
             return new Layer.Checkpoint(ncanvas);
         },
         restoreCheckpoint: function(checkpoint) {
-            console.assert(!this.isDrawingPath);
             console.assert(typeof(checkpoint)!=='string',
                            'need to decode checkpoint before restoring');
             this.clear();
+            console.assert(!this.isDrawingPath);
             this.completedContext.globalAlpha = 1.0;
             this.completedContext.drawImage(checkpoint.canvas, 0, 0);
         }
