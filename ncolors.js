@@ -4,7 +4,7 @@
  */
 /*global define:false, console:false, MessageChannel:false, window:false,
          setTimeout:false, clearTimeout:false */
-define(['domReady!', './src/brush', './src/color', './src/compat', './src/dom', './src/drawcommand', './src/drawing', './src/layer', './hammer', './src/postmessage', './raf', './src/recog', 'drw!./intro.json', 'font!google,families:[Delius]'], function(document, Brush, Color, Compat, Dom, DrawCommand, Drawing, Layer, Hammer, postMessage, requestAnimationFrame, Recog, input_drawing) {
+define(['require', 'domReady!', './src/brush', './src/color', './src/compat', './src/dom', './src/drawcommand', './src/drawing', './src/layer', './hammer', './src/postmessage', './raf', './src/recog', 'font!google,families:[Delius]'], function(require, document, Brush, Color, Compat, Dom, DrawCommand, Drawing, Layer, Hammer, postMessage, requestAnimationFrame, Recog) {
     'use strict';
     // Android browser doesn't support MessageChannel
     // -- however, it also has a losing canvas. so don't worry too much.
@@ -21,7 +21,7 @@ define(['domReady!', './src/brush', './src/color', './src/compat', './src/dom', 
     // get 2d context for canvas.
     Dom.insertMeta(document);
     var drawingElem = document.getElementById('drawing');
-    var drawing = input_drawing || new Drawing();
+    var drawing = new Drawing();
     drawing.attachToContainer(drawingElem);
     var hammer = new Hammer(drawingElem, {
         prevent_default: true,
@@ -364,8 +364,29 @@ define(['domReady!', './src/brush', './src/color', './src/compat', './src/dom', 
         };
         postMessage(window.parent, JSON.stringify(msg), '*');
     }
-    // finally, update the toolbar opacity/size to match
-    updateToolbarBrush();
-    onWindowResize();
-    document.getElementById("loading").style.display="none";
+    var finishUp = function() {
+        // finally, update the toolbar opacity/size to match
+        updateToolbarBrush();
+        onWindowResize();
+        document.getElementById("loading").style.display="none";
+    }
+    // load the requested doc
+    switch(document.location.hash) {
+    case '#lounge':
+    case '#castle':
+    case '#intro':
+        require(['drw!./'+document.location.hash.replace(/^#/,'')+'.json'],
+                function(new_drawing) {
+                    drawing.removeFromContainer(drawingElem);
+                    drawing = new_drawing;
+                    drawing.attachToContainer(drawingElem);
+                    finishUp();
+                });
+        break;
+    default:
+        // XXX load or create from local storage
+        console.log("Unrecognized hash", document.location.hash);
+        finishUp();
+        break;
+    }
 });

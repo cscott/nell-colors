@@ -88,7 +88,7 @@ define(['domReady!', './src/dom', './hammer'], function(document, Dom, Hammer) {
     appIframe.appendChild(loading);
     appIframe.id = 'inner';
     appIframe.scrolling = 'no';
-    appIframe.src='ncolors.html';
+    appIframe.src='ncolors.html'+document.location.hash;
     appWrapper.appendChild(appIframe);
 
     // add toolbar buttons.
