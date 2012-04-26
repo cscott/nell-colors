@@ -137,7 +137,7 @@ define(['require', 'domReady!', './src/brush', './src/color', './src/compat', '.
         maybeHaltPlayback();
         if (!isDragging) {
             // XXX fill in current layer here
-            drawing.addCmd(DrawCommand.create_draw_start(0));
+            drawing.addCmd(DrawCommand.create_draw_start(drawing.layers.current));
             lastpos.x = lastpos.y = null; // force emit next point
             lastpos.time = 0;
         }
