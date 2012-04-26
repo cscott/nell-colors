@@ -390,12 +390,14 @@ define(['require', 'domReady!', './src/brush', './src/color', './src/compat', '.
     case '#lounge':
     case '#castle':
     case '#intro':
+    case '#r':
         require(['drw!./'+document.location.hash.replace(/^#/,'')+'.json'],
                 function(new_drawing) {
                     drawing.removeFromContainer(drawingElem);
                     drawing = new_drawing;
                     drawing.attachToContainer(drawingElem);
                     finishUp();
+                    playbackInfo.speed = 2; // hack
                 });
         break;
     default:
