@@ -80,6 +80,8 @@ define(['domReady!', './src/brush', './src/color', './src/compat', './src/dom', 
 
     var animRequested = false;
     var refresh = function() {
+        console.assert(animRequested);
+        console.assert(drawing.commands.last !== drawing.commands.end);
         drawing.setCmdPos(Drawing.END); // draw to end
         updateFrameRate();
         animRequested = false;
@@ -123,6 +125,7 @@ define(['domReady!', './src/brush', './src/color', './src/compat', './src/dom', 
     };
     maybeRequestAnim = function() {
         if (!animRequested) {
+            console.assert(drawing.commands.last !== drawing.commands.end);
             animRequested = true;
             requestAnimationFrame(playbackInfo.isPlaying ? playback : refresh);
         }
