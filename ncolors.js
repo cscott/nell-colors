@@ -4,7 +4,7 @@
  */
 /*global define:false, console:false, MessageChannel:false, window:false,
          setTimeout:false, clearTimeout:false */
-define(['require', 'domReady!', './src/brush', './src/color', './src/compat', './src/dom', './src/drawcommand', './src/drawing', './src/layer', './hammer', './src/postmessage', './raf', './src/recog', 'font!google,families:[Delius]'], function(require, document, Brush, Color, Compat, Dom, DrawCommand, Drawing, Layer, Hammer, postMessage, requestAnimationFrame, Recog) {
+define(['require', 'domReady!', './src/brush', './src/color', './src/compat', './src/dom', './src/drawcommand', './src/drawing', './src/layer', './hammer', './src/postmessage', './raf', './src/recog', './FileSaver', 'font!google,families:[Delius]'], function(require, document, Brush, Color, Compat, Dom, DrawCommand, Drawing, Layer, Hammer, postMessage, requestAnimationFrame, Recog, saveAs) {
     'use strict';
     // Android browser doesn't support MessageChannel
     // -- however, it also has a losing canvas. so don't worry too much.
@@ -247,6 +247,18 @@ define(['require', 'domReady!', './src/brush', './src/color', './src/compat', '.
         // don't repeat recognition (and cancel timer)
         recog_reset();
     };
+    var doSave = function() {
+        var json = JSON.stringify(drawing, null, 1);
+        var blob, blobUrl;
+        try {
+            blob = new window.Blob([json], {type:"text/plain;charset=ascii"});
+        } catch (e) {
+            var bb = new (window.BlobBuilder || window.WebKitBlobBuilder)();
+            bb.append(json);
+            blob = bb.getBlob("text/plain;charset=ascii");
+        }
+        saveAs(blob, 'drawing.json');
+    };
 
     var onWindowResize = function(event) {
         var w = window.innerWidth, h = window.innerHeight;
@@ -321,6 +333,9 @@ define(['require', 'domReady!', './src/brush', './src/color', './src/compat', '.
                 startPlayback();
             }
             break;
+        case 'saveButton':
+            doSave();
+            break;
         default:
             console.warn("Unexpected child toolbar message", evt);
             break;
@@ -369,7 +384,7 @@ define(['require', 'domReady!', './src/brush', './src/color', './src/compat', '.
         updateToolbarBrush();
         onWindowResize();
         document.getElementById("loading").style.display="none";
-    }
+    };
     // load the requested doc
     switch(document.location.hash) {
     case '#lounge':

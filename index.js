@@ -162,6 +162,8 @@ define(['domReady!', './src/dom', './hammer'], function(document, Dom, Hammer) {
     opacity.addEventListener('change', updateSwatchOpacity, false);
     updateSwatchOpacity();
 
+    var save = addButton('save');
+
     // allow dragging the toolbar left and right
     var toolbar = document.getElementById('toolbar');
     if (false) { // temporarily disable
