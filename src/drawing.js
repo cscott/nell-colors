@@ -71,7 +71,7 @@ define(['./brush','./color','./drawcommand','./layer'], function(Brush, Color, D
                 // restoring checkpoint also sets this.commands.last
                 this.restoreCheckpoint(checkpoint);
             }
-        } else {
+        } else if (pos < this.commands.last) {
             this._clear();
             this.commands.last = 0;
         }
