@@ -163,9 +163,11 @@ define(['./color', './compat'], function(Color, Compat) {
 
     Brush.prototype.toCanvas = function() {
         // XXX should we scale the canvas up based on the devicePixelRatio ?
+        // [nb in original colors code, brushsize stored as a float but then
+        //  truncated to int before calling draw_brush()]
         var brushwidth = this.size;
         if (brushwidth < 2) { brushwidth = 2; }
-        var size = Math.ceil(brushwidth);
+        var size = Math.ceil(brushwidth)+1;
 
         var c = document.createElement('canvas');
         c.width = c.height = size;
@@ -173,7 +175,7 @@ define(['./color', './compat'], function(Color, Compat) {
         var data = context.createImageData(size, size);
         // now render to this canvas
         var halfwidth = brushwidth/2;
-        var center = Math.floor(size/2); // don't center between pixels
+        var center = Math.floor(size/2); // center at integer location
 
         var db = (DIST_TABLE_WIDTH - 1) / brushwidth;
 
