@@ -121,8 +121,9 @@ define(['./drawcommand', './brush', './point'], function(DrawCommand, Brush, Poi
                 o.width = w;
                 o.height = h;
             });
-            this.pixel_ratio = pixel_ratio;
+            this.isDrawingPath = false;
             this.brush_stamp = null;
+            this.pixel_ratio = pixel_ratio;
         },
         saveCheckpoint: function() {
             console.assert(!this.isDrawingPath);
