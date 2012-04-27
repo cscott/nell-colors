@@ -17,6 +17,10 @@ define(['require', 'domReady!', './src/brush', './src/color', './src/compat', '.
     var SHOW_FRAME_RATE = true;
     // limit touch event frequency (set to 0 to disable rate limiting)
     var TOUCH_EVENT_INTERVAL_MS = 25; /* 40 Hz */
+    // (this isn't needed on iphone/ipad)
+    if (/(iPhone|iPad).*Safari/.test(navigator.userAgent)) {
+        TOUCH_EVENT_INTERVAL_MS = 0;
+    }
 
     // get 2d context for canvas.
     Dom.insertMeta(document);
