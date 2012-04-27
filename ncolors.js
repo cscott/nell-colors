@@ -32,7 +32,7 @@ define(['require', 'domReady!', './src/brush', './src/color', './src/compat', '.
         drag_min_distance: 2
     });
 
-    var maybeRequestAnim, removeRecogCanvas;
+    var maybeRequestAnim, removeRecogCanvas, maybeLoadAudio;
 
     var recog_timer_id = null;
     // cancel any running recog timer (ie, if stroke in progress)
@@ -138,6 +138,7 @@ define(['require', 'domReady!', './src/brush', './src/color', './src/compat', '.
     var isDragging = false;
     var lastpos = { x: null, y: null, time: 0 };
     hammer.ondrag = function(ev) {
+        maybeLoadAudio(); // partial workaround for iOS audio reluctance
         maybeHaltPlayback();
         if (!isDragging) {
             // XXX fill in current layer here
@@ -198,6 +199,19 @@ define(['require', 'domReady!', './src/brush', './src/color', './src/compat', '.
         drawingElem.appendChild(audio);
         audio_snippets[id] = audio;
     });
+    audio_snippets.loadQueue = [];
+    maybeLoadAudio = function() {
+        if (audio_snippets.loadQueue.length===0) { return; }
+        var audio = audio_snippets.loadQueue.shift();
+        /* --- sometimes we start to load audio but never finish =( */
+        if (false) {
+            console.log('started to load '+audio.id);
+            audio.addEventListener('loadeddata', function() {
+                console.log('finished loading '+audio.id);
+            });
+        }
+        audio.load();
+    };
 
     var lastRecogCanvas = null;
     removeRecogCanvas = function() {
@@ -248,9 +262,23 @@ define(['require', 'domReady!', './src/brush', './src/color', './src/compat', '.
         // say the letter name
         var audio = audio_snippets[letter];
         if (audio) {
-            audio.pause();
-            audio.currentTime=0;
-            audio.play();
+            try {
+                if (!audio.paused) { audio.pause(); }
+                audio.currentTime=0;
+                audio.play();
+                // console.log(letter + ' played natively');
+            } catch (e) {
+                if (/(iPhone|iPad).*Safari/.test(navigator.userAgent)) {
+                    // iOS won't let us load/play content w/o user interaction
+                    // this is really annoying.
+                    if (!audio_snippets['done'+letter]) {
+                        audio_snippets.loadQueue.push(audio);
+                        audio_snippets['done'+letter] = true;
+                    }
+                } else {
+                    console.log("Unexpected problem playing audio.", e);
+                }
+            }
         }
     };
     Recog.registerCallback(handleRecog);
