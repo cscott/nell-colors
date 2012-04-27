@@ -470,6 +470,9 @@ define(['require', 'domReady!', './src/brush', './src/color', './src/compat', '.
     default:
         // XXX load or create from local storage
         console.log("Unrecognized hash", document.location.hash);
+        // FALL THROUGH
+    case '':
+    case '#':
         finishUp();
         break;
     }
