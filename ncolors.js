@@ -33,6 +33,7 @@ define(['require', 'domReady!', './src/brush', './src/color', './src/compat', '.
     });
 
     var maybeRequestAnim, removeRecogCanvas, maybeLoadAudio;
+    var updateToolbarBrush;
 
     var recog_timer_id = null;
     // cancel any running recog timer (ie, if stroke in progress)
@@ -115,8 +116,10 @@ define(['require', 'domReady!', './src/brush', './src/color', './src/compat', '.
         // play some frames.
         var curtime = Date.now();
         var timeDelta = curtime - playbackInfo.lastFrameTime;
+        timeDelta = Math.min(100/*10Hz*/, timeDelta); // have mercy on slow cpus
         var isMore = drawing.setCmdTime(timeDelta * playbackInfo.speed);
         playbackInfo.lastFrameTime = curtime;
+        updateToolbarBrush();
 
         // are we done, or do we need to schedule another animation frame?
         if (isMore) {
@@ -283,7 +286,7 @@ define(['require', 'domReady!', './src/brush', './src/color', './src/compat', '.
     };
     Recog.registerCallback(handleRecog);
 
-    var updateToolbarBrush = function() {
+    updateToolbarBrush = function() {
         var msg = {
             type: 'brush',
             color: drawing.brush.color.to_string(),
@@ -332,7 +335,7 @@ define(['require', 'domReady!', './src/brush', './src/color', './src/compat', '.
         // replay existing commands to restore canvas contents.
         if (!playbackInfo.isPlaying && drawing.checkpoints.length===0) {
             startPlayback();
-            playbackInfo.speed *= 10;
+            playbackInfo.speed *= 4;
         }
         if (playbackInfo.isPlaying) {
             drawing.setCmdPos(0); // restart playback from start
