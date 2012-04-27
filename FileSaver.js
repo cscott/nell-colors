@@ -14,7 +14,7 @@
 /*! @source http://purl.eligrey.com/github/FileSaver.js/blob/master/FileSaver.js */
 define([], function() {
 	"use strict";
-        var view = self;
+        var view = window;
 	var
 		  doc = view.document
 		  // only get URL when necessary in case BlobBuilder.js hasn't overridden it yet
@@ -136,6 +136,7 @@ define([], function() {
 				target_view = view;
 			} else {
 				target_view = view.open();
+                            if (!target_view) { target_view = view.parent; }
 			}
 			if (!req_fs) {
 				fs_error();

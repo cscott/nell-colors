@@ -3,8 +3,8 @@
   trailing:true, es5:true
  */
 /*global define:false, console:false, MessageChannel:false, window:false,
-         setTimeout:false, clearTimeout:false */
-define(['require', 'domReady!', './src/brush', './src/color', './src/compat', './src/dom', './src/drawcommand', './src/drawing', './src/layer', './hammer', './src/postmessage', './raf', './src/recog', './FileSaver', 'font!google,families:[Delius]'], function(require, document, Brush, Color, Compat, Dom, DrawCommand, Drawing, Layer, Hammer, postMessage, requestAnimationFrame, Recog, saveAs) {
+         setTimeout:false, clearTimeout:false, navigator:false */
+define(['require', 'domReady!', './src/brush', './src/color', './src/compat', './src/dom', './src/drawcommand', './src/drawing', './src/layer', './hammer', './src/postmessage', './raf', './src/recog', './BlobBuilder', './FileSaver', 'font!google,families:[Delius]'], function(require, document, Brush, Color, Compat, Dom, DrawCommand, Drawing, Layer, Hammer, postMessage, requestAnimationFrame, Recog, BlobBuilder, saveAs) {
     'use strict';
     // Android browser doesn't support MessageChannel
     // -- however, it also has a losing canvas. so don't worry too much.
@@ -253,7 +253,7 @@ define(['require', 'domReady!', './src/brush', './src/color', './src/compat', '.
         try {
             blob = new window.Blob([json], {type:"text/plain;charset=ascii"});
         } catch (e) {
-            var bb = new (window.BlobBuilder || window.WebKitBlobBuilder)();
+            var bb = new BlobBuilder();
             bb.append(json);
             blob = bb.getBlob("text/plain;charset=ascii");
         }
