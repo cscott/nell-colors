@@ -3,7 +3,7 @@
 
 var requirejs = require('requirejs');
 requirejs(['commander', 'fs', '../src/brush', '../src/color', '../src/drawcommand', '../src/version'], function(program, fs, Brush, Color, DrawCommand, version) {
-    var SPEED = 100; // milliseconds, per point.
+    var SPEED = 50; // milliseconds, per point.
 
     program
         .version(version)
@@ -11,9 +11,16 @@ requirejs(['commander', 'fs', '../src/brush', '../src/color', '../src/drawcomman
         .option('-o, --output <output>',
                 'Output to the specified file (default stdout)',
                 null)
+        .option('-d, --ds',
+                'Scale drawing to match Colors on the DS (512x384)')
+        .option('-r, --rotate <number>',
+                'Rotate 0, 90, 180, or 270 degrees clockwise (default 0)',
+                Number, 0)
         .option('-s, --scale <number>',
-                "Scaling factor for drawing (default 512)",
+                'Scaling factor for drawing (default 512)',
                 Number, 512)
+        .option('-p, --pretty',
+                'Pretty-print the output JSON')
         .parse(process.argv);
 
     if (program.args.length===0) {
@@ -50,7 +57,24 @@ requirejs(['commander', 'fs', '../src/brush', '../src/color', '../src/drawcomman
         var x = cmd & 0x7FF; cmd >>= 11;
         var y = cmd & 0x7FF; cmd >>= 11;
         var pos = { x: (x-512)/1024, y: (y-512)/1024 };
-        pos.x *= program.scale; pos.y *= program.scale;
+        switch (program.rotate) {
+        case 90:
+            pos = { x: 1-pos.y, y: pos.x }; break;
+        case 180:
+            pos = { x: 1-pos.x, y: 1-pos.y }; break;
+        case 270:
+            pos = { x: pos.y, y: 1-pos.x }; break;
+        default: break;
+        }
+        if (program.ds) {
+            if (program.rotate === 0 || program.rotate === 180) {
+                pos.x *= 512; pos.y *= 384;
+            } else {
+                pos.x *= 384; pos.y *= 512;
+            }
+        } else {
+            pos.x *= program.scale; pos.y *= program.scale;
+        }
         maxx = Math.max(maxx, pos.x);
         maxy = Math.max(maxy, pos.y);
         minx = Math.min(minx, pos.x);
@@ -106,6 +130,11 @@ requirejs(['commander', 'fs', '../src/brush', '../src/color', '../src/drawcomman
         opacity /= 255;
 
         size *= program.scale;
+        // in original colors code, brush size stored as a float but then
+        // truncated to int before calling draw_brush(), and limited to 2
+        // The "add 2" is a gross hack, though -- i think my brush stamp
+        // code isn't doing the edges correctly.
+        if (program.ds) { size = Math.max(2, Math.floor(size)+2); }
 
         commands.push(DrawCommand.create_brush_change(type, size,
                                                       opacity, spacing));
@@ -139,6 +168,6 @@ requirejs(['commander', 'fs', '../src/brush', '../src/color', '../src/drawcomman
         pixelRatio: 1,
         checkpoints: []
     };
-    output.write(JSON.stringify(jsonout));
+    output.write(JSON.stringify(jsonout, null, program.pretty?2:0));
     if (program.output) { output.end(); }
 });
