@@ -14,11 +14,12 @@ build/src/recogworker.js: src/recogworker.js # and other stuff
 	node r.js -o name=recogworker out=$@ baseUrl=src paths.json=../json paths.text=../text $(OPT)
 
 build-all: build/index.js build/ncolors.js build/src/recogworker.js
-	mkdir -p build/icons
+	mkdir -p build/icons build/audio
 	cp index.html ncolors.html build/
 	cp require.min.js build/require.js
 	cp src/worker.js build/src/
 	cp icons/*.png icons/*.ico build/icons/
+	cp audio/*.mp3 audio/*.ogg build/audio/
 	cp *.json build/
 
 clean:

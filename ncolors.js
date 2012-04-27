@@ -180,6 +180,25 @@ define(['require', 'domReady!', './src/brush', './src/color', './src/compat', '.
         recog_timer_reset();
     };
 
+    // generate <audio> elements for various snippets we might want to play
+    var audio_snippets = ['A','B','C','D','E','F','G','H','I','J','K','L','M',
+                          'N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
+    audio_snippets.forEach(function(id, n) {
+        var audio = document.createElement('audio');
+        audio.id = 'audio'+id;
+        audio.preload = 'auto';
+        var mp3src = document.createElement('source');
+        mp3src.src = 'audio/'+id+'.mp3';
+        mp3src.type = 'audio/mpeg';
+        var oggsrc = document.createElement('source');
+        oggsrc.src = 'audio/'+id+'.ogg';
+        oggsrc.type = 'audio/ogg';
+        audio.appendChild(mp3src);
+        audio.appendChild(oggsrc);
+        drawingElem.appendChild(audio);
+        audio_snippets[id] = audio;
+    });
+
     var lastRecogCanvas = null;
     removeRecogCanvas = function() {
         if (lastRecogCanvas) {
@@ -189,6 +208,10 @@ define(['require', 'domReady!', './src/brush', './src/color', './src/compat', '.
     };
     var handleRecog = function(model, prob, bbox) {
         if (prob < 400) { removeRecogCanvas(); return; }
+        var letter = model.charAt(0);
+        //console.log(model);
+
+        // draw recognized letter on "recognition canvas"
         var r = window.devicePixelRatio || 1;
         var w = bbox.br.x - bbox.tl.x, h = bbox.br.y - bbox.tl.y;
         // offset by current brush width (this is a bit hackity)
@@ -200,18 +223,20 @@ define(['require', 'domReady!', './src/brush', './src/color', './src/compat', '.
         c.style.left = (bbox.tl.x-(drawing.brush.size/2))+'px';
         c.style.width = w+'px';
         c.style.height = h+'px';
-        c.style.opacity = 0.25;
+        c.style.opacity = 0.3;
         c.width = w*r;
         c.height = h*r;
         var ctxt = c.getContext('2d');
         // Patrick+Hand is a good alternative to Delius
-        ctxt.font = (c.height*1.2)+"px Delius"; // 1.2 is fudge factor
+        // 1.2 factor in font size is fudge factor to make letter fit
+        // bounding box more tightly
+        ctxt.font = (c.height*1.2)+"px Delius, sans-serif";
         ctxt.textAlign = "center";
         ctxt.textBaseline = "middle";
         ctxt.fillStyle = drawing.brush.color.to_string().replace(/..$/,'');
         ctxt.translate(c.width/2, c.height/2);
         // measure the expected width
-        var metrics = ctxt.measureText(model.charAt(0));
+        var metrics = ctxt.measureText(letter);
         if (metrics.width < c.width) {
             ctxt.scale(c.width/metrics.width, 1); // scale up to fit
         }
@@ -219,7 +244,14 @@ define(['require', 'domReady!', './src/brush', './src/color', './src/compat', '.
         removeRecogCanvas();
         lastRecogCanvas = c;
         drawingElem.appendChild(lastRecogCanvas);
-        //console.log(model);
+
+        // say the letter name
+        var audio = audio_snippets[letter];
+        if (audio) {
+            audio.pause();
+            audio.currentTime=0;
+            audio.play();
+        }
     };
     Recog.registerCallback(handleRecog);
 
