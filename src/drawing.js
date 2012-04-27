@@ -334,7 +334,12 @@ define(['./brush','./color','./drawcommand','./layer'], function(Brush, Color, D
         });
         drawing.commands.end = drawing.commands.recog = json.end;
         drawing.resize(json.width, json.height, json.pixelRatio || 1);
-        if (json.active_layer) { drawing.layers.current = json.active_layer || 0; }
+        if (json.active_layer) {
+            drawing.layers.current = json.active_layer || 0;
+        }
+        if (json.initial_playback_speed) {
+            drawing.initial_playback_speed = json.initial_playback_speed || 2;
+        }
         // restore checkpoints
         if (json.checkpoints.length===0) {
             callback(drawing);

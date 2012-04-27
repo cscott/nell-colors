@@ -401,7 +401,9 @@ define(['require', 'domReady!', './src/brush', './src/color', './src/compat', '.
                     drawing = new_drawing;
                     drawing.attachToContainer(drawingElem);
                     finishUp();
-                    playbackInfo.speed = 2; // hack
+                    if (drawing.initial_playback_speed) {
+                        playbackInfo.speed = drawing.initial_playback_speed;
+                    }
                 });
         break;
     default:
