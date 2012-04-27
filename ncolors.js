@@ -395,6 +395,7 @@ define(['require', 'domReady!', './src/brush', './src/color', './src/compat', '.
     case '#castle':
     case '#intro':
     case '#r':
+    case '#roger':
         require(['drw!./'+document.location.hash.replace(/^#/,'')+'.json'],
                 function(new_drawing) {
                     drawing.removeFromContainer(drawingElem);
