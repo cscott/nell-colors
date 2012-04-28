@@ -49,7 +49,7 @@ requirejs(['commander', 'fs', '../src/brush', '../src/color', '../src/drawcomman
 
     var commands = [];
     var now = Date.now();
-    var inStroke = false;
+    var inStroke = false, isFlipX = false, isFlipY = false;
     var maxx, maxy, minx, miny;
     var parse_cmd0 = function(cmd) {
         // TYPE_DRAW
@@ -57,6 +57,8 @@ requirejs(['commander', 'fs', '../src/brush', '../src/color', '../src/drawcomman
         var x = cmd & 0x7FF; cmd >>= 11;
         var y = cmd & 0x7FF; cmd >>= 11;
         var pos = { x: (x-512)/1024, y: (y-512)/1024 };
+        if (isFlipX) { pos.x = 1 - pos.x; }
+        if (isFlipY) { pos.y = 1 - pos.y; }
         switch (program.rotate) {
         case 90:
             pos = { x: 1-pos.y, y: pos.x }; break;
@@ -104,9 +106,8 @@ requirejs(['commander', 'fs', '../src/brush', '../src/color', '../src/drawcomman
         var r = cmd & 0xFF; cmd >>= 8;
         var flipx = cmd & 1; cmd >>= 1;
         var flipy = cmd & 1; cmd >>= 1;
-        if (flipx || flipy) {
-            console.warn("Unsupported flip operation");
-        }
+        if (flipx) { isFlipX = !isFlipX; }
+        if (flipy) { isFlipY = !isFlipY; }
 
         commands.push(DrawCommand.create_color_change(new Color(r,g,b,255)));
     };
