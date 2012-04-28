@@ -24,3 +24,14 @@ build-all: build/index.js build/ncolors.js build/src/recogworker.js
 
 clean:
 	$(RM) -rf build
+
+###########################################
+brushes/%-129.png: brushes/%-257.png
+	convert $< -resize 129x129 $@
+brushes/brush-tile-129.png: brushes/hard-129.png brushes/medium-129.png \
+	brushes/rough-fine-129.png brushes/rough-coarse-129.png \
+	brushes/soft-129.png \
+	brushes/dots-small-129.png brushes/dots-big-129.png \
+	brushes/soft-rect-129.png brushes/splotch-129.png \
+	brushes/splotches-coarse-129.png
+	montage $^ -tile x1 -geometry +0+0 -background none $@

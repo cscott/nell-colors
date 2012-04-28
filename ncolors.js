@@ -366,16 +366,16 @@ define(['require', 'domReady!', './src/brush', './src/color', './src/compat', '.
             doRedo();
             break;
         case 'hardButton':
-            if (drawing.brush.type === Brush.Type.HARD) { break; }
+            if (drawing.brush.type === 'hard') { break; }
             drawing.addCmd(DrawCommand.create_brush_change(
-                Brush.Type.HARD, drawing.brush.size, drawing.brush.opacity,
+                'hard', drawing.brush.size, drawing.brush.opacity,
                 drawing.brush.spacing));
             drawing.setCmdPos(Drawing.END); // update drawing.brush
             break;
         case 'softButton':
-            if (drawing.brush.type === Brush.Type.SOFT) { break; }
+            if (drawing.brush.type === 'soft') { break; }
             drawing.addCmd(DrawCommand.create_brush_change(
-                Brush.Type.SOFT, drawing.brush.size, drawing.brush.opacity,
+                'soft', drawing.brush.size, drawing.brush.opacity,
                 drawing.brush.spacing));
             drawing.setCmdPos(Drawing.END); // update drawing.brush
             break;

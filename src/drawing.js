@@ -23,7 +23,7 @@ define(['./brush','./color','./drawcommand','./layer'], function(Brush, Color, D
         this.layers.current = this.addLayer(); // one default layer
         // hack in a brush change and color change
         // XXX we should have a different way to synchronize brush after load
-        this.brush = new Brush(Color.BLACK, Brush.Type.SOFT, 20, 0.7, 0.2);
+        this.brush = new Brush(Color.BLACK, 'soft', 20, 0.7, 0.2);
         this.addCmd(DrawCommand.create_color_change(this.brush.color));
         this.addCmd(DrawCommand.create_brush_change(this.brush.type,
                                                     this.brush.size,

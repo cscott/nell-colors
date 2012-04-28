@@ -32,6 +32,10 @@ define(['./color','./brush'], function(Color, Brush) {
                 if (name==='color') {
                     cmd[name] = new Color();
                     cmd[name].set_from_color(json[name]);
+                } else if (name==='brush_type') {
+                    // legacy brush type compatibility
+                    var val = json[name];
+                    cmd[name] = (val===0)?'hard':(val===1)?'soft':val;
                 } else {
                     cmd[name] = json[name];
                 }

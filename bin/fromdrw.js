@@ -2,6 +2,7 @@
 // node script to translate Colors .drw files into our own format.
 
 var requirejs = require('requirejs');
+requirejs.config({ paths: { img: "../img" } });
 requirejs(['commander', 'fs', '../src/brush', '../src/color', '../src/drawcommand', '../src/version'], function(program, fs, Brush, Color, DrawCommand, version) {
     var SPEED = 50; // milliseconds, per point.
 
@@ -120,8 +121,8 @@ requirejs(['commander', 'fs', '../src/brush', '../src/color', '../src/drawcomman
         var opacity = cmd & 0xFF; cmd >>= 8;
         var spacing = 0.225;
 
-        var type = Brush.Type.SOFT;
-        if (brushtype===0) { type = Brush.Type.HARD; }
+        var type = 'soft';
+        if (brushtype===0) { type = 'hard'; }
 
         console.assert(brushtype < 2);
         if (brushcontrol!==0) {
@@ -133,9 +134,6 @@ requirejs(['commander', 'fs', '../src/brush', '../src/color', '../src/drawcomman
         size *= program.scale;
         // in original colors code, brush size stored as a float but then
         // truncated to int before calling draw_brush(), and limited to 2
-        // The "add 2" is a gross hack, though -- i think my brush stamp
-        // code isn't doing the edges correctly.
-        if (program.ds) { size = Math.max(2, Math.floor(size)+2); }
 
         commands.push(DrawCommand.create_brush_change(type, size,
                                                       opacity, spacing));
