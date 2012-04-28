@@ -24,7 +24,7 @@ define(['img!../brushes/brush-tile-129.png', './color'], function(brushesImg, Co
     var NUM_BRUSHES = 0;
     if (brushesImg) {
         NUM_BRUSHES = brushesImg.width / brushesImg.height;
-        console.log('Loaded',NUM_BRUSHES,'brushes');
+        //console.log('Loaded',NUM_BRUSHES,'brushes');
     }
 
     var Brush = function(color, type, size, opacity, spacing) {
