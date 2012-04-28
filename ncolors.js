@@ -4,7 +4,7 @@
  */
 /*global define:false, console:false, MessageChannel:false, window:false,
          setTimeout:false, clearTimeout:false, navigator:false */
-define(['require', 'domReady!', './src/brush', './src/color', './src/compat', './src/dom', './src/drawcommand', './src/drawing', './src/layer', './hammer', './src/postmessage', './raf', './src/recog', './BlobBuilder', './FileSaver', 'font!google,families:[Delius]'], function(require, document, Brush, Color, Compat, Dom, DrawCommand, Drawing, Layer, Hammer, postMessage, requestAnimationFrame, Recog, BlobBuilder, saveAs) {
+define(['require', 'domReady!', './audio-map.js', './src/brush', './src/color', './src/compat', './src/dom', './src/drawcommand', './src/drawing', './src/layer', './hammer', './src/postmessage', './raf', './src/recog', './BlobBuilder', './FileSaver', 'font!google,families:[Delius]'], function(require, document, audioMap, Brush, Color, Compat, Dom, DrawCommand, Drawing, Layer, Hammer, postMessage, requestAnimationFrame, Recog, BlobBuilder, saveAs) {
     'use strict';
     // Android browser doesn't support MessageChannel
     // -- however, it also has a losing canvas. so don't worry too much.
@@ -192,16 +192,25 @@ define(['require', 'domReady!', './src/brush', './src/color', './src/compat', '.
         audio.id = 'audio'+id;
         audio.preload = 'auto';
         var mp3src = document.createElement('source');
-        mp3src.src = 'audio/'+id+'.mp3';
+        if (audioMap) {
+            mp3src.src = 'data:audio/mpeg;base64,'+audioMap['audio/'+id+'.mp3'];
+        } else {
+            mp3src.src = 'audio/'+id+'.mp3';
+        }
         mp3src.type = 'audio/mpeg';
         var oggsrc = document.createElement('source');
-        oggsrc.src = 'audio/'+id+'.ogg';
+        if (audioMap) {
+            oggsrc.src = 'data:audio/ogg;base64,'+audioMap['audio/'+id+'.ogg'];
+        } else {
+            oggsrc.src = 'audio/'+id+'.ogg';
+        }
         oggsrc.type = 'audio/ogg';
         audio.appendChild(mp3src);
         audio.appendChild(oggsrc);
         drawingElem.appendChild(audio);
         audio_snippets[id] = audio;
     });
+    audioMap = null; // free memory (but requirejs still holds a reference)
     audio_snippets.loadQueue = [];
     maybeLoadAudio = function() {
         if (audio_snippets.loadQueue.length===0) { return; }
