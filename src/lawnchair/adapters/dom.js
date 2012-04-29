@@ -9,6 +9,8 @@
 // chainable: nuke, remove, all, get, save, all    
 // not chainable: valid, keys
 //
+define([], function() { return function(Lawnchair) {
+
 Lawnchair.adapter('dom', (function() {
     var storage = window.localStorage
     // the indexer is an encapsulation of the helpers needed to keep an ordered index of the keys
@@ -165,3 +167,6 @@ Lawnchair.adapter('dom', (function() {
             return this 
         }
 }})());
+
+};
+});

@@ -1,4 +1,6 @@
 // window.name code courtesy Remy Sharp: http://24ways.org/2009/breaking-out-the-edges-of-the-browser
+define([], function() { return function(Lawnchair) {
+
 Lawnchair.adapter('window-name', (function(index, store) {
 
     var data = window.top.name ? JSON.parse(window.top.name) : {}
@@ -101,3 +103,6 @@ Lawnchair.adapter('window-name', (function(index, store) {
     }
 /////
 })())
+
+};
+});
