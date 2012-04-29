@@ -4,7 +4,7 @@
  */
 /*global define:false, console:false, MessageChannel:false, window:false,
          setTimeout:false, clearTimeout:false, navigator:false */
-define(['require', 'domReady!', /*'./audio-map.js',*/ './src/brush', './src/color', './src/compat', './src/dom', './src/drawcommand', './src/drawing', './src/layer', './hammer', './src/postmessage', './raf', './src/recog', './BlobBuilder', './FileSaver', 'font!google,families:[Delius]'], function(require, document, /*audioMap_,*/ Brush, Color, Compat, Dom, DrawCommand, Drawing, Layer, Hammer, postMessage, requestAnimationFrame, Recog, BlobBuilder, saveAs) {
+define(['require', 'domReady!', /*'./audio-map.js',*/ './src/brush', './src/color', './src/compat', './src/dom', './src/drawcommand', './src/drawing', './src/layer', './hammer', './src/postmessage', './src/prandom!', './raf', './src/recog', './BlobBuilder', './FileSaver', 'font!google,families:[Delius]'], function(require, document, /*audioMap_,*/ Brush, Color, Compat, Dom, DrawCommand, Drawing, Layer, Hammer, postMessage, prandom, requestAnimationFrame, Recog, BlobBuilder, saveAs) {
     'use strict';
     // inlining the audio snippets with data: URLs seems to break iOS =(
     var audioMap = (typeof audioMap_ === 'undefined') ? false : audioMap_;
@@ -463,31 +463,60 @@ define(['require', 'domReady!', /*'./audio-map.js',*/ './src/brush', './src/colo
         onWindowResize();
         document.getElementById("loading").style.display="none";
     };
-    // load the requested doc
-    switch(document.location.hash) {
-    case '#lounge':
-    case '#castle':
-    case '#intro':
-    case '#r':
-    case '#roger':
-        require(['drw!./'+document.location.hash.replace(/^#/,'')+'.json'],
-                function(new_drawing) {
-                    drawing.removeFromContainer(drawingElem);
-                    drawing = new_drawing;
-                    drawing.attachToContainer(drawingElem);
-                    finishUp();
-                    if (drawing.initial_playback_speed) {
-                        playbackInfo.speed = drawing.initial_playback_speed;
-                    }
-                });
-        break;
-    default:
-        // XXX load or create from local storage
-        console.log("Unrecognized hash", document.location.hash);
-        // FALL THROUGH
-    case '':
-    case '#':
+    var replaceDrawing = function(new_drawing) {
+        console.assert(new_drawing.uuid);
+        drawing.removeFromContainer(drawingElem);
+        drawing = new_drawing;
+        drawing.attachToContainer(drawingElem);
+        if (document.location.hash !== ('#' + drawing.uuid)) {
+            document.location.hash = '#' + drawing.uuid;
+            postMessage(window.parent, JSON.stringify({
+                type: 'hashchange',
+                hash: document.location.hash
+            }), '*');
+        }
         finishUp();
-        break;
-    }
+        if (drawing.initial_playback_speed) {
+            playbackInfo.speed = drawing.initial_playback_speed;
+        }
+    };
+    var loadDrawing = function(uuid, callback) {
+        var nd;
+        switch(uuid) {
+        case 'lounge':
+        case 'castle':
+        case 'intro':
+        case 'r':
+        case 'roger':
+            // special built-in drawings.
+            require(['drw!./'+uuid+'.json'], function(new_drawing) {
+                new_drawing.uuid = uuid;
+                callback(new_drawing);
+            });
+            break;
+        case 'new':
+        case '':
+            nd = new Drawing();
+            nd.uuid = prandom.uuid();
+            callback(nd);
+            break;
+        default:
+            // XXX attempt to load from local storage
+            nd = new Drawing();
+            nd.uuid = uuid;
+            callback(nd);
+            break;
+        }
+    };
+    var onHashChange = function() {
+        var uuid = document.location.hash.replace(/^#/,'');
+        if (!uuid) { uuid = prandom.uuid(); }
+        if (uuid === drawing.uuid) { return; /* already loaded */ }
+        // Load new document.
+        loadDrawing(uuid, replaceDrawing);
+    };
+    window.addEventListener('hashchange', onHashChange, false);
+
+    // load the requested doc (based on URL hash)
+    loadDrawing(document.location.hash.replace(/^#/,''), replaceDrawing);
 });

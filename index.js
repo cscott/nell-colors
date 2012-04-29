@@ -51,6 +51,10 @@ define(['domReady!', './src/dom', './hammer'], function(document, Dom, Hammer) {
             // synthetic MessageChannel
             return toolbarPort.dispatchEvent({data:msg.msg});
 
+        case 'hashchange':
+            // update hash in location bar; will trigger onHashChange()
+            window.location.hash = msg.hash;
+            break;
         case 'childReady':
             console.assert(evt.source===appIframe.contentWindow);
             //console.log("Got toolbar port", evt);
@@ -80,6 +84,12 @@ define(['domReady!', './src/dom', './hammer'], function(document, Dom, Hammer) {
         }
     };
     window.addEventListener('message', handleMessage, false);
+
+    var onHashChange = function() {
+        // change hash in child window to match parent hash
+        appIframe.contentWindow.location.hash = document.location.hash;
+    };
+    window.addEventListener('hashchange', onHashChange, false);
 
     // child window.
     var appWrapper = document.getElementById('wrapper');
