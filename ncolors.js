@@ -4,8 +4,10 @@
  */
 /*global define:false, console:false, MessageChannel:false, window:false,
          setTimeout:false, clearTimeout:false, navigator:false */
-define(['require', 'domReady!', './audio-map.js', './src/brush', './src/color', './src/compat', './src/dom', './src/drawcommand', './src/drawing', './src/layer', './hammer', './src/postmessage', './raf', './src/recog', './BlobBuilder', './FileSaver', 'font!google,families:[Delius]'], function(require, document, audioMap, Brush, Color, Compat, Dom, DrawCommand, Drawing, Layer, Hammer, postMessage, requestAnimationFrame, Recog, BlobBuilder, saveAs) {
+define(['require', 'domReady!', /*'./audio-map.js',*/ './src/brush', './src/color', './src/compat', './src/dom', './src/drawcommand', './src/drawing', './src/layer', './hammer', './src/postmessage', './raf', './src/recog', './BlobBuilder', './FileSaver', 'font!google,families:[Delius]'], function(require, document, /*audioMap_,*/ Brush, Color, Compat, Dom, DrawCommand, Drawing, Layer, Hammer, postMessage, requestAnimationFrame, Recog, BlobBuilder, saveAs) {
     'use strict';
+    // inlining the audio snippets with data: URLs seems to break iOS =(
+    var audioMap = (typeof audioMap_ === 'undefined') ? false : audioMap_;
     // Android browser doesn't support MessageChannel
     // -- however, it also has a losing canvas. so don't worry too much.
     var USE_MESSAGECHANNEL = (typeof(MessageChannel) !== 'undefined');

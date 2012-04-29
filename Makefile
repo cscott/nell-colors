@@ -19,6 +19,7 @@ build-all: build/index.js build/ncolors.js build/src/recogworker.js brushes/brus
 	cp require.min.js build/require.js
 	cp src/worker.js build/src/
 	cp icons/*.png icons/*.ico build/icons/
+	cp audio/*.mp3 audio/*.ogg build/audio/
 	cp brushes/brush-tile-129.png build/brushes
 	cp *.json build/
 
