@@ -25,10 +25,12 @@ define(['./brush','./color','./drawcommand','./layer'], function(Brush, Color, D
         // XXX we should have a different way to synchronize brush after load
         this.brush = new Brush(Color.BLACK, 'soft', 20, 0.7, 0.2);
         this.addCmd(DrawCommand.create_color_change(this.brush.color));
-        this.addCmd(DrawCommand.create_brush_change(this.brush.type,
-                                                    this.brush.size,
-                                                    this.brush.opacity,
-                                                    this.brush.spacing));
+        this.addCmd(DrawCommand.create_brush_change({
+            brush_type: this.brush.type,
+            size: this.brush.size,
+            opacity: this.brush.opacity,
+            spacing: this.brush.spacing
+        }));
         // where to start looking for a letter; this probably should be
         // refactored elsewhere.
         this.commands.recog = this.commands.end;
@@ -110,7 +112,7 @@ define(['./brush','./color','./drawcommand','./layer'], function(Brush, Color, D
         return this.setCmdPos(i, optTimeLimit);
     };
 
-    Drawing.prototype.undo = function() {
+    Drawing.prototype.undo = function(optTimeLimit) {
         if (this.commands.end===0) { return false; /* nothing to undo */ }
         var i = this.commands.end-1;
         while (i >= 0 && this.commands[i].type !== DrawCommand.Type.DRAW_START){
@@ -118,11 +120,12 @@ define(['./brush','./color','./drawcommand','./layer'], function(Brush, Color, D
         }
         if (i<0) { return false; /* nothing but color changes to undo */ }
         // i should now point to a DRAW_START command.
-        this.setCmdPos(i);
+        this.setCmdPos(i, optTimeLimit);
         this.commands.end = i;
-        return true;
+        var isMore = (this.commands.last < this.commands.end);
+        return isMore;
     };
-    Drawing.prototype.redo = function() {
+    Drawing.prototype.redo = function(optTimeLimit) {
         if (this.commands.end >= this.commands.length) {
             return false; // nothing to redo
         }
@@ -137,8 +140,8 @@ define(['./brush','./color','./drawcommand','./layer'], function(Brush, Color, D
             i++;
         }
         this.commands.end = i;
-        this.setCmdPos(Drawing.END);
-        return true;
+        var isMore = this.setCmdPos(Drawing.END, optTimeLimit);
+        return isMore;
     };
     Drawing.prototype.resize = function(width, height, pixelRatio) {
         this.layers.forEach(function(l) {
@@ -172,10 +175,11 @@ define(['./brush','./color','./drawcommand','./layer'], function(Brush, Color, D
             this.layers.forEach(function(l) { l.execCommand(cmd); });
             return false;
         case DrawCommand.Type.BRUSH_CHANGE:
-            this.brush.type = cmd.brush_type;
-            this.brush.size = cmd.size;
-            this.brush.opacity = cmd.opacity;
-            this.brush.spacing = cmd.spacing;
+            ['brush_type','size','opacity','spacing'].forEach(function(f) {
+                if (f in cmd) {
+                    this.brush[(f==='brush_type')?'type':f] = cmd[f];
+                }
+            }.bind(this));
             this.layers.forEach(function(l) { l.execCommand(cmd); });
             return false;
         default:

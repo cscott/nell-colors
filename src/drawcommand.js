@@ -67,13 +67,14 @@ define(['./color','./brush'], function(Color, Brush) {
         cmd.color = color.copy();
         return cmd;
     };
-    DrawCommand.create_brush_change = function(brush_type, size,
-                                               opacity, spacing) {
+    DrawCommand.create_brush_change = function(opts) {
+        opts = opts || {};
         var cmd = new DrawCommand(CommandType.BRUSH_CHANGE);
-        cmd.brush_type = brush_type;
-        cmd.size = size;
-        cmd.opacity = opacity;
-        cmd.spacing = spacing;
+        ['brush_type', 'size', 'opacity', 'spacing'].forEach(function(f) {
+            if (f in opts) {
+                cmd[f] = opts[f];
+            }
+        });
         return cmd;
     };
 

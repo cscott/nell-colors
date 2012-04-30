@@ -135,8 +135,12 @@ requirejs(['commander', 'fs', '../src/brush', '../src/color', '../src/drawcomman
         // in original colors code, brush size stored as a float but then
         // truncated to int before calling draw_brush(), and limited to 2
 
-        commands.push(DrawCommand.create_brush_change(type, size,
-                                                      opacity, spacing));
+        commands.push(DrawCommand.create_brush_change({
+            brush_type: type,
+            size: size,
+            opacity: opacity,
+            spacing: spacing
+        });
     };
 
     var parse_cmd = function(cmd) {

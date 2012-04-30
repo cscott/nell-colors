@@ -15,6 +15,8 @@ define(['require', 'domReady!', /*'./audio-map.js',*/ './src/brush', './src/colo
 
     // How long to allow between strokes of a letter
     var RECOG_TIMEOUT = 750;
+    // minimum frame rate during replay
+    var MAX_FRAME_TIME_MS = 1000 / 30 /* Hz */;
     // show frame rate overlay
     var SHOW_FRAME_RATE = true;
     // limit touch event frequency (set to 0 to disable rate limiting)
@@ -86,57 +88,74 @@ define(['require', 'domReady!', /*'./audio-map.js',*/ './src/brush', './src/colo
     }
 
     var animRequested = false;
-    var refresh = function() {
-        console.assert(animRequested);
-        console.assert(drawing.commands.last !== drawing.commands.end);
-        drawing.setCmdPos(Drawing.END); // draw to end
-        updateFrameRate();
-        animRequested = false;
+    var INSTANTANEOUS = 0; // special speed value
+    var playbackInfo = {
+        isPlaying: false,
+        lastFrameTime: 0,
+        speed: INSTANTANEOUS
     };
-    var playbackInfo = { isPlaying: false, lastFrameTime: 0, speed: 4 };
     var maybeHaltPlayback = function() {
         if (!playbackInfo.isPlaying) { return; }
-        animRequested = false;
-        playbackInfo.isPlaying = false;
-        toolbarPort.postMessage(JSON.stringify({type:'stopped'}));
-        drawing.setCmdPos(Drawing.END); // skip to the end of playback
+        playbackInfo.speed = INSTANTANEOUS;
         recog_reset();
     };
     var startPlayback = function() {
-        playbackInfo.lastFrameTime = Date.now();
-        playbackInfo.speed = 4;
-        playbackInfo.isPlaying = true;
-        drawing.setCmdPos(0);
+        if (!playbackInfo.isPlaying) {
+            playbackInfo.lastFrameTime = Date.now();
+            playbackInfo.speed = 4;
+        }
+        drawing.setCmdPos(Drawing.START);
         removeRecogCanvas();
         maybeRequestAnim();
-        toolbarPort.postMessage(JSON.stringify({type:'playing'}));
     };
     var playback = function() {
-        updateFrameRate();
-        if (!playbackInfo.isPlaying) { return; }
+        console.assert(drawing.commands.last !== drawing.commands.end);
+        console.assert(animRequested);
 
-        // play some frames.
         var curtime = Date.now();
-        var timeDelta = curtime - playbackInfo.lastFrameTime;
-        timeDelta = Math.min(100/*10Hz*/, timeDelta); // have mercy on slow cpus
-        var isMore = drawing.setCmdTime(timeDelta * playbackInfo.speed);
+        var isMore;
+        updateFrameRate();
+
+        if (playbackInfo.speed === INSTANTANEOUS) {
+            // play back as much as possible
+            isMore = drawing.setCmdPos(Drawing.END,
+                                       MAX_FRAME_TIME_MS);
+        } else {
+            // play some frames.
+            var timeDelta = curtime - playbackInfo.lastFrameTime;
+            // have mercy on slow CPUs: even if we get stuck behind the
+            // refresh rate curve, don't try to play back too much to keep up
+            timeDelta = Math.min(100/*10Hz*/, timeDelta);
+            isMore = drawing.setCmdTime(timeDelta * playbackInfo.speed,
+                                        MAX_FRAME_TIME_MS);
+        }
         playbackInfo.lastFrameTime = curtime;
-        updateToolbarBrush();
 
         // are we done, or do we need to schedule another animation frame?
         if (isMore) {
+            if (!playbackInfo.isPlaying) {
+                playbackInfo.isPlaying = true;
+                toolbarPort.postMessage(JSON.stringify({type:'playing'}));
+                // XXX set large checkpoint interval
+            }
             requestAnimationFrame(playback);
         } else {
+            if (playbackInfo.isPlaying) {
+                playbackInfo.isPlaying = false;
+                playbackInfo.speed = INSTANTANEOUS;
+                toolbarPort.postMessage(JSON.stringify({type:'stopped'}));
+                // XXX set slow checkpoint interval
+                // xxx save checkpoint
+            }
             animRequested = false;
-            playbackInfo.isPlaying = false;
-            toolbarPort.postMessage(JSON.stringify({type:'stopped'}));
+            updateToolbarBrush();
         }
     };
     maybeRequestAnim = function() {
         if (!animRequested) {
             console.assert(drawing.commands.last !== drawing.commands.end);
             animRequested = true;
-            requestAnimationFrame(playbackInfo.isPlaying ? playback : refresh);
+            requestAnimationFrame(playback);
         }
     };
 
@@ -307,21 +326,30 @@ define(['require', 'domReady!', /*'./audio-map.js',*/ './src/brush', './src/colo
             spacing: drawing.brush.spacing
         };
         toolbarPort.postMessage(JSON.stringify(msg));
+        // XXX update undo/redo active as well.
     };
 
     var doUndo = function() {
         console.assert(!isDragging);
-        drawing.undo();
-        // update the toolbar opacity/size to match
-        updateToolbarBrush();
+        var isMore = drawing.undo(MAX_FRAME_TIME_MS);
+        if (isMore) {
+            maybeRequestAnim();
+        } else {
+            // update the toolbar opacity/size to match
+            updateToolbarBrush();
+        }
         // stop recognition and cancel timer
         recog_reset();
     };
     var doRedo = function() {
         console.assert(!isDragging);
-        drawing.redo();
-        // update the toolbar opacity/size to match
-        updateToolbarBrush();
+        var isMore = drawing.redo(MAX_FRAME_TIME_MS);
+        if (isMore) {
+            maybeRequestAnim();
+        } else {
+            // update the toolbar opacity/size to match
+            updateToolbarBrush();
+        }
         // don't repeat recognition (and cancel timer)
         recog_reset();
     };
@@ -342,16 +370,13 @@ define(['require', 'domReady!', /*'./audio-map.js',*/ './src/brush', './src/colo
         var w = window.innerWidth, h = window.innerHeight;
         var r = window.devicePixelRatio || 1;
         //console.log("Resizing canvas", w, h, r);
+        var oldpos = drawing.commands.last;
         drawing.resize(w, h, r);
-        // replay existing commands to restore canvas contents.
-        if (!playbackInfo.isPlaying && drawing.checkpoints.length===0) {
-            startPlayback();
-            playbackInfo.speed *= 4;
-        }
-        if (playbackInfo.isPlaying) {
-            drawing.setCmdPos(0); // restart playback from start
-        } else {
-            drawing.setCmdPos(Drawing.END); // refresh
+        // try to restore the old position
+        var isMore = drawing.setCmdPos(oldpos, MAX_FRAME_TIME_MS);
+        // if we were unsuccessful, maybe schedule some future playback time
+        if (isMore) {
+            maybeRequestAnim();
         }
     };
     window.addEventListener('resize', onWindowResize, false);
@@ -361,13 +386,8 @@ define(['require', 'domReady!', /*'./audio-map.js',*/ './src/brush', './src/colo
         if (isDragging) { hammer.ondragend(); }
         var msg = JSON.parse(evt.data);
         if (msg.type !== 'playButton') { maybeHaltPlayback(); }
+        var caughtUp = (drawing.commands.last === drawing.commands.end);
         switch(msg.type) {
-        case 'swatchButton':
-            var color = Color.from_string(msg.color);
-            if (Color.equal(drawing.brush.color, color)) { break; }
-            drawing.addCmd(DrawCommand.create_color_change(color));
-            drawing.setCmdPos(Drawing.END); // update drawing.brush
-            break;
         case 'undoButton':
             removeRecogCanvas();
             doUndo();
@@ -376,36 +396,63 @@ define(['require', 'domReady!', /*'./audio-map.js',*/ './src/brush', './src/colo
             removeRecogCanvas();
             doRedo();
             break;
+        case 'swatchButton':
+            var color = Color.from_string(msg.color);
+            if (caughtUp && Color.equal(drawing.brush.color, color)) {
+                break;
+            }
+            drawing.addCmd(DrawCommand.create_color_change(color));
+            if (caughtUp) {
+                drawing.setCmdPos(Drawing.END); // update drawing.brush immed.
+            }
+            break;
         case 'hardButton':
-            if (drawing.brush.type === 'hard') { break; }
-            drawing.addCmd(DrawCommand.create_brush_change(
-                'hard', drawing.brush.size, drawing.brush.opacity,
-                drawing.brush.spacing));
-            drawing.setCmdPos(Drawing.END); // update drawing.brush
+            if (caughtUp && drawing.brush.type === 'hard') {
+                break;
+            }
+            drawing.addCmd(DrawCommand.create_brush_change({
+                brush_type: 'hard'
+            }));
+            if (caughtUp) {
+                drawing.setCmdPos(Drawing.END); // update drawing.brush
+            }
             break;
         case 'softButton':
-            if (drawing.brush.type === 'soft') { break; }
-            drawing.addCmd(DrawCommand.create_brush_change(
-                'soft', drawing.brush.size, drawing.brush.opacity,
-                drawing.brush.spacing));
-            drawing.setCmdPos(Drawing.END); // update drawing.brush
+            if (caughtUp && drawing.brush.type === 'soft') {
+                break;
+            }
+            drawing.addCmd(DrawCommand.create_brush_change({
+                brush_type: 'soft'
+            }));
+            if (caughtUp) {
+                drawing.setCmdPos(Drawing.END); // update drawing.brush
+            }
             break;
         case 'opacitySlider':
-            if (drawing.brush.opacity === +msg.value) { break; }
-            drawing.addCmd(DrawCommand.create_brush_change(
-                drawing.brush.type, drawing.brush.size, +msg.value,
-                drawing.brush.spacing));
-            drawing.setCmdPos(Drawing.END); // update drawing.brush
+            if (caughtUp && drawing.brush.opacity === +msg.value) {
+                break;
+            }
+            drawing.addCmd(DrawCommand.create_brush_change({
+                opacity: +msg.value
+            }));
+            if (caughtUp) {
+                drawing.setCmdPos(Drawing.END); // update drawing.brush
+            }
             break;
         case 'sizeSlider':
-            if (drawing.brush.size === +msg.value) { break; }
-            drawing.addCmd(DrawCommand.create_brush_change(
-                drawing.brush.type, +msg.value, drawing.brush.opacity,
-                drawing.brush.spacing));
-            drawing.setCmdPos(Drawing.END); // update drawing.brush
+            if (caughtUp && drawing.brush.size === +msg.value) {
+                break;
+            }
+            drawing.addCmd(DrawCommand.create_brush_change({
+                size: +msg.value
+            }));
+            if (caughtUp) {
+                drawing.setCmdPos(Drawing.END); // update drawing.brush
+            }
             break;
         case 'playButton':
-            if (playbackInfo.isPlaying) {
+            if (playbackInfo.isPlaying &&
+                playbackInfo.speed !== INSTANTANEOUS) {
                 playbackInfo.speed *= 4;
             } else {
                 startPlayback();
