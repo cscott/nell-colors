@@ -42,7 +42,7 @@ define(['./drawing', './lzw', './lawnchair/lawnchair'], function(Drawing, LZW, L
                             lawnchair.save({
                                 key: ''+chunk,
                                 uuid: drawing.chunks[chunk].uuid,
-                                data: JSON.stringify(drawing.chunks[chunk])
+                                data: LZW.encode(JSON.stringify(drawing.chunks[chunk]))
                             }, saveChunk);
                         }
                     });
