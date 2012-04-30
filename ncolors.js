@@ -4,7 +4,7 @@
  */
 /*global define:false, console:false, MessageChannel:false, window:false,
          setTimeout:false, clearTimeout:false, navigator:false */
-define(['require', 'domReady!', /*'./audio-map.js',*/ './src/brush', './src/color', './src/compat', './src/dom', './src/drawcommand', './src/drawing', './src/layer', './hammer', './src/postmessage', './src/prandom!', './raf', './src/recog', './BlobBuilder', './FileSaver', 'font!google,families:[Delius]'], function(require, document, /*audioMap_,*/ Brush, Color, Compat, Dom, DrawCommand, Drawing, Layer, Hammer, postMessage, prandom, requestAnimationFrame, Recog, BlobBuilder, saveAs) {
+define(['require', 'domReady!', /*'./audio-map.js',*/ './src/brush', './src/color', './src/compat', './src/dom', './src/drawcommand', './src/drawing', './src/layer', './hammer', './src/postmessage', './src/prandom!', './raf', './src/recog', './src/sync', './BlobBuilder', './FileSaver', 'font!google,families:[Delius]'], function(require, document, /*audioMap_,*/ Brush, Color, Compat, Dom, DrawCommand, Drawing, Layer, Hammer, postMessage, prandom, requestAnimationFrame, Recog, Sync, BlobBuilder, saveAs) {
     'use strict';
     // inlining the audio snippets with data: URLs seems to break iOS =(
     var audioMap = (typeof audioMap_ === 'undefined') ? false : audioMap_;
@@ -355,7 +355,7 @@ define(['require', 'domReady!', /*'./audio-map.js',*/ './src/brush', './src/colo
         // don't repeat recognition (and cancel timer)
         recog_reset();
     };
-    var doSave = function() {
+    var doSave1 = function() {
         var json = JSON.stringify(drawing, null, 1);
         var blob, blobUrl;
         try {
@@ -366,6 +366,12 @@ define(['require', 'domReady!', /*'./audio-map.js',*/ './src/brush', './src/colo
             blob = bb.getBlob("text/plain;charset=ascii");
         }
         saveAs(blob, 'drawing.json');
+    };
+    var doSave = function() {
+        console.log('saving', drawing.uuid);
+        Sync.save(drawing, function() {
+            console.log('saved!');
+        });
     };
 
     var onWindowResize = function(event) {

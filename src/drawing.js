@@ -3,7 +3,7 @@
   trailing:true, es5:true
  */
 /*global define:false, console:false, document:false */
-define(['./brush','./color','./drawcommand','./layer'], function(Brush, Color, DrawCommand, Layer) {
+define(['./brush','./color','./drawcommand','./layer','./prandom!'], function(Brush, Color, DrawCommand, Layer, prandom) {
 
     // A Drawing is a sequence of DrawCommands and a set of layer.
     // It maintains the playback and undo/redo logic
@@ -13,6 +13,11 @@ define(['./brush','./color','./drawcommand','./layer'], function(Brush, Color, D
     // the large one is used when loading or doing playback
     var SMALL_CHECKPOINT_INTERVAL = 300;
     var LARGE_CHECKPOINT_INTERVAL = 10*SMALL_CHECKPOINT_INTERVAL;
+
+    // Adjust this to trade off between network packet size and the
+    // number of network transactions needed to load a drawing
+    // (chunk size of 1000 is 10k-50k a chunk *gzip compressed*)
+    var DEFAULT_CHUNK_SIZE = 1000;
 
     var Drawing = function() {
         this.domElement = document.createElement('div');
@@ -26,6 +31,8 @@ define(['./brush','./color','./drawcommand','./layer'], function(Brush, Color, D
         this.checkpointOften = true;
         this.resize(100,100,1); // default size
         this.layers.current = this.addLayer(); // one default layer
+        // chunks for fast save/restore/sync
+        this.chunks = [];
         // hack in a brush change and color change
         // XXX we should have a different way to synchronize brush after load
         this.brush = new Brush(Color.BLACK, 'soft', 20, 0.7, 0.2);
@@ -60,9 +67,18 @@ define(['./brush','./color','./drawcommand','./layer'], function(Brush, Color, D
         this.commands.length = this.commands.end;
         // truncate any stale checkpoints
         while (this.checkpoints.length > 0 &&
-               this.checkpoints[this.checkpoints.length-1].pos >
+               this.checkpoints[this.checkpoints.length-1].pos >=
                this.commands.length) {
             this.checkpoints.pop();
+        }
+        // truncate stale chunks
+        // Note the deliberate "off by one" in the comparison -- we want
+        // to invalidate the final partial chunk written after a save, to
+        // ensure that the next save is a complete chunk.
+        while (this.chunks.length > 0 &&
+               this.chunks[this.chunks.length-1].end >=
+               (this.commands.length-1)) {
+            this.chunks.pop();
         }
     };
     Drawing.START =  0;
@@ -318,29 +334,100 @@ define(['./brush','./color','./drawcommand','./layer'], function(Brush, Color, D
         }
     };
 
-    Drawing.prototype.toJSON = function() {
+    Drawing.Chunk = function(drawing, num, start, end, prev) {
+        this.drawing = drawing;
+        this.uuid = prandom.uuid();
+        this.num = num;
+        this.start = start;
+        this.end = end;
+        this.prev = prev;
+    };
+    Drawing.Chunk.prototype = {};
+    Drawing.Chunk.prototype.toJSON = function() {
+        console.assert(this.end <= this.drawing.commands.length);
+        var json = {
+            num: this.num,
+            uuid: this.uuid,
+            start: this.start,
+            prev: this.prev
+        };
+        if (this.drawing.uuid) { json.drawing = this.drawing.uuid; }
+        if (this.checkpoint) {
+            var cp = this.drawing._findNearestCheckpoint(this.end);
+            if (cp) { json.checkpoint = cp; }
+        }
+        json.commands = this.drawing.commands.slice(this.start, this.end);
+        return json;
+    };
+    Drawing.prototype._makeChunks = function() {
+        // linear progression of chunks
+        // FUTURE: invalidate some chunks to give logarithmic # of chunks?
+        if (this.commands.length === 0) { return; }
+        // remove stale checkpoint chunks
+        while (this.chunks.length > 0 &&
+               this.chunks[this.chunks.length-1].checkpoint &&
+               (this.chunks[this.chunks.length-1].end + DEFAULT_CHUNK_SIZE) <
+               this.commands.length) {
+            this.chunks.pop();
+        }
+        while (true) {
+            // create another chunk
+            var start = (this.chunks.length===0) ? 0 :
+                this.chunks[this.chunks.length-1].end;
+            if (start >= this.commands.length) {
+                break;
+            }
+            var end = Math.min(start + DEFAULT_CHUNK_SIZE,
+                               this.commands.length);
+            var prevChunk = (this.chunks.length===0) ? null :
+                this.chunks[this.chunks.length-1];
+            var newChunk = new Drawing.Chunk(
+                this,
+                prevChunk ? (prevChunk.num+1) : 0,
+                start, end,
+                prevChunk ? (prevChunk.uuid) : null);
+            if (newChunk.end < this.commands.length &&
+                newChunk.end + DEFAULT_CHUNK_SIZE >= this.commands.length) {
+                // checkpoint goes on penultimate chunk
+                newChunk.checkpoint = true;
+            }
+            this.chunks.push(newChunk);
+        }
+    };
+
+    Drawing.prototype.toJSON = function(useChunks) {
         // save only the 1st and last checkpoints to save space.
         var ncheckpoints = [];
-        if (this.checkpoints.length>0) {
+        if (this.checkpoints.length>0 && !useChunks) {
             ncheckpoints.push(this.checkpoints[0]);
         }
-        if (this.checkpoints.length>1) {
+        if (this.checkpoints.length>1 && !useChunks) {
             ncheckpoints.push(this.checkpoints[this.checkpoints.length-1]);
         }
-        return {
-            commands: this.commands,
+        var json = {
             end: this.commands.end, // save redo buffer
-            nlayers: this.layers.length,
+            nLayers: this.layers.length,
             width: this.width,
             height: this.height,
             pixelRatio: this.pixelRatio,
             checkpoints: ncheckpoints
         };
+        if (useChunks) {
+            this._makeChunks();
+        }
+        if (useChunks && this.chunks.length > 0) {
+            json.firstChunk = this.chunks[0].uuid;
+            json.lastChunk = this.chunks[this.chunks.length-1].uuid;
+            json.nChunks = this.chunks.length;
+        } else {
+            json.commands = this.commands;
+        }
+        return json;
     };
     Drawing.fromJSON = function(str, callback) {
         var json = (typeof(str)==='string') ? JSON.parse(str) : str;
         var drawing = new Drawing();
-        while (drawing.layers.length < json.nlayers) {
+        while (drawing.layers.length < (json.nLayers || json.nlayers)) {
             drawing.addLayer();
         }
         drawing.commands.length=drawing.commands.end=drawing.commands.last = 0;

@@ -165,7 +165,7 @@ requirejs(['commander', 'fs', '../src/brush', '../src/color', '../src/drawcomman
         header: header,
         commands: commands,
         end: commands.length,
-        nlayers: 1,
+        nLayers: 1,
         width: maxx,
         height: maxy,
         pixelRatio: 1,
