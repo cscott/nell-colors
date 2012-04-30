@@ -136,7 +136,8 @@ define(['require', 'domReady!', /*'./audio-map.js',*/ './src/brush', './src/colo
             if (!playbackInfo.isPlaying) {
                 playbackInfo.isPlaying = true;
                 toolbarPort.postMessage(JSON.stringify({type:'playing'}));
-                // XXX set large checkpoint interval
+                // infrequent checkpoints during playback
+                drawing.checkpointOften = false;
             }
             requestAnimationFrame(playback);
         } else {
@@ -144,8 +145,9 @@ define(['require', 'domReady!', /*'./audio-map.js',*/ './src/brush', './src/colo
                 playbackInfo.isPlaying = false;
                 playbackInfo.speed = INSTANTANEOUS;
                 toolbarPort.postMessage(JSON.stringify({type:'stopped'}));
-                // XXX set slow checkpoint interval
-                // xxx save checkpoint
+                // frequent checkpoints for editing
+                drawing.checkpointOften = true;
+                drawing.addCheckpoint(true);
             }
             animRequested = false;
             updateToolbarBrush();

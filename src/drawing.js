@@ -8,7 +8,11 @@ define(['./brush','./color','./drawcommand','./layer'], function(Brush, Color, D
     // A Drawing is a sequence of DrawCommands and a set of layer.
     // It maintains the playback and undo/redo logic
 
-    var CHECKPOINT_INTERVAL = 300;
+    // Adjust this to trade off between the space taken by checkpoints
+    // and the speed of replay.  The small interval is used when editing;
+    // the large one is used when loading or doing playback
+    var SMALL_CHECKPOINT_INTERVAL = 300;
+    var LARGE_CHECKPOINT_INTERVAL = 10*SMALL_CHECKPOINT_INTERVAL;
 
     var Drawing = function() {
         this.domElement = document.createElement('div');
@@ -19,6 +23,7 @@ define(['./brush','./color','./drawcommand','./layer'], function(Brush, Color, D
         this.layers = [ ];
         // checkpoint list, for fast undo
         this.checkpoints = [];
+        this.checkpointOften = true;
         this.resize(100,100,1); // default size
         this.layers.current = this.addLayer(); // one default layer
         // hack in a brush change and color change
@@ -72,7 +77,7 @@ define(['./brush','./color','./drawcommand','./layer'], function(Brush, Color, D
             if ((pos < this.commands.last) ||
                 (pos - checkpoint.pos) < (pos - this.commands.last)) {
                 // restoring checkpoint also sets this.commands.last
-                this.restoreCheckpoint(checkpoint);
+                this._restoreCheckpoint(checkpoint);
             }
         } else if (pos < this.commands.last) {
             this._clear();
@@ -83,7 +88,7 @@ define(['./brush','./color','./drawcommand','./layer'], function(Brush, Color, D
             this._execCommand(this.commands[this.commands.last++]);
             if (this.commands[this.commands.last-1].type ===
                 DrawCommand.Type.DRAW_END) {
-                this._addCheckpoint();
+                this.addCheckpoint();
                 if (optTimeLimit && (Date.now() - startTime) > optTimeLimit) {
                     break;
                 }
@@ -187,7 +192,7 @@ define(['./brush','./color','./drawcommand','./layer'], function(Brush, Color, D
             break;
         }
     };
-    Drawing.prototype.saveCheckpoint = function() {
+    Drawing.prototype._saveCheckpoint = function() {
         return new Drawing.Checkpoint({
             pos: this.commands.last,
             brush: this.brush.clone(),
@@ -199,7 +204,7 @@ define(['./brush','./color','./drawcommand','./layer'], function(Brush, Color, D
             pixelRatio: this.pixelRatio
         });
     };
-    Drawing.prototype.restoreCheckpoint = function(checkpoint) {
+    Drawing.prototype._restoreCheckpoint = function(checkpoint) {
         this.commands.last = checkpoint.pos;
         this.brush = checkpoint.brush.clone();
         checkpoint.layers.forEach(function(chk, i) {
@@ -236,7 +241,7 @@ define(['./brush','./color','./drawcommand','./layer'], function(Brush, Color, D
         }
         return this.checkpoints[ipos-1];
     };
-    Drawing.prototype._addCheckpoint = function() {
+    Drawing.prototype.addCheckpoint = function(optForce) {
         // keep checkpoints array in sorted order
         var nc = { pos: this.commands.last };
         var ipos = _binarySearch(this.checkpoints, nc, _chkcmp);
@@ -247,11 +252,13 @@ define(['./brush','./color','./drawcommand','./layer'], function(Brush, Color, D
         ipos = -(ipos + 1); // insertion point
         // don't save too many checkpoints
         var dist = nc.pos - ((ipos===0) ? 0 : this.checkpoints[ipos-1].pos);
-        if (dist < CHECKPOINT_INTERVAL) {
+        var checkpoint_interval = (this.checkpointOften) ?
+            SMALL_CHECKPOINT_INTERVAL : LARGE_CHECKPOINT_INTERVAL;
+        if (dist < checkpoint_interval && !optForce) {
             // too close to existing checkpoint, skip it
             return;
         }
-        this.checkpoints.splice(ipos, 0, this.saveCheckpoint());
+        this.checkpoints.splice(ipos, 0, this._saveCheckpoint());
         // now thin out the checkpoint list
         this._thinCheckpoints();
     };
