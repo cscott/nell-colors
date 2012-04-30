@@ -21,7 +21,8 @@ define(['./alea','./lawnchair/lawnchair'], function(Alea, Lawnchair) {
                 var random = Alea.Random(Date.now(), Math.random(),
                                          JSON.stringify(pool));
                 // store back into the pool (fire-and-forget)
-                lawnchair.save({ key:'pool', data: random() });
+                lawnchair.save({ key:'pool', time: Date.now(),
+                                 data: [random(),random(),random()] });
                 // improve the lawnchair uuid function
                 // (yes, this is a monkey patch, but there's a circular dep)
                 var uuid = function () {
