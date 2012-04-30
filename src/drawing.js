@@ -60,7 +60,8 @@ define(['./brush','./color','./drawcommand','./layer'], function(Brush, Color, D
     };
     Drawing.START =  0;
     Drawing.END   = -1;
-    Drawing.prototype.setCmdPos = function(pos) {
+    Drawing.prototype.setCmdPos = function(pos, optTimeLimit) {
+        var startTime = Date.now();
         if (pos===Drawing.END) { pos = this.commands.end; }
         console.assert(pos <= this.commands.end);
         // use checkpoints for efficiency
@@ -81,12 +82,15 @@ define(['./brush','./color','./drawcommand','./layer'], function(Brush, Color, D
             if (this.commands[this.commands.last-1].type ===
                 DrawCommand.Type.DRAW_END) {
                 this._addCheckpoint();
+                if (optTimeLimit && (Date.now() - startTime) > optTimeLimit) {
+                    break;
+                }
             }
         }
         // returns 'true' if there are more commands not yet drawn
         return (this.commands.last < this.commands.end);
     };
-    Drawing.prototype.setCmdTime = function(timeDelta) {
+    Drawing.prototype.setCmdTime = function(timeDelta, optTimeLimit) {
         // scan ahead looking for the proper end point
         var i = this.commands.last;
         if (i === this.commands.end) {
@@ -103,7 +107,7 @@ define(['./brush','./color','./drawcommand','./layer'], function(Brush, Color, D
         }
         // okay, execute to this location
         // returns 'true' if there are more commands not yet drawn
-        return this.setCmdPos(i);
+        return this.setCmdPos(i, optTimeLimit);
     };
 
     Drawing.prototype.undo = function() {
