@@ -37,7 +37,7 @@ define(['require', 'domReady!', /*'./audio-map.js',*/ './src/brush', './src/colo
     });
 
     var maybeRequestAnim, removeRecogCanvas, maybeLoadAudio;
-    var updateToolbarBrush;
+    var updateToolbarBrush, replaceDrawing;
 
     var recog_timer_id = null;
     // cancel any running recog timer (ie, if stroke in progress)
@@ -370,7 +370,11 @@ define(['require', 'domReady!', /*'./audio-map.js',*/ './src/brush', './src/colo
     var doSave = function() {
         console.log('saving', drawing.uuid);
         Sync.save(drawing, function() {
-            console.log('saved!');
+            console.log('saved!', drawing.uuid);
+            Sync.load(drawing.uuid, function(ndrawing) {
+                console.log('loaded', ndrawing.uuid);
+                replaceDrawing(ndrawing);
+            });
         });
     };
 
@@ -518,7 +522,7 @@ define(['require', 'domReady!', /*'./audio-map.js',*/ './src/brush', './src/colo
         onWindowResize();
         document.getElementById("loading").style.display="none";
     };
-    var replaceDrawing = function(new_drawing) {
+    replaceDrawing = function(new_drawing) {
         console.assert(new_drawing.uuid);
         drawing.removeFromContainer(drawingElem);
         drawing = new_drawing;

@@ -5,6 +5,7 @@
 /*global define:false, console:false, document:false, window:false */
 define(['./drawing', './lzw', './lawnchair/lawnchair'], function(Drawing, LZW, Lawnchair) {
     var DEBUG = false;
+    var TOP = 'top';
 
     // Sync drawing to local storage.
     var Sync = {};
@@ -19,13 +20,34 @@ define(['./drawing', './lzw', './lawnchair/lawnchair'], function(Drawing, LZW, L
         });
     };
 
+    Sync.load = function(uuid, callback) {
+        var withLawnchair = function(lawnchair) {
+            lawnchair.get(TOP, function(top) {
+                var i, done = 0, chunks = [];
+                var doChunk = function(i) {
+                    lawnchair.get(''+i, function(achunk) {
+                        chunks[i] = JSON.parse(LZW.decode(achunk.data));
+                        done++;
+                        if (done===top.data.nChunks) {
+                            Drawing.fromChunks(top.data, chunks, callback);
+                        }
+                    });
+                };
+                for (i=0; i<top.data.nChunks; i++) {
+                    doChunk(i);
+                }
+            });
+        };
+        Lawnchair({name:'drawing.'+uuid}, function() { withLawnchair(this); });
+    };
+
     Sync.save = function(drawing, callback, optForce) {
         console.assert(drawing.uuid);
         var saveWithLawnchair = function(lawnchair) {
             var dj = drawing.toJSON('use chunks');
             var wrapUp = function() {
                 if (DEBUG) { console.log('writing', drawing.uuid); }
-                lawnchair.save({ key: 'top', data: dj }, callback);
+                lawnchair.save({ key: TOP, data: dj }, callback);
             };
             var chunk = dj.nChunks;
             var saveChunk = function() {

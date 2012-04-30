@@ -359,6 +359,56 @@ define(['./brush','./color','./drawcommand','./layer','./prandom!'], function(Br
         json.commands = this.drawing.commands.slice(this.start, this.end);
         return json;
     };
+    Drawing.fromChunks = function(top, chunks, callback) {
+        var json = (typeof(top)==='string') ? JSON.parse(top) : top;
+        var drawing = new Drawing();
+        while (drawing.layers.length < (json.nLayers || json.nlayers)) {
+            drawing.addLayer();
+        }
+        drawing.commands.length=drawing.commands.end=drawing.commands.last = 0;
+        var checkpoints = [];
+        drawing.chunks = chunks.map(function(str) {
+            var json = (typeof(str)==='string') ? JSON.parse(str) : str;
+            json.commands.forEach(function(c) {
+                drawing.addCmd(DrawCommand.fromJSON(c));
+            });
+            var chunk = new Drawing.Chunk(drawing, json.num, json.start,
+                                           json.start + json.commands.length,
+                                           json.prev);
+            chunk.uuid = json.uuid;
+            if (json.checkpoint) {
+                checkpoints.push(json.checkpoint);
+                chunk.checkpoint = true;
+            }
+            return chunk;
+        });
+        drawing.commands.end = drawing.commands.recog = json.end;
+        drawing.resize(json.width, json.height, json.pixelRatio || 1);
+        if (json.active_layer) {
+            drawing.layers.current = json.active_layer || 0;
+        }
+        if (json.initial_playback_speed) {
+            drawing.initial_playback_speed = json.initial_playback_speed || 2;
+        }
+        if (json.uuid) {
+            drawing.uuid = json.uuid;
+        }
+        // restore checkpoints
+        if (checkpoints.length===0) {
+            callback(drawing);
+        } else {
+            var completed = 0;
+            checkpoints.forEach(function(c, i) {
+                Drawing.Checkpoint.fromJSON(c, function(chk) {
+                    drawing.checkpoints[i] = chk;
+                    completed++;
+                    if (completed === checkpoints.length) {
+                        callback(drawing);
+                    }
+                });
+            });
+        }
+    };
     Drawing.prototype._makeChunks = function() {
         // linear progression of chunks
         // FUTURE: invalidate some chunks to give logarithmic # of chunks?
@@ -412,6 +462,9 @@ define(['./brush','./color','./drawcommand','./layer','./prandom!'], function(Br
             pixelRatio: this.pixelRatio,
             checkpoints: ncheckpoints
         };
+        if (this.uuid) {
+            json.uuid = this.uuid;
+        }
         if (useChunks) {
             this._makeChunks();
         }
@@ -441,6 +494,9 @@ define(['./brush','./color','./drawcommand','./layer','./prandom!'], function(Br
         }
         if (json.initial_playback_speed) {
             drawing.initial_playback_speed = json.initial_playback_speed || 2;
+        }
+        if (json.uuid) {
+            drawing.uuid = json.uuid;
         }
         // restore checkpoints
         if (json.checkpoints.length===0) {
