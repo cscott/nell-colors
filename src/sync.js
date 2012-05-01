@@ -20,6 +20,33 @@ define(['./drawing', './lzw', './lawnchair/lawnchair'], function(Drawing, LZW, L
         });
     };
 
+    var addToIndex = function(drawing, callback) {
+        Lawnchair({name:'drawing_index'}, function() {
+            var lawnchair = this;
+            lawnchair.save({
+                key: drawing.uuid,
+                ctime: drawing.ctime,
+                mtime: Date.now()
+            }, function() {
+                callback.call(drawing);
+            });
+        });
+    };
+
+    Sync.list = function(callback) {
+        Lawnchair({name:'drawing_index'}, function() {
+            var lawnchair = this;
+            lawnchair.all(function(results) {
+                results.sort(function(a, b) {
+                    // oldest first
+                    return a.ctime - b.ctime;
+                });
+                // return list of uuids (don't expose 'key' field)
+                callback(results.map(function(r) { return r.key; }));
+            });
+        });
+    };
+
     Sync.load = function(uuid, callback) {
         var withLawnchair = function(lawnchair) {
             lawnchair.get(TOP, function(top) {
@@ -41,13 +68,22 @@ define(['./drawing', './lzw', './lawnchair/lawnchair'], function(Drawing, LZW, L
         Lawnchair({name:'drawing.'+uuid}, function() { withLawnchair(this); });
     };
 
+    Sync.exists = function(uuid, callback) {
+        var withLawnchair = function(lawnchair) {
+            lawnchair.exists(TOP, callback);
+        };
+        Lawnchair({name:'drawing.'+uuid}, function() { withLawnchair(this); });
+    };
+
     Sync.save = function(drawing, callback, optForce) {
         console.assert(drawing.uuid);
         var saveWithLawnchair = function(lawnchair) {
             var dj = drawing.toJSON('use chunks');
             var wrapUp = function() {
                 if (DEBUG) { console.log('writing', drawing.uuid); }
-                lawnchair.save({ key: TOP, data: dj }, callback);
+                lawnchair.save({ key: TOP, data: dj }, function() {
+                    addToIndex(drawing, callback);
+                });
             };
             var chunk = dj.nChunks;
             var saveChunk = function() {

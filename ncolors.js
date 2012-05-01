@@ -588,10 +588,16 @@ define(['require', 'domReady!', /*'./audio-map.js',*/ './src/brush', './src/colo
             callback(nd);
             break;
         default:
-            // XXX attempt to load from local storage
-            nd = new Drawing();
-            nd.uuid = uuid;
-            callback(nd);
+            Sync.exists(uuid, function(exists) {
+                if (exists) {
+                    Sync.load(uuid, callback);
+                } else {
+                    // XXX attempt to load from network?
+                    nd = new Drawing();
+                    nd.uuid = uuid;
+                    callback(nd);
+                }
+            });
             break;
         }
     };
