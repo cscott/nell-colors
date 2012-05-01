@@ -37,7 +37,7 @@ define(['require', 'domReady!', /*'./audio-map.js',*/ './src/brush', './src/colo
     });
 
     var maybeRequestAnim, removeRecogCanvas, maybeLoadAudio;
-    var updateToolbarBrush, replaceDrawing;
+    var updateToolbarBrush, replaceDrawing, maybeSyncDrawing;
 
     var recog_timer_id = null;
     // cancel any running recog timer (ie, if stroke in progress)
@@ -205,6 +205,8 @@ define(['require', 'domReady!', /*'./audio-map.js',*/ './src/brush', './src/colo
         }
         // start recog reset timer
         recog_timer_reset();
+        // save
+        maybeSyncDrawing();
     };
 
     // generate <audio> elements for various snippets we might want to play
@@ -342,6 +344,7 @@ define(['require', 'domReady!', /*'./audio-map.js',*/ './src/brush', './src/colo
         }
         // stop recognition and cancel timer
         recog_reset();
+        maybeSyncDrawing();
     };
     var doRedo = function() {
         console.assert(!isDragging);
@@ -354,8 +357,9 @@ define(['require', 'domReady!', /*'./audio-map.js',*/ './src/brush', './src/colo
         }
         // don't repeat recognition (and cancel timer)
         recog_reset();
+        maybeSyncDrawing();
     };
-    var doSave1 = function() {
+    var doSave = function() {
         var json = JSON.stringify(drawing, null, 1);
         var blob, blobUrl;
         try {
@@ -367,7 +371,7 @@ define(['require', 'domReady!', /*'./audio-map.js',*/ './src/brush', './src/colo
         }
         saveAs(blob, 'drawing.json');
     };
-    var doSave = function() {
+    var doSave1 = function() {
         console.log('saving', drawing.uuid);
         Sync.save(drawing, function() {
             console.log('saved!', drawing.uuid);
@@ -377,6 +381,30 @@ define(['require', 'domReady!', /*'./audio-map.js',*/ './src/brush', './src/colo
             });
         });
     };
+    maybeSyncDrawing = function() {
+        var isSaving = false, isDirty = false;
+        return function() {
+            if (isSaving) {
+                // can't save now, queue it for later.
+                isDirty = true;
+                return;
+            }
+            // ok, save now!
+            isSaving = true;
+            isDirty = true;
+            var afterSave = function() {
+                if (isDirty) {
+                    // someone requested another save while we were busy, do it
+                    isDirty = false;
+                    Sync.save(drawing, afterSave);
+                } else {
+                    // we're all caught up!
+                    isSaving = false;
+                }
+            };
+            afterSave();
+        };
+    }();
 
     var onWindowResize = function(event) {
         var w = window.innerWidth, h = window.innerHeight;
