@@ -1,6 +1,6 @@
 /**
  * indexed db adapter
- * ===
+ * === 
  * - originally authored by Vivian Li
  *
  */
@@ -9,6 +9,8 @@ define([], function() { return function(Lawnchair) {
 Lawnchair.adapter('indexed-db', (function(){
 
   function fail(e, i) { console.error('error in indexed-db adapter!', e, i); }
+
+  var STORE_NAME = 'lawnchair';
 
   var getIDB = function() {
     return window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.oIndexedDB || window.msIndexedDB;
@@ -26,9 +28,9 @@ Lawnchair.adapter('indexed-db', (function(){
 
 
   return {
-
+    
     valid: function() { return !!getIDB(); },
-
+    
     init:function(options, callback) {
         this.idb = getIDB();
         this.waiting = [];
@@ -36,15 +38,15 @@ Lawnchair.adapter('indexed-db', (function(){
         var self = this;
         var cb = self.fn(self.name, callback);
         var win = function(){ return cb.call(self, self); }
-
+        
         request.onsuccess = function(event) {
-           self.db = request.result;
-
+           self.db = request.result; 
+            
             if(self.db.version != "1.0") {
               var setVrequest = self.db.setVersion("1.0");
               // onsuccess is the only place we can create Object Stores
               setVrequest.onsuccess = function(e) {
-                  self.store = self.db.createObjectStore("teststore", { autoIncrement: true} );
+                  self.store = self.db.createObjectStore(STORE_NAME, { autoIncrement: true} );
                   for (var i = 0; i < self.waiting.length; i++) {
                       self.waiting[i].call(self);
                   }
@@ -74,23 +76,23 @@ Lawnchair.adapter('indexed-db', (function(){
             });
             return;
          }
-
+         
          var self = this;
          var win  = function (e) { if (callback) { obj.key = e.target.result; self.lambda(callback).call(self, obj) }};
 
-         var trans = this.db.transaction(["teststore"], getIDBTransaction().READ_WRITE);
-         var store = trans.objectStore("teststore");
+         var trans = this.db.transaction(STORE_NAME, getIDBTransaction().READ_WRITE);
+         var store = trans.objectStore(STORE_NAME);
          var request = obj.key ? store.put(obj, obj.key) : store.put(obj);
-
+         
          request.onsuccess = win;
          request.onerror = fail;
-
+         
          return this;
     },
-
+    
     // FIXME this should be a batch insert / just getting the test to pass...
     batch: function (objs, cb) {
-
+        
         var results = []
         ,   done = false
         ,   self = this
@@ -107,12 +109,12 @@ Lawnchair.adapter('indexed-db', (function(){
             }
         }, 200)
 
-        for (var i = 0, l = objs.length; i < l; i++)
+        for (var i = 0, l = objs.length; i < l; i++) 
             this.save(objs[i], updateProgress)
-
+        
         return this
     },
-
+    
 
     get:function(key, callback) {
         if(!this.store) {
@@ -121,22 +123,22 @@ Lawnchair.adapter('indexed-db', (function(){
             });
             return;
         }
-
-
+        
+        
         var self = this;
         var win  = function (e) { if (callback) { self.lambda(callback).call(self, e.target.result) }};
-
-
+        
+        
         if (!this.isArray(key)){
-            var req = this.db.transaction("teststore").objectStore("teststore").get(key);
+            var req = this.db.transaction(STORE_NAME).objectStore(STORE_NAME).get(key);
 
             req.onsuccess = win;
             req.onerror = function(event) {
                 console.log("Failed to find " + key);
                 fail(event);
             };
-
-        // FIXME: again the setInterval solution to async callbacks..
+        
+        // FIXME: again the setInterval solution to async callbacks..    
         } else {
 
             // note: these are hosted.
@@ -156,9 +158,9 @@ Lawnchair.adapter('indexed-db', (function(){
                 }
             }, 200)
 
-            for (var i = 0, l = keys.length; i < l; i++)
+            for (var i = 0, l = keys.length; i < l; i++) 
                 this.get(keys[i], updateProgress)
-
+            
         }
 
         return this;
@@ -174,7 +176,7 @@ Lawnchair.adapter('indexed-db', (function(){
 
         var self = this;
 
-        var req = this.db.transaction("teststore").objectStore("teststore").openCursor(getIDBKeyRange().only(key));
+        var req = this.db.transaction(STORE_NAME).objectStore(STORE_NAME).openCursor(getIDBKeyRange().only(key));
 
         req.onsuccess = function(event) {
             // exists iff req.result is not null
@@ -197,13 +199,13 @@ Lawnchair.adapter('indexed-db', (function(){
         }
         var cb = this.fn(this.name, callback) || undefined;
         var self = this;
-        var objectStore = this.db.transaction("teststore").objectStore("teststore");
+        var objectStore = this.db.transaction(STORE_NAME).objectStore(STORE_NAME);
         var toReturn = [];
         objectStore.openCursor().onsuccess = function(event) {
           var cursor = event.target.result;
           if (cursor) {
                toReturn.push(cursor.value);
-               cursor.continue();
+               cursor['continue']();
           }
           else {
               if (cb) cb.call(self, toReturn);
@@ -224,8 +226,8 @@ Lawnchair.adapter('indexed-db', (function(){
         }
         var self = this;
         var win  = function () { if (callback) self.lambda(callback).call(self) };
-
-        var request = this.db.transaction(["teststore"], getIDBTransaction().READ_WRITE).objectStore("teststore").delete(keyOrObj);
+        
+        var request = this.db.transaction(STORE_NAME, getIDBTransaction().READ_WRITE).objectStore(STORE_NAME)['delete'](keyOrObj);
         request.onsuccess = win;
         request.onerror = fail;
         return this;
@@ -238,23 +240,23 @@ Lawnchair.adapter('indexed-db', (function(){
             });
             return;
         }
-
+        
         var self = this
         ,   win  = callback ? function() { self.lambda(callback).call(self) } : function(){};
-
+        
         try {
             this.db
-                .transaction(["teststore"], getIDBTransaction().READ_WRITE)
-                .objectStore("teststore").clear().onsuccess = win;
-
+                .transaction(STORE_NAME, getIDBTransaction().READ_WRITE)
+                .objectStore(STORE_NAME).clear().onsuccess = win;
+            
         } catch(e) {
             fail();
         }
         return this;
     }
-
+    
   };
-
+  
 })());
 
 };

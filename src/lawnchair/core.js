@@ -1,7 +1,7 @@
 /**
  * Lawnchair!
- * ---
- * clientside json store
+ * --- 
+ * clientside json store 
  *
  */
 define([], function() {
@@ -9,7 +9,7 @@ var Lawnchair = function (options, callback) {
     // ensure Lawnchair was called as a constructor
     if (!(this instanceof Lawnchair)) return new Lawnchair(options, callback);
 
-    // lawnchair requires json
+    // lawnchair requires json 
     if (!JSON) throw 'JSON unavailable! Include http://www.json.org/json2.js to fix.'
     // options are optional; callback is not
     if (arguments.length <= 2 && arguments.length > 0) {
@@ -20,11 +20,11 @@ var Lawnchair = function (options, callback) {
     }
     // TODO perhaps allow for pub/sub instead?
     if (typeof callback !== 'function') throw 'No callback was provided';
-
-    // default configuration
+    
+    // default configuration 
     this.record = options.record || 'record'  // default for records
     this.name   = options.name   || 'records' // default name for underlying store
-
+    
     // mixin first valid  adapter
     var adapter
     // if the adapter is passed in we try to load that only
@@ -36,32 +36,32 @@ var Lawnchair = function (options, callback) {
             }
         }
     // otherwise find the first valid adapter for this env
-    }
+    } 
     else {
         for (var i = 0, l = Lawnchair.adapters.length; i < l; i++) {
             adapter = Lawnchair.adapters[i].valid() ? Lawnchair.adapters[i] : undefined
-            if (adapter) break
+            if (adapter) break 
         }
-    }
-
-    // we have failed
-    if (!adapter) throw 'No valid adapter.'
-
-    // yay! mixin the adapter
-    for (var j in adapter)
+    } 
+    
+    // we have failed 
+    if (!adapter) throw 'No valid adapter.' 
+    
+    // yay! mixin the adapter 
+    for (var j in adapter)  
         this[j] = adapter[j]
-
+    
     // call init for each mixed in plugin
-    for (var i = 0, l = Lawnchair.plugins.length; i < l; i++)
+    for (var i = 0, l = Lawnchair.plugins.length; i < l; i++) 
         Lawnchair.plugins[i].call(this)
 
-    // init the adapter
+    // init the adapter 
     this.init(options, callback)
 }
 
-Lawnchair.adapters = []
+Lawnchair.adapters = [] 
 
-/**
+/** 
  * queues an adapter for mixin
  * ===
  * - ensures an adapter conforms to a specific interface
@@ -71,14 +71,14 @@ Lawnchair.adapter = function (id, obj) {
     // add the adapter id to the adapter obj
     // ugly here for a  cleaner dsl for implementing adapters
     obj['adapter'] = id
-    // methods required to implement a lawnchair adapter
+    // methods required to implement a lawnchair adapter 
     var implementing = 'adapter valid init keys save batch get exists all remove nuke'.split(' ')
     ,   indexOf = this.prototype.indexOf
-    // mix in the adapter
+    // mix in the adapter   
     for (var i in obj) {
         if (indexOf(implementing, i) === -1) throw 'Invalid adapter! Nonstandard method: ' + i
     }
-    // if we made it this far the adapter interface is valid
+    // if we made it this far the adapter interface is valid 
 	// insert the new adapter as the preferred adapter
 	Lawnchair.adapters.splice(0,0,obj)
 }
@@ -88,11 +88,11 @@ Lawnchair.plugins = []
 /**
  * generic shallow extension for plugins
  * ===
- * - if an init method is found it registers it to be called when the lawnchair is inited
+ * - if an init method is found it registers it to be called when the lawnchair is inited 
  * - yes we could use hasOwnProp but nobody here is an asshole
- */
+ */ 
 Lawnchair.plugin = function (obj) {
-    for (var i in obj)
+    for (var i in obj) 
         i === 'init' ? Lawnchair.plugins.push(obj[i]) : this.prototype[i] = obj[i]
 }
 
@@ -103,7 +103,7 @@ Lawnchair.plugin = function (obj) {
 Lawnchair.prototype = {
 
     isArray: Array.isArray || function(o) { return Object.prototype.toString.call(o) === '[object Array]' },
-
+    
     /**
      * this code exists for ie8... for more background see:
      * http://www.flickr.com/photos/westcoastlogic/5955365742/in/photostream
@@ -138,9 +138,9 @@ Lawnchair.prototype = {
         var cb = this.lambda(callback)
         // iterate from chain
         if (this.__results) {
-            for (var i = 0, l = this.__results.length; i < l; i++) cb.call(this, this.__results[i], i)
-        }
-        // otherwise iterate the entire collection
+            for (var i = 0, l = this.__results.length; i < l; i++) cb.call(this, this.__results[i], i) 
+        }  
+        // otherwise iterate the entire collection 
         else {
             this.all(function(r) {
                 for (var i = 0, l = r.length; i < l; i++) cb.call(this, r[i], i)
