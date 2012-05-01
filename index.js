@@ -132,7 +132,7 @@ define(['domReady!', './src/dom', './hammer'], function(document, Dom, Hammer) {
         return span;
     };
     var colors = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo',
-                  'violet', 'white', 'black'];
+                  'violet', 'white', 'brown', 'black'];
     var color_buttons = colors.map(function(c) { return addSwatch(c); });
     color_buttons.forEach(function(cb, i) {
         var colorName = colors[i];
