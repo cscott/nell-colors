@@ -2,6 +2,9 @@
 define([], function() { return function(Lawnchair) {
 
 Lawnchair.adapter('window-name', (function(index, store) {
+    if (typeof window==='undefined') {
+        window = { top: { } }; // node/optimizer compatibility
+    }
 
     var data = window.top.name ? JSON.parse(window.top.name) : {}
 

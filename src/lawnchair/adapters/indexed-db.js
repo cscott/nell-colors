@@ -8,7 +8,7 @@ define([], function() { return function(Lawnchair) {
 
 Lawnchair.adapter('indexed-db', (function(){
 
-  function fail(e, i) { console.log('error in indexed-db adapter!', e, i); debugger; } ;
+  function fail(e, i) { console.error('error in indexed-db adapter!', e, i); }
 
   var getIDB = function() {
     return window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.oIndexedDB || window.msIndexedDB;
