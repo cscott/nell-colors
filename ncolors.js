@@ -577,7 +577,7 @@ define(['require', 'domReady!', /*'./audio-map.js',*/ './src/brush', './src/colo
         case 'roger':
             // special built-in drawings.
             require(['drw!./'+uuid+'.json'], function(new_drawing) {
-                new_drawing.uuid = uuid;
+                new_drawing.uuid = prandom.uuid();
                 callback(new_drawing);
             });
             break;
