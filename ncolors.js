@@ -214,26 +214,35 @@ define(['require', 'domReady!', /*'./audio-map.js',*/ './src/brush', './src/colo
     var audio_snippets = ['A','B','C','D','E','F','G','H','I','J','K','L','M',
                           'N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
     audio_snippets.forEach(function(id, n) {
-        var audio = document.createElement('audio');
-        audio.id = 'audio'+id;
-        audio.preload = 'auto';
-        var mp3src = document.createElement('source');
-        if (audioMap) {
-            mp3src.src = 'data:audio/mpeg;base64,'+audioMap['audio/'+id+'.mp3'];
-        } else {
-            mp3src.src = 'audio/'+id+'.mp3';
+        var audio = null;
+        if (!/(iPhone|iPad).*Safari/.test(navigator.userAgent)) {
+            // sadly, just creating audio tags slows down iphone/ipad by
+            // a *lot*... and then they won't even play the audio! boo.
+            // performance hit seems proportional to how many audio tags are
+            // on the page, so we might be able to reenable this on iOS
+            // using audio sprites (ie, a single audio file containing all
+            // clips)
+            audio = document.createElement('audio');
+            audio.id = 'audio'+id;
+            //audio.preload = 'auto';
+            var mp3src = document.createElement('source');
+            if (audioMap) {
+                mp3src.src = 'data:audio/mpeg;base64,'+audioMap['audio/'+id+'.mp3'];
+            } else {
+                mp3src.src = 'audio/'+id+'.mp3';
+            }
+            mp3src.type = 'audio/mpeg';
+            audio.appendChild(mp3src);
+            var oggsrc = document.createElement('source');
+            if (audioMap) {
+                oggsrc.src = 'data:audio/ogg;base64,'+audioMap['audio/'+id+'.ogg'];
+            } else {
+                oggsrc.src = 'audio/'+id+'.ogg';
+            }
+            oggsrc.type = 'audio/ogg';
+            audio.appendChild(oggsrc);
+            drawingElem.appendChild(audio);
         }
-        mp3src.type = 'audio/mpeg';
-        var oggsrc = document.createElement('source');
-        if (audioMap) {
-            oggsrc.src = 'data:audio/ogg;base64,'+audioMap['audio/'+id+'.ogg'];
-        } else {
-            oggsrc.src = 'audio/'+id+'.ogg';
-        }
-        oggsrc.type = 'audio/ogg';
-        audio.appendChild(mp3src);
-        audio.appendChild(oggsrc);
-        drawingElem.appendChild(audio);
         audio_snippets[id] = audio;
     });
     audioMap = null; // free memory (but requirejs still holds a reference)
