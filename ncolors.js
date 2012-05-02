@@ -30,6 +30,7 @@ define(['require', 'domReady!', /*'./audio-map.js',*/ './src/brush', './src/colo
     Dom.insertMeta(document);
     var drawingElem = document.getElementById('drawing');
     var drawing = new Drawing();
+    drawing.placeholder = true;
     drawing.attachToContainer(drawingElem);
     var hammer = new Hammer(drawingElem, {
         prevent_default: true,
@@ -592,6 +593,12 @@ define(['require', 'domReady!', /*'./audio-map.js',*/ './src/brush', './src/colo
         case 'gallery':
             gallery = new Gallery();
             gallery.wait(function(uuid) {
+                // discard old drawing (replace with blank placeholder)
+                drawing.removeFromContainer(drawingElem);
+                drawing = new Drawing();
+                drawing.placeholder = true;
+                drawing.attachToContainer(drawingElem);
+                // hide the gallery and load the new drawing
                 document.body.removeChild(gallery.domElement);
                 loadDrawing(uuid, callback);
             });
@@ -618,7 +625,6 @@ define(['require', 'domReady!', /*'./audio-map.js',*/ './src/brush', './src/colo
     };
     var onHashChange = function() {
         var uuid = document.location.hash.replace(/^#/,'');
-        if (!uuid) { uuid = prandom.uuid(); }
         if (uuid === drawing.uuid) { return; /* already loaded */ }
         // Load new document.
         document.getElementById("loading").style.display="block";

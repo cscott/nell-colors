@@ -16,7 +16,8 @@ define(['domReady!','./compat','./sync'], function(document, Compat, Sync) {
             var a = document.createElement('a');
             a.href='#'; // for iOS
             a.textContent = uuid; // XXX should be a thumbnail
-            a.addEventListener('click', function() {
+            a.addEventListener('click', function(event) {
+                event.preventDefault();
                 this._callback(uuid);
             }.bind(this));
             this.domElement.appendChild(a);
