@@ -4,7 +4,7 @@
  */
 /*global define:false, console:false, MessageChannel:false, window:false,
          setTimeout:false, clearTimeout:false, navigator:false */
-define(['require', 'domReady!', /*'./audio-map.js',*/ './src/brush', './src/color', './src/compat', './src/dom', './src/drawcommand', './src/drawing', './src/layer', './hammer', './src/postmessage', './src/prandom!', './raf', './src/recog', './src/sync', './BlobBuilder', './FileSaver', 'font!google,families:[Delius]'], function(require, document, /*audioMap_,*/ Brush, Color, Compat, Dom, DrawCommand, Drawing, Layer, Hammer, postMessage, prandom, requestAnimationFrame, Recog, Sync, BlobBuilder, saveAs) {
+define(['require', 'domReady!', /*'./audio-map.js',*/ './src/brush', './src/color', './src/compat', './src/dom', './src/drawcommand', './src/drawing', './src/layer', './src/gallery', './hammer', './src/postmessage', './src/prandom!', './raf', './src/recog', './src/sync', './BlobBuilder', './FileSaver', 'font!google,families:[Delius]'], function(require, document, /*audioMap_,*/ Brush, Color, Compat, Dom, DrawCommand, Drawing, Layer, Gallery, Hammer, postMessage, prandom, requestAnimationFrame, Recog, Sync, BlobBuilder, saveAs) {
     'use strict';
     // inlining the audio snippets with data: URLs seems to break iOS =(
     var audioMap = (typeof audioMap_ === 'undefined') ? false : audioMap_;
@@ -544,12 +544,6 @@ define(['require', 'domReady!', /*'./audio-map.js',*/ './src/brush', './src/colo
         };
         postMessage(window.parent, JSON.stringify(msg), '*');
     }
-    var finishUp = function() {
-        // finally, update the toolbar opacity/size to match
-        updateToolbarBrush();
-        onWindowResize();
-        document.getElementById("loading").style.display="none";
-    };
     replaceDrawing = function(new_drawing) {
         console.assert(new_drawing.uuid);
         drawing.removeFromContainer(drawingElem);
@@ -562,13 +556,17 @@ define(['require', 'domReady!', /*'./audio-map.js',*/ './src/brush', './src/colo
                 hash: document.location.hash
             }), '*');
         }
-        finishUp();
         if (drawing.initial_playback_speed) {
             playbackInfo.speed = drawing.initial_playback_speed;
         }
+        // finally, update the toolbar opacity/size to match
+        updateToolbarBrush();
+        onWindowResize();
+        document.getElementById("loading").style.display="none";
     };
+
     var loadDrawing = function(uuid, callback) {
-        var nd;
+        var nd, gallery;
         switch(uuid) {
         case 'lounge':
         case 'castle':
@@ -581,8 +579,16 @@ define(['require', 'domReady!', /*'./audio-map.js',*/ './src/brush', './src/colo
                 callback(new_drawing);
             });
             break;
-        case 'new':
         case '':
+        case 'gallery':
+            gallery = new Gallery();
+            gallery.wait(function(uuid) {
+                document.body.removeChild(gallery.domElement);
+                loadDrawing(uuid, callback);
+            });
+            document.body.appendChild(gallery.domElement);
+            break;
+        case 'new':
             nd = new Drawing();
             nd.uuid = prandom.uuid();
             callback(nd);
@@ -606,6 +612,7 @@ define(['require', 'domReady!', /*'./audio-map.js',*/ './src/brush', './src/colo
         if (!uuid) { uuid = prandom.uuid(); }
         if (uuid === drawing.uuid) { return; /* already loaded */ }
         // Load new document.
+        document.getElementById("loading").style.display="block";
         loadDrawing(uuid, replaceDrawing);
     };
     window.addEventListener('hashchange', onHashChange, false);
