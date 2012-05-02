@@ -1,11 +1,11 @@
 x double buffer to implement transparency mechanism.
 x tool bar at top
 x undo/redo
-replay
-refactor into a 'drawing' class
-recognize letters:
- - draw box over bb
- - draw letter over bb
+x replay
+x refactor into a 'drawing' class
+x recognize letters:
+ x draw box over bb
+ x draw letter over bb
  - animation
    (maybe animate by playing an ncolors document?
     open up new layer, draw on that.
@@ -15,7 +15,7 @@ recognize letters:
     audio snippets ought to have text as well.  use HMM recognizer
     to segment speech, highlight appropriate words.
 
-dump drawings to local storage
+x dump drawings to local storage
   - sync w/ google app engine
 select backgrounds: letter/primer pictures
 implement gallery (preload with letter images)
@@ -26,11 +26,29 @@ play back audio tagged with word positions.
 two pane ui -- text interaction on right?
 
 --
-implement arbitrary brush images (128x128)
+x implement arbitrary brush images (128x128)
 implement color wheel chooser
 implement image rotation along path
 implement variable brush spacing, brush size
 implement layers (then draggable layers?)
 implement audio snippets
 zoom canvas, two finger scroll to drag zoomed version
-implement color picker
+implement color picker (eyedropper)
+
+--
+audit layers code, ensure that we are snapping drawImage to integer pixel
+locations and that we quantize appropriately when determining spacing (ie,
+don't draw multiple times in the same location quantized location).
+
+Scaling: keep layers code pixel accurate (for above), scale points in higher
+layers. 
+
+Min/max of drawing (aspect ratio) is always fixed to that of original device
+when it was created.  Resolution, too? (If variable resolution, then we should probably keep brush size constant even when zooming in/out.)
+
+Thumbnails (based on original size?) 120x160 (doubled on iphone?)
+
+Label size/opacity sliders.
+
+Offline web font
+Appcache
