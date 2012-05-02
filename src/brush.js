@@ -28,11 +28,7 @@ define(['img!../brushes/brush-tile-129.png', './color'], function(brushesImg, Co
     }
 
     var Brush = function(color, type, size, opacity, spacing) {
-        this.color = color || Color.BLACK;
-        this.type = type || 'hard';
-        this.size = size || 32;
-        this.opacity = opacity || 1.0;
-        this.spacing = spacing || 0.225; // fraction of brush size
+        this.set(color, type, size, opacity, spacing);
     };
     Brush.prototype = {};
 
@@ -55,6 +51,19 @@ define(['img!../brushes/brush-tile-129.png', './color'], function(brushesImg, Co
             this.size === b.size &&
             this.opacity === b.opacity &&
             this.spacing === b.spacing;
+    };
+
+    Brush.prototype.set = function(color, type, size, opacity, spacing) {
+        this.color = color || Color.BLACK;
+        this.type = type || 'hard';
+        this.size = size || 32;
+        this.opacity = opacity || 1.0;
+        this.spacing = spacing || 0.225; // fraction of brush size
+    };
+
+    Brush.prototype.set_from_brush = function(brush) {
+        this.set(brush.color, brush.type, brush.size, brush.opacity,
+                 brush.spacing);
     };
 
     Brush.prototype.clone = function() {

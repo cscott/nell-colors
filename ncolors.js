@@ -320,18 +320,27 @@ define(['require', 'domReady!', /*'./audio-map.js',*/ './src/brush', './src/colo
     };
     Recog.registerCallback(handleRecog);
 
-    updateToolbarBrush = function() {
-        var msg = {
-            type: 'brush',
-            color: drawing.brush.color.to_string(),
-            brush_type:  drawing.brush.type,
-            size:  drawing.brush.size,
-            opacity: drawing.brush.opacity,
-            spacing: drawing.brush.spacing
+    updateToolbarBrush = (function() {
+        // don't post redundant updates (ie, while drawing!)
+        var lastBrush = new Brush(), first = true;
+        return function() {
+            if (lastBrush.equals(drawing.brush) && !first) {
+                return; // already up to date
+            }
+            lastBrush.set_from_brush(drawing.brush);
+            first = false;
+            var msg = {
+                type: 'brush',
+                color: drawing.brush.color.to_string(),
+                brush_type:  drawing.brush.type,
+                size:  drawing.brush.size,
+                opacity: drawing.brush.opacity,
+                spacing: drawing.brush.spacing
+            };
+            toolbarPort.postMessage(JSON.stringify(msg));
+            // XXX update undo/redo active as well.
         };
-        toolbarPort.postMessage(JSON.stringify(msg));
-        // XXX update undo/redo active as well.
-    };
+    }());
 
     var doUndo = function() {
         console.assert(!isDragging);
