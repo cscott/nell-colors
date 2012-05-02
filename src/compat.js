@@ -10,13 +10,19 @@
 // Compatibility thunks.  Hackity hackity.
 define([], function() {
     // Because Safari 5.1 doesn't have Function.bind (sigh)
-    // (xxx this is a lame implementation that only allows 1 arg to bind)
-    if (typeof(Function.prototype.bind) === 'undefined') {
-        Function.prototype.bind = function(context) {
-            var oldRef = this;
-            return function() {
-                return oldRef.apply(context || null, Array.prototype.slice.call(arguments));
+    if (!Function.prototype.bind) {
+        Function.prototype.bind = function (oThis) {
+            var aArgs = Array.prototype.slice.call(arguments, 1),
+            fToBind = this,
+            fNOP = function () {},
+            fBound = function () {
+                return fToBind.apply(this instanceof fNOP ? this :
+                                     (oThis || window),
+                                     aArgs.concat(Array.prototype.slice.call(arguments)));
             };
+            fNOP.prototype = this.prototype;
+            fBound.prototype = new fNOP();
+            return fBound;
         };
     }
     // Android non-Chrome doesn't have Web Workers
