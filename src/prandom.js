@@ -26,6 +26,17 @@ define(['./alea','./lawnchair/lawnchair'], function(Alea, Lawnchair) {
                 // improve the lawnchair uuid function
                 // (yes, this is a monkey patch, but there's a circular dep)
                 var uuid = function () {
+                    if (window.btoa) {
+                        // compact 96-bit UUID
+                        var rand8 = function() {
+                            return random.uint32() & 0xFF;
+                        };
+                        var s = String.fromCharCode(
+                            rand8(), rand8(), rand8(),
+                            rand8(), rand8(), rand8(),
+                            rand8(), rand8(), rand8());
+                        return window.btoa(s).replace('+','-').replace('/','_');
+                    }
                     var S4 = function () {
                         return (((1+random())*0x10000)|0).toString(16)
                             .substring(1);
@@ -34,7 +45,7 @@ define(['./alea','./lawnchair/lawnchair'], function(Alea, Lawnchair) {
                         return arguments[Math.floor(random()*arguments.length)]+
                             S4().substring(1);
                     };
-                    // "version 4 (random)" UUIDs
+                    // "version 4 (random)" UUIDs (122 bits)
                     return (S4()+S4()+"-"+S4()+"-"+S3('4')+"-"+
                             S3('8','9','a','b')+"-"+
                             S4()+S4()+S4());
