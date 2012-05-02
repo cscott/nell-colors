@@ -9,13 +9,19 @@ if (typeof define !== 'function') {
 define([], function() {
     'use strict';
     var Point = function(x, y, isUp) {
-        this.x = x; this.y = y; this.isUp = isUp || false;
+        this.set(x, y, isUp);
     };
     Point.prototype = {
         clone: function() { return new Point(this.x, this.y, this.isUp); },
         equals: function(p) { return Point.equals(this, p); },
         dist: function(p) { return Point.dist(this, p); },
-        interp: function(p, amt) { return Point.interp(this, p, amt); }
+        interp: function(p, amt) { return Point.interp(this, p, amt); },
+        set: function(x, y, isUp) {
+            this.x = x; this.y = y; this.isUp = isUp || false;
+        },
+        set_from_point: function(p) {
+            this.set(p.x, p.y, p.isUp);
+        }
     };
     Point.equals = function(a, b) {
         if (a===b) { return true; }
@@ -28,10 +34,12 @@ define([], function() {
     Point.dist = function(a, b) {
         return Math.sqrt(Point.dist2(a, b));
     };
-    Point.interp = function(p1, p2, amt) {
+    Point.interp = function(p1, p2, amt, optDst) {
         var x = p1.x + amt*(p2.x - p1.x);
         var y = p1.y + amt*(p2.y - p1.y);
-        return new Point(x, y, p2.isUp);
+        var result = optDst || new Point();
+        result.set(x, y, p2.isUp);
+        return result;
     };
 
     return Point;

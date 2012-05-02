@@ -31,6 +31,12 @@ define(['./drawcommand', './brush', './point'], function(DrawCommand, Brush, Poi
         this.brush_stamp = null;
         // line state
         this.isDrawingPath = false;
+        this.lastPoint = new Point();
+        // temporaries, to avoid reallocating points every time we invoke
+        // execDraw()
+        this._draw_from = new Point();
+        this._draw_to   = new Point();
+        this._draw_tmp  = new Point();
         // XXX handle resize events?
     };
     Layer.prototype = {
@@ -44,22 +50,24 @@ define(['./drawcommand', './brush', './point'], function(DrawCommand, Brush, Poi
             return this.brush_stamp;
         },
         _drawStamp: function(pos, brush) {
-            this.lastPoint = pos;
+            this.lastPoint.set_from_point(pos);
             var stamp = this._getBrushStamp(brush);
             var center = Math.floor(stamp.width / 2);
             var x = Math.round(pos.x) - center, y = Math.round(pos.y) - center;
             this.progressContext.drawImage(stamp, x, y);
         },
         execDraw: function(x, y, brush) {
-            var pos = { x:x, y:y };
+            var from=this._draw_from, to=this._draw_to, tmp=this._draw_tmp;
+
+            from.set_from_point(this.lastPoint);
+            to.set(x, y);
+
             var drawn = false;
             if (!this.isDrawingPath) {
-                this._drawStamp(pos, brush);
+                this._drawStamp(to, brush);
                 this.isDrawingPath = true;
                 drawn = true;
             } else {
-                var from = this.lastPoint;
-                var to = pos;
                 // interpolate along path
                 var dist = Point.dist(from, to), d;
                 var step = brush.size * brush.spacing;
@@ -67,7 +75,8 @@ define(['./drawcommand', './brush', './point'], function(DrawCommand, Brush, Poi
                     // XXX idle?
                 } else {
                     for (d = step; d < dist; d+= step) {
-                        this._drawStamp(Point.interp(from, to, d/dist), brush);
+                        this._drawStamp(Point.interp(from, to, d/dist, tmp),
+                                        brush);
                         drawn = true;
                     }
                 }
