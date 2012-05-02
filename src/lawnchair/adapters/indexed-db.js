@@ -256,10 +256,10 @@ Lawnchair.adapter('indexed-db', (function(){
         return this;
     },
 
-    nuke:function(callback) {
+    nuke:function(callback, optDeleteOutright) {
         if(!this.store) {
             this.waiting.push(function() {
-                this.nuke(callback);
+                this.nuke(callback, optDeleteOutright);
             });
             return;
         }
@@ -267,6 +267,16 @@ Lawnchair.adapter('indexed-db', (function(){
         var self = this
         ,   win  = callback ? function() { self.lambda(callback).call(self) } : function(){};
         
+        if (optDeleteOutright) {
+            // can't use this lawnchair for anything after this completes
+            if (this.waiting.length) fail();
+            this.idb.deleteDatabase(this.name);
+            delete this.store;
+            delete this.waiting;
+            win();
+            return;
+        }
+
         try {
             this.db
                 .transaction(STORE_NAME, getIDBTransaction().READ_WRITE)

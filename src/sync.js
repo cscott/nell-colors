@@ -32,6 +32,12 @@ define(['./drawing', './lzw', './lawnchair/lawnchair'], function(Drawing, LZW, L
             });
         });
     };
+    var removeFromIndex = function(uuid, callback) {
+        Lawnchair({name:'drawing_index'}, function() {
+            var lawnchair = this;
+            lawnchair.remove(uuid, callback);
+        });
+    };
 
     Sync.list = function(callback) {
         Lawnchair({name:'drawing_index'}, function() {
@@ -43,6 +49,14 @@ define(['./drawing', './lzw', './lawnchair/lawnchair'], function(Drawing, LZW, L
                 });
                 // return list of uuids (don't expose 'key' field)
                 callback(results.map(function(r) { return r.key; }));
+            });
+        });
+    };
+
+    Sync['delete'] = function(uuid, callback) {
+        removeFromIndex(uuid, function() {
+            Lawnchair({name:'drawing.'+uuid}, function() {
+                this.nuke(callback, true);
             });
         });
     };
