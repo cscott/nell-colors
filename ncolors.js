@@ -307,7 +307,7 @@ define(['require', 'domReady!', /*'./audio-map.js',*/ './src/brush', './src/colo
         drawingElem.appendChild(lastRecogCanvas);
 
         // say the letter name
-        var audio = audio_snippets[letter];
+        var audio = audio_snippets[letter.toUpperCase()];
         if (audio) {
             try {
                 if (!audio.paused) { audio.pause(); }

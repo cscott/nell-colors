@@ -3,7 +3,7 @@
   trailing:true, es5:true
  */
 /*global define:false, console:false, postMessage:false */
-define(['./hand/hmm', 'json!./hand/8s2a256-64-16t.json'], function(HMM, hmmdef) {
+define(['./hand/hmm', 'json!./hand/8s2a256-128-128tL.json'], function(HMM, hmmdef) {
     'use strict';
     /* Handwriting recognition! */
     var config = { };
