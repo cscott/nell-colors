@@ -653,6 +653,7 @@ define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/
         var uuid = document.location.hash.replace(/^#/,'');
         if (uuid === drawing.uuid) { return; /* already loaded */ }
         // Load new document.
+        Gallery.abort();
         document.getElementById("loading").style.display="block";
         loadDrawing(uuid, replaceDrawing);
     };

@@ -30,5 +30,11 @@ define(['domReady!','./compat','./sync'], function(document, Compat, Sync) {
         // register callback
         this._callback = callback;
     };
+    Gallery.abort = function() {
+        var galleries = document.querySelectorAll('div.gallery'), i;
+        for (i=0; i<galleries.length; i++) {
+            galleries[i].parentElement.removeChild(galleries[i]);
+        }
+    };
     return Gallery;
 });
