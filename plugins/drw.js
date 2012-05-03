@@ -3,7 +3,7 @@
  * depends on json plugin.
  * Author: C. Scott Ananian
  */
-define(['./src/drawing'], function(Drawing) {
+define(['src/drawing'], function(Drawing) {
     return {
         load : function(name, req, onLoad, config) {
             // recurse to load the json file containing the drawing data

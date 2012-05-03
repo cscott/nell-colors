@@ -3,7 +3,12 @@
   trailing:true, es5:true
  */
 /*global define:false, console:false, window:false */
-define(['domReady!', './src/dom', './hammer'], function(document, Dom, Hammer) {
+require.config({
+    paths: {
+        domReady: "./plugins/domReady"
+    }
+});
+define(['domReady!', './src/dom', './lib/hammer'], function(document, Dom, Hammer) {
     'use strict';
     Dom.insertMeta(document);
 

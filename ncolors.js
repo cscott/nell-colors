@@ -4,7 +4,19 @@
  */
 /*global define:false, console:false, MessageChannel:false, window:false,
          setTimeout:false, clearTimeout:false, navigator:false */
-define(['require', 'domReady!', /*'./audio-map.js',*/ './src/brush', './src/color', './src/compat', './src/dom', './src/drawcommand', './src/drawing', './src/layer', './src/gallery', './hammer', './src/postmessage', './src/prandom!', './raf', './src/recog', './src/sync', './BlobBuilder', './FileSaver', 'font!google,families:[Delius]'], function(require, document, /*audioMap_,*/ Brush, Color, Compat, Dom, DrawCommand, Drawing, Layer, Gallery, Hammer, postMessage, prandom, requestAnimationFrame, Recog, Sync, BlobBuilder, saveAs) {
+require.config({
+    paths: {
+        domReady: "../plugins/domReady",
+        font: "../plugins/font",
+        drw: "../plugins/drw",
+        img: "../plugins/img",
+        font: "../plugins/font",
+        propertyParser: "../plugins/propertyParser",
+        json: "../plugins/json",
+        text: "../plugins/text"
+    }
+});
+define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/color', './src/compat', './src/dom', './src/drawcommand', './src/drawing', './src/layer', './src/gallery', './lib/hammer', './src/postmessage', './src/prandom!', './src/recog', './src/sync', './lib/BlobBuilder', './lib/FileSaver', 'font!google,families:[Delius]'], function(require, document, /*audioMap_,*/ Brush, Color, Compat, Dom, DrawCommand, Drawing, Layer, Gallery, Hammer, postMessage, prandom, Recog, Sync, BlobBuilder, saveAs) {
     'use strict';
     // inlining the audio snippets with data: URLs seems to break iOS =(
     var audioMap = (typeof audioMap_ === 'undefined') ? false : audioMap_;
@@ -140,7 +152,7 @@ define(['require', 'domReady!', /*'./audio-map.js',*/ './src/brush', './src/colo
                 // infrequent checkpoints during playback
                 drawing.checkpointOften = false;
             }
-            requestAnimationFrame(playback);
+            Compat.requestAnimationFrame(playback);
         } else {
             if (playbackInfo.isPlaying) {
                 playbackInfo.isPlaying = false;
@@ -158,7 +170,7 @@ define(['require', 'domReady!', /*'./audio-map.js',*/ './src/brush', './src/colo
         if (!animRequested) {
             console.assert(drawing.commands.last !== drawing.commands.end);
             animRequested = true;
-            requestAnimationFrame(playback);
+            Compat.requestAnimationFrame(playback);
         }
     };
 
@@ -590,13 +602,13 @@ define(['require', 'domReady!', /*'./audio-map.js',*/ './src/brush', './src/colo
     var loadDrawing = function(uuid, callback) {
         var nd, gallery;
         switch(uuid) {
-        case 'lounge':
         case 'castle':
         case 'intro':
+        case 'lounge':
         case 'r':
         case 'roger':
             // special built-in drawings.
-            require(['drw!./'+uuid+'.json'], function(new_drawing) {
+            require(['drw!samples/'+uuid+'.json'], function(new_drawing) {
                 new_drawing.uuid = prandom.uuid();
                 callback(new_drawing);
             });
