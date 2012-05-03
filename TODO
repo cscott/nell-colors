@@ -17,7 +17,7 @@ x recognize letters:
 
 x dump drawings to local storage
   - sync w/ google app engine
-select backgrounds: letter/primer pictures
+select backgrounds: letter/primer pictures (camera)
 implement gallery (preload with letter images)
 lasso strokes and then drag them around -- simple animation
   plays well with layers -- draw background, then draw foreground and drag it
@@ -52,3 +52,12 @@ Label size/opacity sliders.
 
 Offline web font
 Appcache
+-----
+fix new performance regression on ios w/ lowercase =(
+
+use "overlapping bounding boxes" as the metric for grouping segments, not time
+
+add offline features to recognizer
+
+audio sprites
+------
