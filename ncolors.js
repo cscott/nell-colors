@@ -567,6 +567,8 @@ define(['require', 'domReady!', /*'./audio-map.js',*/ './src/brush', './src/colo
     replaceDrawing = function(new_drawing) {
         console.assert(new_drawing.uuid);
         drawing.removeFromContainer(drawingElem);
+        removeRecogCanvas();
+        recog_timer_cancel();
         drawing = new_drawing;
         drawing.attachToContainer(drawingElem);
         if (document.location.hash !== ('#' + drawing.uuid)) {
@@ -605,6 +607,8 @@ define(['require', 'domReady!', /*'./audio-map.js',*/ './src/brush', './src/colo
             gallery.wait(function(uuid) {
                 // discard old drawing (replace with blank placeholder)
                 drawing.removeFromContainer(drawingElem);
+                removeRecogCanvas();
+                recog_timer_cancel();
                 drawing = new Drawing();
                 drawing.placeholder = true;
                 drawing.attachToContainer(drawingElem);
