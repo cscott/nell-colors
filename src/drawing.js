@@ -372,13 +372,14 @@ define(['./brush','./color','./drawcommand','./layer','./prandom!'], function(Br
                this.commands.length) {
             this.chunks.pop();
         }
-        // .. remove non-checkpoint chunk if we need to make it into a checkpoint
+        // .. remove non-checkpoint chunk if we need to make it a checkpoint
         while (this.chunks.length > 0 &&
                (!this.chunks[this.chunks.length-1].checkpoint) &&
                (this.chunks[this.chunks.length-1].end + DEFAULT_CHUNK_SIZE) >=
                this.commands.length) {
             this.chunks.pop();
         }
+        // .. XXX this doesn't deal with checkpoint size changes
         while (true) {
             // create another chunk
             var start = (this.chunks.length===0) ? 0 :
