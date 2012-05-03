@@ -75,7 +75,7 @@ define(['./brush','./color','./drawcommand','./layer','./prandom!'], function(Br
         // truncate stale chunks
         // Note the deliberate "off by one" in the comparison -- we want
         // to invalidate the final partial chunk written after a save, to
-        // ensure that the next save is a complete chunk.
+        // ensure that only the last chunk is partial.
         while (this.chunks.length > 0 &&
                this.chunks[this.chunks.length-1].end >=
                (this.commands.length-1)) {
@@ -365,9 +365,17 @@ define(['./brush','./color','./drawcommand','./layer','./prandom!'], function(Br
         // FUTURE: invalidate some chunks to give logarithmic # of chunks?
         if (this.commands.length === 0) { return; }
         // remove stale checkpoint chunks
+        // .. remove checkpoint chunks which are now too far back
         while (this.chunks.length > 0 &&
                this.chunks[this.chunks.length-1].checkpoint &&
                (this.chunks[this.chunks.length-1].end + DEFAULT_CHUNK_SIZE) <
+               this.commands.length) {
+            this.chunks.pop();
+        }
+        // .. remove non-checkpoint chunk if we need to make it into a checkpoint
+        while (this.chunks.length > 0 &&
+               (!this.chunks[this.chunks.length-1].checkpoint) &&
+               (this.chunks[this.chunks.length-1].end + DEFAULT_CHUNK_SIZE) >=
                this.commands.length) {
             this.chunks.pop();
         }
