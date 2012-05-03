@@ -50,10 +50,10 @@ define(['./drawcommand', './brush', './point'], function(DrawCommand, Brush, Poi
             return this.brush_stamp;
         },
         _drawStamp: function(pos, brush) {
-            this.lastPoint.set_from_point(pos);
+            this.lastPoint.set(Math.round(pos.x), Math.round(pos.y));
             var stamp = this._getBrushStamp(brush);
             var center = Math.floor(stamp.width / 2);
-            var x = Math.round(pos.x) - center, y = Math.round(pos.y) - center;
+            var x = this.lastPoint.x - center, y = this.lastPoint.y - center;
             this.progressContext.drawImage(stamp, x, y);
         },
         execDraw: function(x, y, brush) {
@@ -70,7 +70,8 @@ define(['./drawcommand', './brush', './point'], function(DrawCommand, Brush, Poi
             } else {
                 // interpolate along path
                 var dist = Point.dist(from, to), d;
-                var step = brush.size * brush.spacing;
+                // step should never be less than 1 px.
+                var step = Math.max(1, brush.size * brush.spacing);
                 if (dist < step) {
                     // XXX idle?
                 } else {
