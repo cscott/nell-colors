@@ -58,7 +58,11 @@ define(['domReady!', './src/dom', './lib/hammer'], function(document, Dom, Hamme
 
         case 'hashchange':
             // update hash in location bar; will trigger onHashChange()
-            window.location.hash = msg.hash;
+            if (msg.replace && window.history.replaceState) {
+                window.history.replaceState(null, msg.title, msg.hash||'#');
+            } else {
+                window.location.hash = msg.hash;
+            }
             break;
         case 'childReady':
             console.assert(evt.source===appIframe.contentWindow);

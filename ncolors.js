@@ -576,7 +576,19 @@ define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/
         };
         postMessage(window.parent, JSON.stringify(msg), '*');
     }
-    replaceDrawing = function(new_drawing) {
+    var notifyParentHash = function(newHash, optReplace, optTitle) {
+        var msg = {
+            type: 'hashchange',
+            hash: newHash
+        };
+        if (optReplace) {
+            msg.replace = true;
+            msg.title = optTitle;
+        }
+        postMessage(window.parent, JSON.stringify(msg), '*');
+    };
+
+    replaceDrawing = function(new_drawing, optForceSave) {
         console.assert(new_drawing.uuid);
         drawing.removeFromContainer(drawingElem);
         removeRecogCanvas();
@@ -585,10 +597,7 @@ define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/
         drawing.attachToContainer(drawingElem);
         if (document.location.hash !== ('#' + drawing.uuid)) {
             document.location.hash = '#' + drawing.uuid;
-            postMessage(window.parent, JSON.stringify({
-                type: 'hashchange',
-                hash: document.location.hash
-            }), '*');
+            notifyParentHash(document.location.hash);
         }
         if (drawing.initial_playback_speed) {
             playbackInfo.speed = drawing.initial_playback_speed;
@@ -597,6 +606,10 @@ define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/
         updateToolbarBrush();
         onWindowResize();
         document.getElementById("loading").style.display="none";
+        // newly loaded sample drawings need to be saved w/ their new UUID
+        if (optForceSave) {
+            maybeSyncDrawing();
+        }
     };
 
     var loadDrawing = function(uuid, callback) {
@@ -610,25 +623,29 @@ define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/
             // special built-in drawings.
             require(['drw!samples/'+uuid+'.json'], function(new_drawing) {
                 new_drawing.uuid = prandom.uuid();
-                callback(new_drawing);
+                if (window.history.replaceState) {
+                    window.history.replaceState(null, uuid, '#'+new_drawing.uuid);
+                    notifyParentHash('#'+new_drawing.uuid, true, uuid);
+                }
+                callback(new_drawing, true/* force initial save */);
             });
             break;
         case '':
         case 'gallery':
             gallery = new Gallery();
             gallery.wait(function(uuid) {
-                // discard old drawing (replace with blank placeholder)
-                drawing.removeFromContainer(drawingElem);
-                removeRecogCanvas();
-                recog_timer_cancel();
-                drawing = new Drawing();
-                drawing.placeholder = true;
-                drawing.attachToContainer(drawingElem);
                 // hide the gallery and load the new drawing
                 document.body.removeChild(gallery.domElement);
                 loadDrawing(uuid, callback);
             });
             document.body.appendChild(gallery.domElement);
+            // discard old drawing (replace with blank placeholder)
+            drawing.removeFromContainer(drawingElem);
+            removeRecogCanvas();
+            recog_timer_cancel();
+            drawing = new Drawing();
+            drawing.placeholder = true;
+            drawing.attachToContainer(drawingElem);
             break;
         case 'new':
             nd = new Drawing();
@@ -653,6 +670,7 @@ define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/
         var uuid = document.location.hash.replace(/^#/,'');
         if (uuid === drawing.uuid) { return; /* already loaded */ }
         // Load new document.
+        notifyParentHash(document.location.hash, true, uuid);
         Gallery.abort();
         document.getElementById("loading").style.display="block";
         loadDrawing(uuid, replaceDrawing);
