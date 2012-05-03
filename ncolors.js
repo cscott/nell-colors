@@ -411,11 +411,12 @@ define(['require', 'domReady!', /*'./audio-map.js',*/ './src/brush', './src/colo
             // ok, save now!
             isSaving = true;
             isDirty = true;
+            var drawing_copy = drawing;
             var afterSave = function() {
                 if (isDirty) {
                     // someone requested another save while we were busy, do it
                     isDirty = false;
-                    Sync.save(drawing, afterSave);
+                    Sync.save(drawing_copy, afterSave);
                 } else {
                     // we're all caught up!
                     isSaving = false;
