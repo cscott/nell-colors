@@ -3,7 +3,7 @@
   trailing:true, es5:true
  */
 /*global define:false, console:false, Uint8Array:false */
-define(['./color','./brush'], function(Color, Brush) {
+define(['./color','./compat', './brush'], function(Color, Compat, Brush) {
     'use strict';
 
     // draw commands
@@ -16,6 +16,7 @@ define(['./color','./brush'], function(Color, Brush) {
         DRAW_START: 4,
         NUM_COMMAND_TYPES: 5
     };
+    // the Compat module ensures that Object.freeze is defined (maybe a no-op)
     Object.freeze(CommandType);
 
     var DrawCommand = function(type) {

@@ -25,8 +25,14 @@ define([], function() {
             return fBound;
         };
     }
+    // Android's embedded webkit doesn't have Object.freeze
+    if (!Object.freeze) {
+        Object.freeze = function(o) { return o; };
+    }
     // Android non-Chrome doesn't have Web Workers
-    var FakeWorker = function() { };
+    var FakeWorker = function() {
+        console.warn("Faking Web Worker creation.");
+    };
     FakeWorker.prototype = {
         postMessage: function(msg) { },
         addEventListener: function(msg, func) { }
