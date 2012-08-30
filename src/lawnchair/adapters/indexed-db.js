@@ -17,8 +17,10 @@ Lawnchair.adapter('indexed-db', (function(){
   var STORE_VERSION = 2;
 
   var getIDB = function() {
+    // XXX firefox is timing out trying to open the db after you clear local
+    // storage, without firing onblocked or anything. =(
     return window.indexedDB || window.webkitIndexedDB ||
-          window.mozIndexedDB || window.oIndexedDB ||
+          /*window.mozIndexedDB || */ window.oIndexedDB ||
           window.msIndexedDB;
   };
   var getIDBTransaction = function() {
@@ -113,6 +115,9 @@ Lawnchair.adapter('indexed-db', (function(){
                 win();
             }
         }
+        request.onblocked = function(ev) {
+            console.log('onblocked!'); // XXX
+        };
         request.onerror = function(ev) {
             if (request.errorCode === getIDBDatabaseException().VERSION_ERR) {
                 // xxx blow it away
