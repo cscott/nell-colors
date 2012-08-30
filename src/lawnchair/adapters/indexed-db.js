@@ -37,6 +37,9 @@ Lawnchair.adapter('indexed-db', (function(){
           window.msIDBDatabaseException;
   };
 
+  // see https://groups.google.com/a/chromium.org/forum/?fromgroups#!topic/chromium-html5/OhsoAQLj7kc
+  var READ_WRITE = ('READ_WRITE' in getIDBTransaction()) ?
+        getIDBTransaction().READ_WRITE : 'readwrite';
 
   return {
     
@@ -76,20 +79,24 @@ Lawnchair.adapter('indexed-db', (function(){
         request.onsuccess = function(event) {
            self.db = request.result; 
             
-            if(self.db.version != (''+STORE_VERSION)) {
+            if (self.db.version != (''+STORE_VERSION)) {
               // DEPRECATED API: modern implementations will fire the
               // upgradeneeded event instead.
               var oldVersion = self.db.version;
               var setVrequest = self.db.setVersion(''+STORE_VERSION);
               // onsuccess is the only place we can create Object Stores
-              setVrequest.onsuccess = function(e) {
+              setVrequest.onsuccess = function(event) {
+                  var transaction = setVrequest.result;
                   setVrequest.onsuccess = setVrequest.onerror = null;
+                  // can't upgrade w/o versionchange transaction.
                   upgrade(oldVersion, STORE_VERSION);
-                  for (var i = 0; i < self.waiting.length; i++) {
-                      self.waiting[i].call(self);
-                  }
-                  self.waiting = [];
-                  win();
+                  transaction.oncomplete = function() {
+                      for (var i = 0; i < self.waiting.length; i++) {
+                          self.waiting[i].call(self);
+                      }
+                      self.waiting = [];
+                      win();
+                  };
               };
               setVrequest.onerror = function(e) {
                   setVrequest.onsuccess = setVrequest.onerror = null;
@@ -131,7 +138,7 @@ Lawnchair.adapter('indexed-db', (function(){
              if (callback) { obj.key = e.target.result; self.lambda(callback).call(self, obj) }
          };
 
-         var trans = this.db.transaction(STORE_NAME, getIDBTransaction().READ_WRITE);
+         var trans = this.db.transaction(STORE_NAME, READ_WRITE);
          var store = trans.objectStore(STORE_NAME);
          request = obj.key ? store.put(obj, obj.key) : store.put(obj);
          
@@ -282,7 +289,7 @@ Lawnchair.adapter('indexed-db', (function(){
             if (callback) self.lambda(callback).call(self)
         };
         
-        request = this.db.transaction(STORE_NAME, getIDBTransaction().READ_WRITE).objectStore(STORE_NAME)['delete'](keyOrObj);
+        request = this.db.transaction(STORE_NAME, READ_WRITE).objectStore(STORE_NAME)['delete'](keyOrObj);
         request.onsuccess = win;
         request.onerror = fail;
         return this;
@@ -311,7 +318,7 @@ Lawnchair.adapter('indexed-db', (function(){
 
         try {
             this.db
-                .transaction(STORE_NAME, getIDBTransaction().READ_WRITE)
+                .transaction(STORE_NAME, READ_WRITE)
                 .objectStore(STORE_NAME).clear().onsuccess = win;
             
         } catch(e) {
