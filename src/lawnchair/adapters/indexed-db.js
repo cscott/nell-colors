@@ -38,8 +38,9 @@ Lawnchair.adapter('indexed-db', (function(){
   };
 
   // see https://groups.google.com/a/chromium.org/forum/?fromgroups#!topic/chromium-html5/OhsoAQLj7kc
-  var READ_WRITE = ('READ_WRITE' in getIDBTransaction()) ?
-        getIDBTransaction().READ_WRITE : 'readwrite';
+  var READ_WRITE = (getIDBTransaction() &&
+                    'READ_WRITE' in getIDBTransaction()) ?
+    getIDBTransaction().READ_WRITE : 'readwrite';
 
   return {
     
