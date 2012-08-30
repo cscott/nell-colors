@@ -3,7 +3,7 @@ all: build-all
 #OPT=optimize=none
 OPT=
 
-PLUGINS=domReady font img drw json text propertyParser
+PLUGINS=domReady font img drw json text propertyParser webfont
 
 build/index.js: index.js # and other stuff
 	mkdir -p build

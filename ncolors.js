@@ -11,6 +11,7 @@ require.config({
         drw: "../plugins/drw",
         img: "../plugins/img",
         font: "../plugins/font",
+        webfont: "../plugins/webfont",
         propertyParser: "../plugins/propertyParser",
         json: "../plugins/json",
         text: "../plugins/text"
