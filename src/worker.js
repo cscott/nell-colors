@@ -10,8 +10,8 @@
 importScripts('../require.js');
 require.config({
     paths: {
-        json: "../json",
-        text: "../text"
+        json: "../plugins/json",
+        text: "../plugins/text"
     }
 });
 // compatibility thunk
