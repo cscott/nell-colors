@@ -17,7 +17,9 @@ Lawnchair.adapter('indexed-db', (function(){
   var STORE_VERSION = 2;
 
   var getIDB = function() {
-    return window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.oIndexedDB || window.msIndexedDB;
+    return window.indexedDB || window.webkitIndexedDB ||
+          window.mozIndexedDB || window.oIndexedDB ||
+          window.msIndexedDB;
   };
   var getIDBTransaction = function() {
       return window.IDBTransaction || window.webkitIDBTransaction ||
@@ -28,6 +30,11 @@ Lawnchair.adapter('indexed-db', (function(){
       return window.IDBKeyRange || window.webkitIDBKeyRange ||
           window.mozIDBKeyRange || window.oIDBKeyRange ||
           window.msIDBKeyRange;
+  };
+  var getIDBDatabaseException = function() {
+      return window.IDBDatabaseException || window.webkitIDBDatabaseException ||
+          window.mozIDBDatabaseException || window.oIDBDatabaseException ||
+          window.msIDBDatabaseException;
   };
 
 
@@ -53,16 +60,14 @@ Lawnchair.adapter('indexed-db', (function(){
             } catch (e2) { /* ignore */ }
 
             // ok, create object store.
-            self.store = self.db.createObjectStore(STORE_NAME,
-                                                   { autoIncrement: true} );
-            for (var i = 0; i < self.waiting.length; i++) {
-                self.waiting[i].call(self);
-            }
-            self.waiting = [];
-            win();
+            self.db.createObjectStore(STORE_NAME/*, { autoIncrement: true}*/);
+            self.store = true;
         };
         request.onupgradeneeded = function(event) {
+            self.db = request.result;
+            self.transaction = request.transaction;
             upgrade(event.oldVersion, event.newVersion);
+            // will end up in onsuccess callback
         };
         request.onsuccess = function(event) {
            self.db = request.result; 
@@ -75,13 +80,18 @@ Lawnchair.adapter('indexed-db', (function(){
               // onsuccess is the only place we can create Object Stores
               setVrequest.onsuccess = function(e) {
                   upgrade(oldVersion, STORE_VERSION);
+                  for (var i = 0; i < self.waiting.length; i++) {
+                      self.waiting[i].call(self);
+                  }
+                  self.waiting = [];
+                  win();
               };
               setVrequest.onerror = function(e) {
                   console.log("Failed to create objectstore " + e);
                   fail(e);
-              }
+              };
             } else {
-                self.store = {};
+                self.store = true;
                 for (var i = 0; i < self.waiting.length; i++) {
                       self.waiting[i].call(self);
                 }
@@ -89,7 +99,15 @@ Lawnchair.adapter('indexed-db', (function(){
                 win();
             }
         }
-        request.onerror = fail;
+        request.onerror = function(ev) {
+            if (request.errorCode === getIDBDatabaseException().VERSION_ERR) {
+                // xxx blow it away
+                self.idb.deleteDatabase(self.name);
+                // try it again.
+                return self.init(options, callback);
+            }
+            console.error('Failed to open database');
+        };
     },
 
     save:function(obj, callback) {
