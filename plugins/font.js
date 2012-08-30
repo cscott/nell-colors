@@ -7,7 +7,7 @@
 // webfont.js is the typekit loader, from
 //   https://github.com/typekit/webfontloader
 // it defines window.WebFont
-define(['propertyParser','webfont'], function (propertyParser,_ignore_) {
+define(['propertyParser','webfont'], function (propertyParser, WebFont) {
 
     var rParts = /^([^,]+),([^\|]+)\|?/;
 

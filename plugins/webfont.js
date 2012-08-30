@@ -13,7 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-;(function(window,document,undefined){
+define([],function() { return (function(window,document,navigator,undefined) {
+    if (!document) return; // build environment.
 var h=void 0,i=!0,l=null,o=!1;function p(a){return function(){return this[a]}}var q;function s(a,c,b){var d=2<arguments.length?Array.prototype.slice.call(arguments,2):[];return function(){d.push.apply(d,arguments);return c.apply(a,d)}};function t(a){this.F=a;this.U=h}t.prototype.createElement=function(a,c,b){a=this.F.createElement(a);if(c)for(var d in c)c.hasOwnProperty(d)&&("style"==d?u(this,a,c[d]):a.setAttribute(d,c[d]));b&&a.appendChild(this.F.createTextNode(b));return a};function v(a,c,b){a=a.F.getElementsByTagName(c)[0];a||(a=document.documentElement);a&&a.lastChild&&a.insertBefore(b,a.lastChild)}function aa(a){function c(){document.body?a():setTimeout(c,0)}c()}function w(a){a.parentNode&&a.parentNode.removeChild(a)}
 function x(a,c){return a.createElement("link",{rel:"stylesheet",href:c})}function y(a,c){return a.createElement("script",{src:c})}function z(a,c){for(var b=a.className.split(/\s+/),d=0,e=b.length;d<e;d++)if(b[d]==c)return;b.push(c);a.className=b.join(" ").replace(/^\s+/,"")}function A(a,c){for(var b=a.className.split(/\s+/),d=[],e=0,g=b.length;e<g;e++)b[e]!=c&&d.push(b[e]);a.className=d.join(" ").replace(/^\s+/,"").replace(/\s+$/,"")}
 function ba(a,c){for(var b=a.className.split(/\s+/),d=0,e=b.length;d<e;d++)if(b[d]==c)return i;return o}function u(a,c,b){if(a.U===h){var d=a.F.createElement("p");d.innerHTML='<a style="top:1px;">w</a>';a.U=/top/.test(d.getElementsByTagName("a")[0].getAttribute("style"))}a.U?c.setAttribute("style",b):c.style.cssText=b};function B(a,c,b,d,e,g,f,k){this.za=a;this.Fa=c;this.na=b;this.ma=d;this.Ca=e;this.Ba=g;this.la=f;this.Ga=k}q=B.prototype;q.getName=p("za");q.va=p("Fa");q.X=p("na");q.sa=p("ma");q.ta=p("Ca");q.ua=p("Ba");q.ra=p("la");q.w=p("Ga");function C(a,c){this.a=a;this.k=c}var ca=new B("Unknown","Unknown","Unknown","Unknown","Unknown","Unknown",h,o);
@@ -40,4 +41,8 @@ Y.prototype.z=function(a,c){var b=this.d.id,d=this;b?(this.m.__webfontfontdeckmo
 Z.prototype.C=function(a){var c=this.protocol(),b=(this.d.api||"fast.fonts.com/jsapi").replace(/^.*http(s?):(\/\/)?/,"");return c+"//"+b+"/"+a+".js"};Z.prototype.load=function(a){a(this.f,this.s)};Z.prototype.protocol=function(){var a=["http:","https:"],c=a[0];if(this.k&&this.k.location&&this.k.location.protocol)for(var b=0,b=0;b<a.length;b++)if(this.k.location.protocol===a[b])return this.k.location.protocol;return c};
 window.WebFont.q("monotype",function(a){var c=(new C(navigator.userAgent,document)).parse();return new Z(window,c,new t(document),document,a)});function $(a,c,b){this.m=a;this.c=c;this.d=b;this.f=[];this.s={}}$.prototype.C=function(a){var c="https:"==window.location.protocol?"https:":"http:";return(this.d.api||c+"//use.typekit.com")+"/"+a+".js"};$.prototype.z=function(a,c){var b=this.d.id,d=this.d,e=this;b?(this.m.__webfonttypekitmodule__||(this.m.__webfonttypekitmodule__={}),this.m.__webfonttypekitmodule__[b]=function(b){b(a,d,function(a,b,d){e.f=b;e.s=d;c(a)})},v(this.c,"head",y(this.c,this.C(b)))):c(i)};
 $.prototype.load=function(a){a(this.f,this.s)};window.WebFont.q("typekit",function(a){return new $(window,new t(document),a)});window.WebFontConfig&&window.WebFont.load(window.WebFontConfig);
-})(this,document);
+    return window.WebFont;
+})((typeof window === 'undefined') ? null : window,
+   (typeof document === 'undefined') ? null : document,
+   (typeof navigator === 'undefined') ? {} : navigator);
+});
