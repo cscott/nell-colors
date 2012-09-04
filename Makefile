@@ -27,7 +27,10 @@ build-all: build/index.js build/ncolors.js build/src/recogworker.js brushes/brus
 	cp brushes/brush-tile-129.png build/brushes
 	cp samples/*.json build/samples
 	# offline manifest (everything!)
-	( echo "CACHE MANIFEST" ; cd build ; find . -type f -print ) \
+	( echo "CACHE MANIFEST" ; \
+	  echo -n '# ' ; find build -type f | xargs md5sum -b | md5sum; echo ; \
+	  echo "CACHE:" ; \
+	  cd build ; find . -type f -print | fgrep -v .manifest ) \
 		> build/offline.manifest
 	# domain name for github pages
 	echo nell-colors.github.cscott.net > build/CNAME
