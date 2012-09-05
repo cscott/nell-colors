@@ -17,9 +17,10 @@ build/src/recogworker.js: src/recogworker.js # and other stuff
 
 build-all: build/index.js build/ncolors.js build/src/recogworker.js brushes/brush-tile-129.png
 	mkdir -p build/icons build/audio build/brushes build/samples
-	for f in index.html ncolors.html ; do \
+	for f in index.html ncolors.html install.html ; do \
 	  sed -e 's/<html/<html manifest="offline.manifest" /' < $$f > build/$$f; \
 	done
+	cp manifest.webapp build/
 	cp require.min.js build/require.js
 	cp src/worker.js build/src/
 	cp icons/*.png icons/*.ico build/icons/
@@ -30,12 +31,14 @@ build-all: build/index.js build/ncolors.js build/src/recogworker.js brushes/brus
 	( echo "CACHE MANIFEST" ; \
 	  echo -n '# ' ; find build -type f | xargs md5sum -b | md5sum; echo ; \
 	  echo "CACHE:" ; \
-	  cd build ; find . -type f -print | fgrep -v .manifest ) \
+	  cd build ; find . -type f -print | fgrep -v manifest ) \
 		> build/offline.manifest
 	# domain name for github pages
 	echo nell-colors.github.cscott.net > build/CNAME
 	# apache support for HTML5 offline manifest
-	echo "AddType text/cache-manifest .manifest" > build/.htaccess
+	( echo "AddType text/cache-manifest .manifest" ; \
+	  echo "AddType application/x-web-app-manifest+json .webapp" ) \
+	  > build/.htaccess
 
 clean:
 	$(RM) -rf build
