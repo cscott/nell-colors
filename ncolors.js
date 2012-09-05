@@ -17,10 +17,8 @@ require.config({
         text: "../plugins/text"
     }
 });
-define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/color', './src/compat', './src/dom', './src/drawcommand', './src/drawing', './src/layer', './src/gallery', './lib/hammer', './src/postmessage', './src/prandom!', './src/recog', './src/sync', './lib/BlobBuilder', './lib/FileSaver', 'font!custom,families:[Delius],urls:[fonts/style.css]'], function(require, document, /*audioMap_,*/ Brush, Color, Compat, Dom, DrawCommand, Drawing, Layer, Gallery, Hammer, postMessage, prandom, Recog, Sync, BlobBuilder, saveAs) {
+define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/color', './src/compat', './src/dom', './src/drawcommand', './src/drawing', './src/layer', './src/gallery', './lib/hammer', './src/postmessage', './src/prandom!', './src/recog', './src/sound', './src/sync', './lib/BlobBuilder', './lib/FileSaver', 'font!custom,families:[Delius],urls:[fonts/style.css]'], function(require, document, /*audioMap,*/ Brush, Color, Compat, Dom, DrawCommand, Drawing, Layer, Gallery, Hammer, postMessage, prandom, Recog, Sound, Sync, BlobBuilder, saveAs) {
     'use strict';
-    // inlining the audio snippets with data: URLs seems to break iOS =(
-    var audioMap = (typeof audioMap_ === 'undefined') ? false : audioMap_;
     // Android browser doesn't support MessageChannel
     // -- however, it also has a losing canvas. so don't worry too much.
     var USE_MESSAGECHANNEL = (typeof(MessageChannel) !== 'undefined');
@@ -50,7 +48,7 @@ define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/
         drag_min_distance: 2
     });
 
-    var maybeRequestAnim, removeRecogCanvas, maybeLoadAudio;
+    var maybeRequestAnim, removeRecogCanvas;
     var updateToolbarBrush, replaceDrawing, maybeSyncDrawing;
 
     var recog_timer_id = null;
@@ -178,7 +176,6 @@ define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/
     var isDragging = false;
     var lastpos = { x: null, y: null, time: 0 };
     hammer.ondrag = function(ev) {
-        maybeLoadAudio(); // partial workaround for iOS audio reluctance
         maybeHaltPlayback();
         if (!isDragging) {
             // XXX fill in current layer here
@@ -224,9 +221,10 @@ define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/
     };
 
     // generate <audio> elements for various snippets we might want to play
-    var audio_snippets = ['A','B','C','D','E','F','G','H','I','J','K','L','M',
-                          'N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
-    audio_snippets.forEach(function(id, n) {
+    var audio_snippets = {};
+    ['A','B','C','D','E','F','G','H','I','J','K','L','M',
+     'N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
+        .forEach(function(id,n) {
         var audio = null;
         if (!/(iPhone|iPad).*Safari/.test(navigator.userAgent)) {
             // sadly, just creating audio tags slows down iphone/ipad by
@@ -235,43 +233,14 @@ define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/
             // on the page, so we might be able to reenable this on iOS
             // using audio sprites (ie, a single audio file containing all
             // clips)
-            audio = document.createElement('audio');
-            audio.id = 'audio'+id;
-            //audio.preload = 'auto';
-            var mp3src = document.createElement('source');
-            if (audioMap) {
-                mp3src.src = 'data:audio/mpeg;base64,'+audioMap['audio/'+id+'.mp3'];
-            } else {
-                mp3src.src = 'audio/'+id+'.mp3';
-            }
-            mp3src.type = 'audio/mpeg';
-            audio.appendChild(mp3src);
-            var oggsrc = document.createElement('source');
-            if (audioMap) {
-                oggsrc.src = 'data:audio/ogg;base64,'+audioMap['audio/'+id+'.ogg'];
-            } else {
-                oggsrc.src = 'audio/'+id+'.ogg';
-            }
-            oggsrc.type = 'audio/ogg';
-            audio.appendChild(oggsrc);
-            drawingElem.appendChild(audio);
+            // (and inlining the audio snippets with data: URLs breaks iOS
+            // as well, so set audioMap to null if you re-enable this)
+            audio = new Sound.Effect({ url:'audio/'+id,
+                                       instances: 2,
+                                       formats: ['ogg','mp3'] });
         }
         audio_snippets[id] = audio;
-    });
-    audioMap = null; // free memory (but requirejs still holds a reference)
-    audio_snippets.loadQueue = [];
-    maybeLoadAudio = function() {
-        if (audio_snippets.loadQueue.length===0) { return; }
-        var audio = audio_snippets.loadQueue.shift();
-        /* --- sometimes we start to load audio but never finish =( */
-        if (false) {
-            console.log('started to load '+audio.id);
-            audio.addEventListener('loadeddata', function() {
-                console.log('finished loading '+audio.id);
-            });
-        }
-        audio.load();
-    };
+        });
 
     var lastRecogCanvas = null;
     removeRecogCanvas = function() {
@@ -323,18 +292,12 @@ define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/
         var audio = audio_snippets[letter.toUpperCase()];
         if (audio) {
             try {
-                if (!audio.paused) { audio.pause(); }
-                audio.currentTime=0;
                 audio.play();
                 // console.log(letter + ' played natively');
             } catch (e) {
                 if (/(iPhone|iPad).*Safari/.test(navigator.userAgent)) {
                     // iOS won't let us load/play content w/o user interaction
                     // this is really annoying.
-                    if (!audio_snippets['done'+letter]) {
-                        audio_snippets.loadQueue.push(audio);
-                        audio_snippets['done'+letter] = true;
-                    }
                 } else {
                     console.log("Unexpected problem playing audio.", e);
                 }
