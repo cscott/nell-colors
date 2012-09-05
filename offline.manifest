@@ -1,4 +1,7 @@
 CACHE MANIFEST
+# 46a00d49d6eb9c02f8a147215e244eae  -
+
+CACHE:
 ./src/worker.js
 ./src/recogworker.js
 ./index.js
@@ -78,5 +81,5 @@ CACHE MANIFEST
 ./samples/roger.json
 ./index.html
 ./ncolors.html
+./install.html
 ./require.js
-./offline.manifest
