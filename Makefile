@@ -16,7 +16,7 @@ build/src/recogworker.js: src/recogworker.js # and other stuff
 	node r.js -o name=recogworker out=$@ baseUrl=src $(foreach p,$(PLUGINS),paths.$(p)=../plugins/$(p)) $(OPT)
 
 build-all: build/index.js build/ncolors.js build/src/recogworker.js brushes/brush-tile-129.png
-	mkdir -p build/icons build/audio build/brushes build/samples
+	mkdir -p build/icons build/audio build/brushes build/samples build/fonts
 	for f in index.html ncolors.html install.html ; do \
 	  sed -e 's/<html/<html manifest="offline.manifest" /' < $$f > build/$$f; \
 	done
@@ -26,6 +26,7 @@ build-all: build/index.js build/ncolors.js build/src/recogworker.js brushes/brus
 	cp icons/*.png icons/*.ico build/icons/
 	cp audio/*.mp3 audio/*.ogg build/audio/
 	cp brushes/brush-tile-129.png build/brushes
+	cp fonts/*.eot fonts/*.ttf fonts/*.css build/fonts
 	cp samples/*.json build/samples
 	# offline manifest (everything!)
 	( echo "CACHE MANIFEST" ; \
