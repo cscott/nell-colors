@@ -23,7 +23,7 @@ build-all: build/index.js build/ncolors.js build/src/recogworker.js brushes/brus
 	done
 	cp install.html *.webapp build/
 	cp require.min.js build/require.js
-	cp src/worker.js build/src/
+	cp src/worker.js src/appcacheui.js build/src/
 	cp icons/*.png icons/*.ico icons/*.svg build/icons/
 	cp audio/*.webm build/audio/
 	cp brushes/brush-tile-129.png build/brushes
