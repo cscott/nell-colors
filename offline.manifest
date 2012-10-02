@@ -1,9 +1,11 @@
 CACHE MANIFEST
-# 87d6bb1fc05dba2180090dd9ded69a60  -
+# 9271ed8a36dcea18550967ba229530ab  -
 
 CACHE:
 ./src/worker.js
 ./src/recogworker.js
+./src/iscroll.js
+./src/slider.js
 ./index.js
 ./ncolors.js
 ./icons/colors_icon-128x128.png
@@ -21,6 +23,11 @@ CACHE:
 ./icons/trans.png
 ./icons/undo.png
 ./icons/colors_icon-16x16.ico
+./icons/checkerboard.svg
+./icons/circle-minus.svg
+./icons/circle-plus.svg
+./icons/tool-brush.svg
+./icons/up-arrow.svg
 ./audio/A.mp3
 ./audio/B.mp3
 ./audio/C.mp3
@@ -79,7 +86,12 @@ CACHE:
 ./samples/lounge.json
 ./samples/r.json
 ./samples/roger.json
+./fonts/Delius-Regular.eot
+./fonts/Delius-Regular.ttf
+./fonts/style.css
+./style/normalize.css
 ./index.html
 ./ncolors.html
 ./install.html
 ./require.js
+./brush.html

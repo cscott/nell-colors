@@ -1,0 +1,8 @@
+@font-face {
+ font-family: Delius;
+ src: url("Delius-Regular.eot") /* EOT file for IE */
+}
+@font-face {
+ font-family: Delius;
+ src: url("Delius-Regular.ttf") /* TTF file for CSS3 browsers */
+}
