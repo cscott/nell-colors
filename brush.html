@@ -342,7 +342,7 @@ input.fd_slider { display: none; } /* hide slider input */
 #brushpane .plus {
   background-image: url('icons/circle-plus.svg');
 }
-#brushpane .size {
+#brushpane .spacing {
   margin-top: 10px;
 }
 #brushpane .size,
@@ -811,11 +811,11 @@ document.addEventListener("DOMContentLoaded", pageLoaded, false);
       <div class="brush_options">
         <div class="stroke"><canvas></canvas></div>
         <div class="shape" tabindex="0"><div class="scrollwrapper"><div class="allbrushes"></div></div></div>
-        <div class="size">
-          <a class="minus" href="#"></a><input name="brush_size" id="brush_size" type="text" value="18" class="fd_slider fd_tween fd_range_15_200" /><a class="plus" href="#"></a>
-        </div>
         <div class="spacing">
-          <a class="minus" href="#"></a><input name="brush_spacing" id="brush_spacing" type="text" value="18" class="fd_slider fd_tween fd_range_15_200" /><a class="plus" href="#"></a>
+          <a class="minus" href="#" tabindex="-1"></a><input name="brush_spacing" id="brush_spacing" type="text" value="18" class="fd_slider fd_tween fd_range_5_300" /><a class="plus" href="#" tabindex="-1"></a>
+        </div>
+        <div class="size">
+          <a class="minus" href="#" tabindex="-1"></a><input name="brush_size" id="brush_size" type="text" value="18" class="fd_slider fd_tween fd_range_1_128" /><a class="plus" href="#" tabindex="-1"></a>
         </div>
       </div>
       <div class="color_options">
