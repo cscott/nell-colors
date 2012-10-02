@@ -18,10 +18,10 @@ build/src/recogworker.js: src/recogworker.js # and other stuff
 build-all: build/index.js build/ncolors.js build/src/recogworker.js brushes/brush-tile-129.png
 	mkdir -p build/icons build/audio build/brushes build/samples \
 		build/fonts build/style
-	for f in index.html ncolors.html install.html ; do \
-	  sed -e 's/<html/<html manifest="offline.manifest" /' < $$f > build/$$f; \
+	for f in index.html ncolors.html ; do \
+	  sed -e 's/<html/<html manifest="manifest.appcache" /' < $$f > build/$$f; \
 	done
-	cp manifest.webapp build/
+	cp install.html *.webapp build/
 	cp require.min.js build/require.js
 	cp src/worker.js build/src/
 	cp icons/*.png icons/*.ico icons/*.svg build/icons/
@@ -35,15 +35,19 @@ build-all: build/index.js build/ncolors.js build/src/recogworker.js brushes/brus
 	cp src/iscroll.js src/slider.js build/src/
 	# offline manifest (everything!)
 	( echo "CACHE MANIFEST" ; \
-	  echo -n '# ' ; find build -type f | xargs md5sum -b | md5sum; echo ; \
+	  echo -n '# ' ; find build -type f | fgrep -v manifest | \
+	    fgrep -v install.html | xargs md5sum -b | md5sum; echo ; \
 	  echo "CACHE:" ; \
-	  cd build ; find . -type f -print | fgrep -v manifest ) \
-		> build/offline.manifest
+	  cd build ; find . -type f -print | fgrep -v manifest | \
+	    fgrep -v install.html ) > build/manifest.appcache
 	# domain name for github pages
 	echo nell-colors.github.cscott.net > build/CNAME
+	# turn off jekyll for github pages
+	touch build/.nojekyll
 	# apache support for HTML5 offline manifest
-	( echo "AddType text/cache-manifest .manifest" ; \
-	  echo "AddType application/x-web-app-manifest+json .webapp" ) \
+	( echo "AddType text/cache-manifest .appcache" ; \
+	  echo "AddType application/x-web-app-manifest+json .webapp" ; \
+	  echo "AddType video/webm .webm" ) \
 	  > build/.htaccess
 
 clean:
