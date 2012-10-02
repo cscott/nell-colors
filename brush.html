@@ -49,22 +49,26 @@
 #brushpane .panes {
   width: 200%;
   min-height: 400px;
-  -webkit-transition-property: -webkit-transform;
-  -webkit-transition-duration: 1s;
+  -webkit-transition: visibility 0s linear 1s, -webkit-transform 1s ease-in-out;
+     -moz-transition: visibility 0s linear 1s,    -moz-transform 1s ease-in-out;
+          transition: visibility 0s linear 1s,         transform 1s ease-in-out;
   -webkit-transform: translate3d(0,0,0);
-  -moz-transition-property: -moz-transform;
-  -moz-transition-duration: 1s;
   -moz-transform: translate(0,0);
-  transition-property: transform;
-  transition-duration: 1s;
   transform: translate(0,0);
+  /* hiding inactive panes is needed to work around FF keyboard focus issues */
+  visibility: hidden;
+
   -webkit-user-select: none;
   -moz-user-select: -moz-none;
 }
+#brushpane.color .color_options,
+#brushpane.brush .brush_options {
+  visibility: visible;
+}
 #brushpane.color .panes {
   -webkit-transform: translate3d(-50%,0,0);
-  -moz-transform: translate(-50%,0);
-  transform: translate(-50%,0);
+     -moz-transform: translate(-50%,0);
+          transform: translate(-50%,0);
 }
 #brushpane .panes:after {
   content: "";
@@ -74,10 +78,18 @@
 #brushpane .panes .color_options {
   float: left;
   width: 50%;
+  /* workaround for FF not clipping .allbrushes:before to .scrollwrapper
+     properly: */
+  overflow: hidden;
 }
-#brushpane.brush .brush_options,
-#brushpane.color .color_options {
-  displayx: block;
+#brushpane.color .brush_options *,
+#brushpane.brush .color_options * {
+  /* this should work, but FF removed it:
+   *   https://bugzilla.mozilla.org/show_bug.cgi?id=379939 */
+  -moz-user-focus: ignore;
+  user-focus: ignore;
+  -moz-user-input: none;
+  user-input: none;
 }
 
 /* --------- page selector and close widgets ------- */
@@ -91,12 +103,26 @@
   margin: 0 32px;
   position: relative; /* use this as position reference for pseudo-elements */
 }
-#brushpane.brush .page_select > .brush_select:before,
-#brushpane.color .page_select > .color_select:before {
+#brushpane .page_select > a:focus {
+  -moz-outline: 0px none;
+  outline: 0px none;
+}
+#brushpane .page_select > a:before {
   content: ""; /* needs to be present or pseudo-element isn't created */
   position: absolute; top: -2px; bottom: -2px; left: -2px; right: -2px;
-  background: #666; /* highlight */
   border-radius: 5px;
+  border: 2px dotted transparent;
+}
+#brushpane .page_select > a:focus:before {
+  border-color: #555;
+}
+#brushpane.brush .page_select > .brush_select:before,
+#brushpane.color .page_select > .color_select:before {
+  background: #666; /* highlight */
+}
+#brushpane.brush .page_select > .brush_select:focus:before,
+#brushpane.color .page_select > .color_select:focus:before {
+  border-color: #888; /* lighten highlight */
 }
 
 #brushpane .page_select > .color_select:after {
@@ -180,12 +206,12 @@
   background: #8c8c8c;
   -webkit-user-select: none;
   -moz-user-select: none;
-  -moz-user-focus: none;
+  -moz-user-focus: ignore;
   box-sizing: border-box;
 }
 .fd-slider-handle, .fd-slider-handle:focus {
-  outline: 0px none;
   -moz-outline:0px none;               
+  outline: 0px none;
 }
 .fd-slider-handle:focus {
   -moz-user-focus: normal;
