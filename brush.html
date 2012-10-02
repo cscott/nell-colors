@@ -31,12 +31,15 @@
   -webkit-transition-property: -webkit-transform;
   -webkit-transition-duration: 1s;
   -webkit-transform: translate3d(0,-100%,0);
+  -webkit-transform-origin: top center;
   -moz-transition-property: -moz-transform;
   -moz-transition-duration: 1s;
   -moz-transform: translate(0,-100%);
+  -moz-transform-origin: top center;
   transition-property: transform;
   transition-duration: 1s;
   transform: translate(0,-100%);
+  transform-origin: top center;
   -webkit-user-select: none;
   -moz-user-select: -moz-none;
 }
@@ -50,6 +53,32 @@
   -moz-transform: translate(0,0);
   transform: translate(0,0);
 }
+
+@media (-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 1.5dppx) {
+  #brushpane {
+    -webkit-transform: translate3d(0,-100%,0) scale(0.66);
+    -moz-transform: translate(0,-100%) scale(0.66);
+    transform: translate(0,-100%) scale(0.66);
+  }
+  #brushpane.visible {
+    -webkit-transform: translate3d(0,0,0) scale(0.66);
+    -moz-transform: translate(0,0) scale(0.66);
+    transform: translate(0,0) scale(0.66);
+  }
+}
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 2dppx) {
+  #brushpane {
+    -webkit-transform: translate3d(0,-100%,0) scale(0.5);
+    -moz-transform: translate(0,-100%) scale(0.5);
+    transform: translate(0,-100%) scale(0.5);
+  }
+  #brushpane.visible {
+    -webkit-transform: translate3d(0,0,0) scale(0.5);
+    -moz-transform: translate(0,0) scale(0.5);
+    transform: translate(0,0) scale(0.5);
+  }
+}
+
 
 #brushpane .panes {
   width: 200%;
@@ -548,7 +577,7 @@ function drawWheel() {
   var canvas = document.querySelector('#brushpane .wheel > canvas');
   var lightness = parseInt(document.getElementById('color_lightness').value, 10) || 0;
   var size = canvas.width = canvas.height =
-    298 * (window.devicePixelRatio || 1);
+    298 * (/*window.devicePixelRatio ||*/ 1);
   var ctx = canvas.getContext('2d');
   var hue;
   for (hue=0; hue<=255; hue++) {
@@ -729,7 +758,6 @@ function pageLoaded() {
   wheel.addEventListener('keypress', handleWheelKey, true);
 
   fdSliderController.create();
-  brushpane.classList.add('visible');
   updateThumb();
   updateColorFromInputs();
 
@@ -754,6 +782,7 @@ function pageLoaded() {
     e.stopPropagation(); e.preventDefault();
     return false;
   }, true);
+  brushpane.classList.add('visible');
 }
 document.addEventListener("DOMContentLoaded", pageLoaded, false);
 //]]>
