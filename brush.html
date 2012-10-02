@@ -40,6 +40,11 @@
   -webkit-user-select: none;
   -moz-user-select: -moz-none;
 }
+#brushpane a:focus,
+#brushpane canvas:focus {
+  -moz-outline: 2px dotted #888;
+  outline: 2px dotted #888;
+}
 #brushpane.visible {
   -webkit-transform: translate3d(0,0,0);
   -moz-transform: translate(0,0);
@@ -207,15 +212,11 @@
   background: #8c8c8c;
   -webkit-user-select: none;
   -moz-user-select: none;
-  -moz-user-focus: ignore;
   box-sizing: border-box;
 }
 .fd-slider-handle, .fd-slider-handle:focus {
   -moz-outline:0px none;               
   outline: 0px none;
-}
-.fd-slider-handle:focus {
-  -moz-user-focus: normal;
 }
 .fd-slider-handle:focus::-moz-focus-inner { border-color: transparent; }
 /* hover effect */
@@ -247,6 +248,12 @@ input.fd_slider { display: none; } /* hide slider input */
   background: white;
   margin: 0 2px;
   position: relative;
+  -moz-user-focus: normal; /* allow to take focus */
+}
+#brushpane .shape:focus {
+  border: 2px dotted #888;
+  -moz-outline: 0px none;
+  outline: 0px none;
 }
 #brushpane .shape:before, #brushpane .shape:after {
   content: "";
@@ -322,6 +329,11 @@ input.fd_slider { display: none; } /* hide slider input */
   width: 77px;
   margin-left: 4px; margin-right: 4px;
   background: currentColor;
+}
+#brushpane .swatches > a:focus {
+  -moz-outline: 0px none;
+  outline: 0px none;
+  border: 2px dotted #888;
 }
 #brushpane .swatches > .new:before,
 #brushpane .swatches > .old:before {
@@ -677,14 +689,44 @@ function pageLoaded() {
       // emualate mouseleave event
       handleMouseUp(event);
     }
-  }
+  };
   var handleMouseUp = function(event) {
     updateThumbFromEvent(event);
     brushpane.removeEventListener('mousemove', handleMouseMove, true);
     brushpane.removeEventListener('mouseup', handleMouseUp, true);
     brushpane.removeEventListener('mouseout', handleMouseOut, true);
-  }
+  };
   wheel.addEventListener('mousedown', handleMouseDown, true);
+  var handleWheelKey = function(e) {
+    var INCR = 2;
+    e = e || document.parentWindow.event;
+    var kc = e.keyCode != null ? e.keyCode : e.charCode;
+    var h = parseInt(document.getElementById('color_hue').value, 10) || 0;
+    var s = parseInt(document.getElementById('color_saturation').value, 10)|| 0;
+    switch (kc) {
+    case 37: /* left */
+      h-= INCR; break;
+    case 39: /* right */
+      h+= INCR; break;
+    case 38: /* up */
+    case 33: /* page up */
+      s+= INCR; break;
+    case 40: /* down */
+    case 34: /* page down */
+      s-= INCR; break;
+    default:
+      return true;
+    }
+    if (h < 0) h = 255; if (h > 255) h = 0;
+    if (s < 0) s = 0;   if (s > 255) s = 255;
+    document.getElementById('color_hue').value=Math.round(h);
+    document.getElementById('color_saturation').value=Math.round(s);
+    updateThumb();
+    updateColorFromInputs();
+    e.stopPropagation(); e.preventDefault();
+    return false;
+  };
+  wheel.addEventListener('keypress', handleWheelKey, true);
 
   fdSliderController.create();
   brushpane.classList.add('visible');
@@ -697,6 +739,21 @@ function pageLoaded() {
   };
   var brushes = brushpane.querySelector('.shape > .scrollwrapper');
   var brushscroll = new iScroll(brushes, { vScroll: false, snap: 100, onAnimationEnd: updateBrush });
+  /* listen to arrow key events on scroller */
+  var shape = brushpane.querySelector('.shape');
+  shape.addEventListener('keypress', function(e) {
+    e = e || document.parentWindow.event;
+    var kc = e.keyCode != null ? e.keyCode : e.charCode;
+    if( kc == 37 || kc == 40 || kc == 46 || kc == 34) {
+      // left, down, ins, page down
+      brushscroll.scrollToPage('prev');
+    } else if( kc == 39 || kc == 38 || kc == 45 || kc == 33) {
+      // right, up, del, page up
+      brushscroll.scrollToPage('next');
+    } else return true;
+    e.stopPropagation(); e.preventDefault();
+    return false;
+  }, true);
 }
 document.addEventListener("DOMContentLoaded", pageLoaded, false);
 //]]>
@@ -715,7 +772,7 @@ document.addEventListener("DOMContentLoaded", pageLoaded, false);
     <div class="panes">
       <div class="brush_options">
         <div class="stroke"><canvas></canvas></div>
-        <div class="shape"><div class="scrollwrapper"><div class="allbrushes"></div></div></div>
+        <div class="shape" tabindex="0"><div class="scrollwrapper"><div class="allbrushes"></div></div></div>
         <div class="size">
           <a class="minus" href="#"></a><input name="brush_size" id="brush_size" type="text" value="18" class="fd_slider fd_tween fd_range_15_200" /><a class="plus" href="#"></a>
         </div>
@@ -727,12 +784,12 @@ document.addEventListener("DOMContentLoaded", pageLoaded, false);
         <div class="swatches">
           <a href="#" class="white">
           </a><a href="#" class="old">
-          </a><a href="#" class="new">
+          </a><a          class="new" tabindex="-1">
           </a><a href="#" class="black">
           </a>
         </div>
         <div class="wheel">
-          <canvas></canvas>
+          <canvas tabindex="0"></canvas>
           <div class="thumb"></div>
           <input type="hidden" name="color_hue" id="color_hue" value="94" />
           <input type="hidden" name="color_saturation" id="color_saturation" value="250" />
