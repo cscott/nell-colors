@@ -1,3 +1,18 @@
+add explicit metrics for Delius font so that letters match up optimally.
+brush selection
+image thumbnails on gallery page
+delete picture option on gallery page
+paintbrush dialog (replace range sliders)
+select background (camera api)
+include a decent # of samples: cat / bat / mat / cab at least!
+convert audio to webm
+rename manifests
+add .nojekyll
+fix touch events on dialog sliders
+fix touch events on dialog color wheel (and keyboard focus?)
+fix keyboard focus on brush selector?
+make focused +/-/up buttons prettier
+----
 x double buffer to implement transparency mechanism.
 x tool bar at top
 x undo/redo
