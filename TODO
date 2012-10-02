@@ -5,7 +5,7 @@ delete picture option on gallery page
 paintbrush dialog (replace range sliders)
 select background (camera api)
 include a decent # of samples: cat / bat / mat / cab at least!
-convert audio to webm
+x convert audio to webm
 rename manifests
 add .nojekyll
 fix touch events on dialog sliders

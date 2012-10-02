@@ -25,7 +25,7 @@ build-all: build/index.js build/ncolors.js build/src/recogworker.js brushes/brus
 	cp require.min.js build/require.js
 	cp src/worker.js build/src/
 	cp icons/*.png icons/*.ico icons/*.svg build/icons/
-	cp audio/*.mp3 audio/*.ogg build/audio/
+	cp audio/*.webm build/audio/
 	cp brushes/brush-tile-129.png build/brushes
 	cp fonts/*.eot fonts/*.ttf fonts/*.css build/fonts
 	cp style/*.css build/style
@@ -53,7 +53,7 @@ clean:
 audio/%.b64: audio/%
 	base64 -w 0 < $< > $@
 src/audio-map.js: $(foreach l,A B C D E F G H I J K L M N O P Q R S T U V W X Y Z,\
-	audio/$(l).mp3.b64 audio/$(l).ogg.b64)
+	audio/$(l).webm.b64)
 	echo "define([], function() { return {" > $@
 	for f in $^ ; do \
 	echo '"audio/'`basename $$f .b64`'": "'`cat $$f`'",' >> $@ ; \

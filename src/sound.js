@@ -14,6 +14,7 @@ define([], function() {
         'ogg': 'audio/ogg',
         'wav': 'audio/wav',
         'aac': 'audio/aac',
+        'webm': 'audio/webm',
         'm4a': 'audio/x-m4a'
     };
 
@@ -114,7 +115,11 @@ define([], function() {
             audio.pause();
             audio.removeAttribute('loop');
             audio.removeEventListener('ended', loopFunc, false);
-            audio.currentTime = 0;
+            try {
+                audio.currentTime = 0;
+            } catch (e) {
+                console.log("AUDIO PROBLEM: "+e);
+            }
         };
     };
     if (window.cordovaDetect) {

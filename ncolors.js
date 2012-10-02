@@ -236,8 +236,8 @@ define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/
             // (and inlining the audio snippets with data: URLs breaks iOS
             // as well, so set audioMap to null if you re-enable this)
             audio = new Sound.Effect({ url:'audio/'+id,
-                                       instances: 2,
-                                       formats: ['ogg','mp3'] });
+                                       instances: 1,
+                                       formats: ['webm'] });
         }
         audio_snippets[id] = audio;
         });
