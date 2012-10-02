@@ -16,18 +16,23 @@ build/src/recogworker.js: src/recogworker.js # and other stuff
 	node r.js -o name=recogworker out=$@ baseUrl=src $(foreach p,$(PLUGINS),paths.$(p)=../plugins/$(p)) $(OPT)
 
 build-all: build/index.js build/ncolors.js build/src/recogworker.js brushes/brush-tile-129.png
-	mkdir -p build/icons build/audio build/brushes build/samples build/fonts
+	mkdir -p build/icons build/audio build/brushes build/samples \
+		build/fonts build/style
 	for f in index.html ncolors.html install.html ; do \
 	  sed -e 's/<html/<html manifest="offline.manifest" /' < $$f > build/$$f; \
 	done
 	cp manifest.webapp build/
 	cp require.min.js build/require.js
 	cp src/worker.js build/src/
-	cp icons/*.png icons/*.ico build/icons/
+	cp icons/*.png icons/*.ico icons/*.svg build/icons/
 	cp audio/*.mp3 audio/*.ogg build/audio/
 	cp brushes/brush-tile-129.png build/brushes
 	cp fonts/*.eot fonts/*.ttf fonts/*.css build/fonts
+	cp style/*.css build/style
 	cp samples/*.json build/samples
+	# 'brush' dialog demo
+	cp brush.html build/
+	cp src/iscroll.js src/slider.js build/src/
 	# offline manifest (everything!)
 	( echo "CACHE MANIFEST" ; \
 	  echo -n '# ' ; find build -type f | xargs md5sum -b | md5sum; echo ; \
