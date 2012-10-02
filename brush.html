@@ -83,21 +83,30 @@
 #brushpane .panes {
   width: 200%;
   min-height: 400px;
-  -webkit-transition: visibility 0s linear 1s, -webkit-transform 1s ease-in-out;
-     -moz-transition: visibility 0s linear 1s,    -moz-transform 1s ease-in-out;
-          transition: visibility 0s linear 1s,         transform 1s ease-in-out;
+  -webkit-transition: -webkit-transform 0.5s ease-in-out;
+     -moz-transition:    -moz-transform 0.5s ease-in-out;
+          transition:         transform 0.5s ease-in-out;
   -webkit-transform: translate3d(0,0,0);
   -moz-transform: translate(0,0);
   transform: translate(0,0);
-  /* hiding inactive panes is needed to work around FF keyboard focus issues */
-  visibility: hidden;
 
   -webkit-user-select: none;
   -moz-user-select: -moz-none;
 }
+#brushpane .color_options,
+#brushpane .brush_options {
+  /* hiding inactive panes is needed to work around FF keyboard focus issues */
+  visibility: hidden;
+  -webkit-transition: visibility 0s linear 0.5s;
+     -moz-transition: visibility 0s linear 0.5s;
+          transition: visibility 0s linear 0.5s;
+}
 #brushpane.color .color_options,
 #brushpane.brush .brush_options {
   visibility: visible;
+  -webkit-transition-delay: 0s;
+     -moz-transition-delay: 0s;
+          transition-delay: 0s;
 }
 #brushpane.color .panes {
   -webkit-transform: translate3d(-50%,0,0);
