@@ -20,47 +20,12 @@ define(['domReady!', './src/color', './src/compat', './src/dom', './src/iscroll'
     'use strict';
 
 
-/**
- * Converts an HSL color value to RGB. Conversion formula
- * adapted from http://en.wikipedia.org/wiki/HSL_color_space.
- * Assumes h, s, and l are contained in the set [0, 1] and
- * returns r, g, and b in the set [0, 255].
- *
- * @param   Number  h       The hue
- * @param   Number  s       The saturation
- * @param   Number  l       The lightness
- * @return  Array           The RGB representation
- */
-var hslToRgb = function(h, s, l) {
-    var r, g, b;
-
-    if(s == 0) {
-        r = g = b = l; // achromatic
-    } else {
-        var hue2rgb = function(p, q, t) {
-            if(t < 0) t += 1;
-            if(t > 1) t -= 1;
-            if(t < 1/6) return p + (q - p) * 6 * t;
-            if(t < 1/2) return q;
-            if(t < 2/3) return p + (q - p) * (2/3 - t) * 6;
-            return p;
-        };
-
-        var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-        var p = 2 * l - q;
-        r = hue2rgb(p, q, h + 1/3);
-        g = hue2rgb(p, q, h);
-        b = hue2rgb(p, q, h - 1/3);
-    }
-
-    return [r * 255, g * 255, b * 255];
-}
-var rgbstring = function(r, g, b) {
-  return "rgb("+Math.round(r)+","+Math.round(g)+","+Math.round(b)+")";
-}
-var rgbastring = function(r, g, b, a) {
-  return "rgba("+Math.round(r)+","+Math.round(g)+","+Math.round(b)+","+(a/255)+")";
-}
+var rgbstring = function(color) {
+  return "rgb("+Math.round(color.red)+","+Math.round(color.green)+","+Math.round(color.blue)+")";
+};
+var rgbastring = function(color) {
+    return "rgba("+Math.round(color.red)+","+Math.round(color.green)+","+Math.round(color.blue)+","+(color.alpha/255)+")";
+};
 
 // robust poly fill for window.requestAnimationFrame
 if (typeof window !== 'undefined') {
@@ -244,27 +209,27 @@ function updateOldColorFromInputs() {
   updateOldColor.apply(null, hsla);
 }
 function updateOldColor(hue, saturation, lightness, opacity) {
-  var rgb = hslToRgb(hue/256, saturation/255, lightness/255);
+  var color = Color.from_hls(hue*360/256, lightness/255, saturation/255, opacity);
   ['.swatches > .old'].forEach(function(sel) {
-    var e = document.querySelector('#brushpane '+sel);
-    e.style.color = rgbastring(rgb[0], rgb[1], rgb[2], opacity);
+      var e = document.querySelector('#brushpane '+sel);
+      e.style.color = rgbastring(color);
   });
 }
-var updateColor = onAnim('updateColor',
-                         function(hue, saturation, lightness, opacity) {
-  var rgb = hslToRgb(hue/256, saturation/255, lightness/255);
+/* hue=[0,255], sat=[0,255], lightness=[0,255], opacity=[0,255] */
+var updateColor = onAnim('updateColor', function(hue, saturation, lightness, opacity) {
+  var color = Color.from_hls(hue*360/256, lightness/255, saturation/255, opacity);
   ['.color_select > span','.opacity_options .fd-slider-bar','.wheel > .thumb'].forEach(function(sel) {
-    var e = document.querySelector('#brushpane '+sel);
-    e.style.color = rgbstring(rgb[0], rgb[1], rgb[2]);
+      var e = document.querySelector('#brushpane '+sel);
+      e.style.color = rgbstring(color);
   });
   ['.swatches > .new'].forEach(function(sel) {
-    var e = document.querySelector('#brushpane '+sel);
-    e.style.color = rgbastring(rgb[0], rgb[1], rgb[2], opacity);
+      var e = document.querySelector('#brushpane '+sel);
+      e.style.color = rgbastring(color);
   });
   // saturated version of color
   ['.lightness .fd-slider-inner'].forEach(function(sel) {
-    var e = document.querySelector('#brushpane '+sel);
-    e.style.color = rgbstring.apply(null, hslToRgb(hue/256, 1, 0.5));
+      var e = document.querySelector('#brushpane '+sel);
+      e.style.color = rgbstring(Color.from_hls(hue*360/256, 0.5, 1));
   });
 });
 function pageLoaded() {
