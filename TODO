@@ -8,10 +8,14 @@ include a decent # of samples: cat / bat / mat / cab at least!
 x convert audio to webm
 x rename manifests
 x add .nojekyll
-fix touch events on dialog sliders
-fix touch events on dialog color wheel (and keyboard focus?)
-fix keyboard focus on brush selector?
-make focused +/-/up buttons prettier
+x fix touch events on dialog sliders
+x fix touch events on dialog color wheel (and keyboard focus?)
+x fix keyboard focus on brush selector?
+x make focused +/-/up buttons prettier
+resize elements instead of using css transform, since transform screws up
+ event location parsing.  shrink to ~320px wide and/or use percentages.
+fix slider to allow click and drag off the handle.
+rewrite color wheel to be faster -- opacity on white/black circles perhaps?
 ----
 x double buffer to implement transparency mechanism.
 x tool bar at top
