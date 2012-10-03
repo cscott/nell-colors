@@ -439,7 +439,11 @@ input.fd_slider { display: none; } /* hide slider input */
   border: 2px solid #666;
   display: inline-block;
   width: 298px; height: 298px;
+  /*
   background: url('icons/color-wheel.svg');
+  */
+  background-image: url('icons/color-wheel.png');
+  background-size: 100%;
 }
 #brushpane .wheel > .color > div {
   position: absolute;
@@ -454,12 +458,15 @@ input.fd_slider { display: none; } /* hide slider input */
   opacity: 0;
 }
 #brushpane .wheel > .thumb {
-  position: absolute; left: 50%; top: 50%;
+  position: absolute; left: 2px; top: 2px; /* offset past border */
   width: 22px; height: 22px;
   margin-left: -11px; margin-top: -11px;
   border: 2px solid black;
   background: currentColor;
   pointer-events: none;
+  -webkit-transform: translate3d(0,0,0);
+     -moz-transform: translate(0,0);
+          transform: translate(0,0);
 }
 #brushpane .wheel > .thumb:after {
   position: absolute; left: -1px; right: -1px; top: -1px; bottom: -1px;
@@ -538,6 +545,62 @@ function rgbstring(r, g, b) {
 function rgbastring(r, g, b, a) {
   return "rgba("+Math.round(r)+","+Math.round(g)+","+Math.round(b)+","+(a/255)+")";
 }
+
+// robust poly fill for window.requestAnimationFrame
+if (typeof window !== 'undefined') {
+        (function() {
+            var lastTime = 0;
+            var vendors = ['ms', 'moz', 'webkit', 'o'];
+            var x;
+            for(x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+                window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
+                window.cancelAnimationFrame =
+                    window[vendors[x]+'CancelAnimationFrame'] || window[vendors[x]+'CancelRequestAnimationFrame'];
+            }
+
+            if (!window.requestAnimationFrame) {
+                console.log("Using requestAnimationFrame fallback.");
+                window.requestAnimationFrame = function(callback, element) {
+                    var currTime = new Date().getTime();
+                    var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+                    var id = window.setTimeout(function() { callback(currTime + timeToCall); },
+                                               timeToCall);
+                    lastTime = currTime + timeToCall;
+                    return id;
+                };
+            }
+
+            if (!window.cancelAnimationFrame) {
+                window.cancelAnimationFrame = function(id) {
+                    clearTimeout(id);
+                };
+            }
+        })();
+}
+
+var onAnim = (function() {
+  var funcs = {};
+  var lastArgs = {};
+  var animateScheduled = false;
+  var animate = function() {
+    animateScheduled = false;
+    Object.getOwnPropertyNames(funcs).forEach(function(name) {
+      if (lastArgs[name]) {
+        funcs[name].apply(null, lastArgs[name]);
+        lastArgs[name] = null;
+      }
+    });
+  };
+  return function(name, f) {
+    funcs[name] = f;
+    return function() {
+      lastArgs[name] = Array.prototype.slice.call(arguments);
+      if (animateScheduled) { return; }
+      window.requestAnimationFrame(animate);
+      animateScheduled = true;
+    };
+  };
+})();
 
 function getAbsolutePosition(element) {
      if (element.getBoundingClientRect) {
@@ -628,11 +691,7 @@ var pol2xy = function(theta, r, size) {
   var y = -Math.sin(theta_rad) * r_scaled;
   return [x + (size/2), y + (size/2)];
 };
-var lastLightness = null;
-function drawWheel() {
-  var lightness = parseInt(document.getElementById('color_lightness').value, 10) || 0;
-  if (lightness === lastLightness) { return; }
-  lastLightness = lightness;
+var _drawWheel = onAnim('_drawWheel', function(lightness) {
   var color = document.querySelector('#brushpane .wheel > .color');
   var white = color.querySelector('.white');
   var black = color.querySelector('.black');
@@ -644,8 +703,17 @@ function drawWheel() {
     white.style.opacity = (lightness*2)-1;
     black.style.opacity = 0;
   }
-}
-
+});
+var drawWheel = (function() {
+  var lastLightness = null;
+  return function() {
+    var lightness = parseInt(document.getElementById('color_lightness').value,
+                             10) || 0;
+    if (lightness === lastLightness) { return; }
+    lastLightness = lightness;
+    _drawWheel(lightness);
+  };
+})();
 function updateColorFromInputs() {
   var hsla = ["color_hue", "color_saturation", "color_lightness", "brush_opacity"].map(function(id) {
     return parseInt(document.getElementById(id).value, 10) || 0;
@@ -666,7 +734,8 @@ function updateOldColor(hue, saturation, lightness, opacity) {
     e.style.color = rgbastring(rgb[0], rgb[1], rgb[2], opacity);
   });
 }
-function updateColor(hue, saturation, lightness, opacity) {
+var updateColor = onAnim('updateColor',
+                         function(hue, saturation, lightness, opacity) {
   var rgb = hslToRgb(hue/256, saturation/255, lightness/255);
   ['.color_select > span','.opacity_options .fd-slider-bar','.wheel > .thumb'].forEach(function(sel) {
     var e = document.querySelector('#brushpane '+sel);
@@ -681,7 +750,7 @@ function updateColor(hue, saturation, lightness, opacity) {
     var e = document.querySelector('#brushpane '+sel);
     e.style.color = rgbstring.apply(null, hslToRgb(hue/256, 1, 0.5));
   });
-}
+});
 function pageLoaded() {
   var brushpane = document.querySelector("#brushpane");
   PAGES = ['color', 'brush'];
@@ -766,7 +835,7 @@ function pageLoaded() {
     updateThumb(h, s, ox, oy);
     updateColorFromInputs();
   }
-  var updateThumb = function(h, s, x, y) {
+  var updateThumb = onAnim('updateThumb', function(h, s, x, y) {
     if (typeof(h)!=='number') {
       h = parseInt(document.getElementById('color_hue').value, 10) || 0;
       s = parseInt(document.getElementById('color_saturation').value, 10) || 0;
@@ -776,9 +845,14 @@ function pageLoaded() {
       x = xy[0], y = xy[1];
     }
     var thumb = document.querySelector('#brushpane .wheel > .thumb');
-    thumb.style.left = Math.round(x+2) + 'px';
-    thumb.style.top = Math.round(y+2) + 'px';
-  }
+    var transform = Math.round(x)+'px,'+Math.round(y)+'px';
+    // the '3d' is actually very important here: it enables
+    // GPU acceleration of this transform on webkit
+    thumb.style.WebkitTransform =
+            'translate3d('+transform+',0)';
+    thumb.style.MozTransform = thumb.style.transform =
+            'translate('+transform;+')';
+  });
   var handleMouseDown = function(event) {
     updateThumbFromEvent(event);
     if (event.type==='mousedown') {
