@@ -614,9 +614,12 @@ var pol2xy = function(theta, r, size) {
   var y = -Math.sin(theta_rad) * r_scaled;
   return [x + (size/2), y + (size/2)];
 };
+var lastLightness = null;
 function drawWheel() {
   var canvas = document.querySelector('#brushpane .wheel > canvas');
   var lightness = parseInt(document.getElementById('color_lightness').value, 10) || 0;
+  if (lightness === lastLightness) { return; }
+  lastLightness = lightness;
   var size = canvas.width = canvas.height =
     298 * (/*window.devicePixelRatio ||*/ 1);
   var ctx = canvas.getContext('2d');
