@@ -198,6 +198,17 @@ var fdSliderController = (function() {
                 removeEvent(window, "load",   function() { setTimeout(onload, 200) });
                 /*@end@*/
         };              
+        var extractTouch = function(event) {
+            // synthesize new event with data from first touch
+            return {
+                type: event.type,
+                pageX: event.touches[0].pageX,
+                pageY: event.touches[0].pageY,
+                clientX: event.touches[0].clientX,
+                clientY: event.touches[0].clientY,
+                target: event.touches[0].target || event.target || event.srcElement
+            };
+        }
         function fdSlider(options) {
                 var inp         = options.inp,
                     disabled    = false,
@@ -254,6 +265,7 @@ var fdSliderController = (function() {
                                 removeEvent(outerWrapper, "mouseover", onMouseOver);
                                 removeEvent(outerWrapper, "mouseout",  onMouseOut);
                                 removeEvent(outerWrapper, "mousedown", onMouseDown);
+                                removeEvent(outerWrapper, "touchstart",onMouseDown);
                                 removeEvent(handle, "focus",     onFocus);
                                 removeEvent(handle, "blur",      onBlur);                        
                                 if(!window.opera) {
@@ -263,7 +275,10 @@ var fdSliderController = (function() {
                                         removeEvent(handle, "keypress",  onKeyDown);
                                 };                                             
                                 removeEvent(handle, "mousedown", onHandleMouseDown);
+                                removeEvent(handle, "touchstart",onHandleMouseDown);
                                 removeEvent(handle, "mouseup",   onHandleMouseUp);
+                                removeEvent(handle, "touchend",  onHandleMouseUp);
+                                removeEvent(handle, "touchcancel",onHandleMouseUp);
 
                                 if(mouseWheelEnabled && !noMWheel) {
                                         if (window.addEventListener && !window.devicePixelRatio) window.removeEventListener('DOMMouseScroll', trackMouseWheel, false);
@@ -288,7 +303,8 @@ var fdSliderController = (function() {
                         if(!disabled && !noCallback) return;
                         addEvent(outerWrapper, "mouseover", onMouseOver);
                         addEvent(outerWrapper, "mouseout",  onMouseOut);
-                        addEvent(outerWrapper, "mousedown", onMouseDown);                        
+                        addEvent(outerWrapper, "mousedown", onMouseDown);
+                        addEvent(outerWrapper, "touchstart",onMouseDown);
                         if(!window.opera) {
                                 addEvent(handle, "keydown",   onKeyDown);  
                                 addEvent(handle, "keypress",  onKeyPress); 
@@ -296,9 +312,12 @@ var fdSliderController = (function() {
                                 addEvent(handle, "keypress",  onKeyDown);
                         };
                         addEvent(handle, "focus",     onFocus);
-                        addEvent(handle, "blur",      onBlur);                       
+                        addEvent(handle, "blur",      onBlur);
                         addEvent(handle, "mousedown", onHandleMouseDown);
+                        addEvent(handle, "touchstart",onHandleMouseDown);
                         addEvent(handle, "mouseup",   onHandleMouseUp); 
+                        addEvent(handle, "touchend",  onHandleMouseUp); 
+                        addEvent(handle, "touchcancel",onHandleMouseUp); 
                         
                         outerWrapper.className = outerWrapper.className.replace("slider-disabled", "");
                         outerWrapper.setAttribute("aria-disabled", false);                         
@@ -458,8 +477,14 @@ var fdSliderController = (function() {
                 
                 function onHandleMouseUp(e) {
                         e = e || window.event;
-                        removeEvent(document, 'mousemove', trackMouse);
-                        removeEvent(document, 'mouseup',   onHandleMouseUp);
+                        if (e.type==='mouseup') {
+                            removeEvent(document, 'mousemove', trackMouse);
+                            removeEvent(document, 'mouseup',   onHandleMouseUp);
+                        } else {
+                            removeEvent(document, 'touchmove', trackMouse);
+                            removeEvent(document, 'touchend',    onHandleMouseUp);
+                            removeEvent(document, 'touchcancel', onHandleMouseUp);
+                        }
                         
                         kbEnabled = true;
 
@@ -472,6 +497,11 @@ var fdSliderController = (function() {
                 
                 function onHandleMouseDown(e) {
                         e = e || window.event;
+                        // mouse event emulation from touches
+                        if (e.touches) {
+                            if (e.touches.length===0) { return; }
+                            e = extractTouch(e);
+                        }
                         mousePos  = vertical ? e.clientY : e.clientX;
                         handlePos = parseInt(vertical ? handle.offsetTop : handle.offsetLeft)||0;                        
                         kbEnabled = false;
@@ -479,8 +509,14 @@ var fdSliderController = (function() {
                         clearTimeout(timer);
                         timer = null;
                                 
-                        addEvent(document, 'mousemove', trackMouse);
-                        addEvent(document, 'mouseup', onHandleMouseUp);
+                        if (e.type==='mousedown') {
+                            addEvent(document, 'mousemove', trackMouse);
+                            addEvent(document, 'mouseup', onHandleMouseUp);
+                        } else {
+                            addEvent(document, 'touchmove', trackMouse);
+                            addEvent(document, 'touchend',    onHandleMouseUp);
+                            addEvent(document, 'touchcancel', onHandleMouseUp);
+                        }
                                 
                         // Force a "focus" on the button on mouse events
                         if(window.devicePixelRatio || (document.all && !window.opera)) try { setTimeout(function() { handle.focus(); }, 0); } catch(err) {};
@@ -490,7 +526,12 @@ var fdSliderController = (function() {
                 
                 function onMouseUp( e ) {
                         e = e || window.event;
-                        removeEvent(document, 'mouseup', onMouseUp);
+                        if (e.type === 'mouseup') {
+                            removeEvent(document, 'mouseup', onMouseUp);
+                        } else {
+                            removeEvent(document, 'touchend', onMouseUp);
+                            removeEvent(document, 'touchcancel', onMouseUp);
+                        }
                         if(!useTween) {
                                 clearTimeout(timer);
                                 timer = null;
@@ -501,11 +542,23 @@ var fdSliderController = (function() {
                 
                 function trackMouse( e ) {                                                  
                         e = e || window.event;                        
+                        if (e.touches) {
+                            if (e.touches.length===0) { return; }
+                            e = extractTouch(e);
+                        }
                         pixelsToValue(snapToNearestValue(handlePos + (vertical ? e.clientY - mousePos : e.clientX - mousePos)));                                          
                 };
                 
                 function onMouseDown( e ) {
                         e = e || window.event;
+                        // mouse event emulation from touches
+                        if (e.touches) {
+                            if (e.type==='touchstart') {
+                                e.preventDefault();
+                            }
+                            if (e.touches.length===0) { return; }
+                            e = extractTouch(e);
+                        }
                         var targ;                          
                         if (e.target) targ = e.target;
                         else if (e.srcElement) targ = e.srcElement;
@@ -537,9 +590,6 @@ var fdSliderController = (function() {
                         if (e.pageX)            posx = vertical ? e.pageY : e.pageX;
                         else if (e.clientX)     posx = vertical ? e.clientY + sTop : e.clientX + sLft;
                         posx -= vertical ? y + Math.round(handle.offsetHeight / 2) : x + Math.round(handle.offsetWidth / 2);                         
-                    if ('offsetX' in e) { /* CSA FIXUP */
-                        posx = vertical ? e.offsetY - Math.round(handle.offsetHeight / 2) : e.offsetX - Math.round(handle.offsetWidth/2);
-                    }
                         posx = snapToNearestValue(posx);                         
                         
                         if(useTween) {
@@ -547,7 +597,12 @@ var fdSliderController = (function() {
                         } else if(clickJump) {
                                 pixelsToValue(posx);
                         } else {
-                                addEvent(document, 'mouseup', onMouseUp);
+                                if (e.type==='mousedown') {
+                                    addEvent(document, 'mouseup', onMouseUp);
+                                } else {
+                                    addEvent(document, 'touchend', onMouseUp);
+                                    addEvent(document, 'touchcancel', onMouseUp);
+                                }
                                 destPos = posx;
                                 onTimer();
                         };                    
@@ -572,6 +627,13 @@ var fdSliderController = (function() {
                             curtop  = 0,
                             obj     = outerWrapper;
                             
+                        // in modern browsers; roughly ".offset()" from zepto.js
+                        if (obj.getBoundingClientRect) {
+                            var rect = obj.getBoundingClientRect();
+                            x = rect.left + document.body.scrollLeft;
+                            y = rect.top + document.body.scrollTop;
+                            return;
+                        }
                         // Try catch for IE's benefit
                         try {
                                 while (obj.offsetParent) {

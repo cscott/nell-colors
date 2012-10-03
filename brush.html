@@ -510,6 +510,23 @@ function rgbastring(r, g, b, a) {
   return "rgba("+Math.round(r)+","+Math.round(g)+","+Math.round(b)+","+(a/255)+")";
 }
 
+function getAbsolutePosition(element) {
+     if (element.getBoundingClientRect) {
+      // roughly, ".offset()" from zepto.js
+      var obj = element.getBoundingClientRect();
+      return {
+        x: obj.left + document.body.scrollLeft,
+        y: obj.top + document.body.scrollTop,
+      };
+     }
+     var r = { x: element.offsetLeft, y: element.offsetTop };
+     if (element.offsetParent) {
+       var tmp = getAbsolutePosition(element.offsetParent);
+       r.x += tmp.x;
+       r.y += tmp.y;
+     }
+     return r;
+};
 /**
  * Retrieve the coordinates of the given event relative to the center
  * of the widget.
@@ -683,6 +700,18 @@ function pageLoaded() {
   });
   var wheel = document.querySelector('#brushpane .wheel > canvas');
   var updateThumbFromEvent = function(event) {
+    if (event.touches) { // synthesize new event w/ first touch
+      if (event.touches.length===0) { return; }
+      // synthesize new event with data from first touch
+      event = {
+        type: event.type,
+        pageX: event.touches[0].pageX,
+        pageY: event.touches[0].pageY,
+        clientX: event.touches[0].clientX,
+        clientY: event.touches[0].clientY,
+        target: event.touches[0].target || event.target || event.srcElement
+      };
+    }
     var coords = getRelativeCoordinates(event, wheel);
     var ox = coords.x, oy = coords.y;
     var x = (ox - (wheel.offsetWidth/2)) / (wheel.clientHeight/2);
@@ -712,9 +741,17 @@ function pageLoaded() {
   }
   var handleMouseDown = function(event) {
     updateThumbFromEvent(event);
-    brushpane.addEventListener('mousemove', handleMouseMove, true);
-    brushpane.addEventListener('mouseup', handleMouseUp, true);
-    brushpane.addEventListener('mouseout', handleMouseOut, true);
+    if (event.type==='mousedown') {
+      brushpane.addEventListener('mousemove', handleMouseMove, true);
+      brushpane.addEventListener('mouseup', handleMouseUp, true);
+      brushpane.addEventListener('mouseout', handleMouseOut, true);
+    } else {
+      brushpane.addEventListener('touchmove', handleMouseMove, true);
+      brushpane.addEventListener('touchend', handleMouseUp, true);
+      brushpane.addEventListener('touchcancel', handleMouseUp, true);
+      brushpane.addEventListener('touchleave', handleMouseUp, true);
+      event.preventDefault();
+    }
   }
   var handleMouseMove = function(event) {
     updateThumbFromEvent(event);
@@ -730,11 +767,19 @@ function pageLoaded() {
   };
   var handleMouseUp = function(event) {
     updateThumbFromEvent(event);
-    brushpane.removeEventListener('mousemove', handleMouseMove, true);
-    brushpane.removeEventListener('mouseup', handleMouseUp, true);
-    brushpane.removeEventListener('mouseout', handleMouseOut, true);
+    if (event.type==='mouseup' || event.type==='mouseout') {
+      brushpane.removeEventListener('mousemove', handleMouseMove, true);
+      brushpane.removeEventListener('mouseup', handleMouseUp, true);
+      brushpane.removeEventListener('mouseout', handleMouseOut, true);
+    } else {
+      brushpane.removeEventListener('touchmove', handleMouseMove, true);
+      brushpane.removeEventListener('touchend', handleMouseUp, true);
+      brushpane.removeEventListener('touchcancel', handleMouseUp, true);
+      brushpane.removeEventListener('touchleave', handleMouseUp, true);
+    }
   };
   wheel.addEventListener('mousedown', handleMouseDown, true);
+  wheel.addEventListener('touchstart', handleMouseDown, true);
   var handleWheelKey = function(e) {
     var INCR = 2;
     e = e || document.parentWindow.event;
