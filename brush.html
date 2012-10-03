@@ -47,7 +47,7 @@ html, body, #frame {
   -moz-user-select: -moz-none;
 }
 #brushpane a:focus,
-#brushpane canvas:focus {
+#brushpane .wheel > .color:focus {
   -moz-outline: 2px dotted #888;
   outline: 2px dotted #888;
 }
@@ -423,7 +423,8 @@ input.fd_slider { display: none; } /* hide slider input */
   -webkit-user-select: none;
   -moz-user-select: -moz-none;
 }
-#brushpane .wheel > canvas,
+#brushpane .wheel > .color,
+#brushpane .wheel > .color > div,
 #brushpane .wheel > .thumb,
 #brushpane .wheel > .thumb:after {
   -moz-border-radius: 50%;
@@ -433,11 +434,24 @@ input.fd_slider { display: none; } /* hide slider input */
   -webkit-user-select: none;
   -moz-user-select: -moz-none;
 }
-#brushpane .wheel > canvas {
+#brushpane .wheel > .color {
   position: relative; /* z-ordering with thumb */
   border: 2px solid #666;
   display: inline-block;
   width: 298px; height: 298px;
+  background: url('icons/color-wheel.svg');
+}
+#brushpane .wheel > .color > div {
+  position: absolute;
+  top: 0; bottom: 0; left: 0; right: 0;
+}
+#brushpane .wheel > .color > .white {
+  background: white;
+  opacity: 0;
+}
+#brushpane .wheel > .color > .black {
+  background: black;
+  opacity: 0;
 }
 #brushpane .wheel > .thumb {
   position: absolute; left: 50%; top: 50%;
@@ -606,7 +620,7 @@ function getRelativeCoordinates(event, reference) {
 
 var pol2xy = function(theta, r, size) {
   if (!size) {
-    size = document.querySelector('#brushpane .wheel > canvas').width;
+    size = document.querySelector('#brushpane .wheel > .color').clientWidth;
   }
   var theta_rad = 2*Math.PI*theta/256;
   var r_scaled = r*(size/2)/255;
@@ -616,27 +630,19 @@ var pol2xy = function(theta, r, size) {
 };
 var lastLightness = null;
 function drawWheel() {
-  var canvas = document.querySelector('#brushpane .wheel > canvas');
   var lightness = parseInt(document.getElementById('color_lightness').value, 10) || 0;
   if (lightness === lastLightness) { return; }
   lastLightness = lightness;
-  var size = canvas.width = canvas.height =
-    298 * (/*window.devicePixelRatio ||*/ 1);
-  var ctx = canvas.getContext('2d');
-  var hue;
-  for (hue=0; hue<=255; hue++) {
-    var start = pol2xy(hue, 0, size), end = pol2xy(hue, 255, size);
-    var lingrad = ctx.createLinearGradient(start[0], start[1], end[0], end[1]);
-    lingrad.addColorStop(0, rgbstring.apply(null, hslToRgb(hue/256, 0, lightness/255)));
-    lingrad.addColorStop(1, rgbstring.apply(null, hslToRgb(hue/256, 1, lightness/255)));
-    // draw sector
-    ctx.fillStyle = lingrad;
-    ctx.beginPath();
-    ctx.arc(start[0], start[1], size/2,
-            -2*Math.PI*(hue-0.75)/256, -2*Math.PI*(hue+0.75)/256, true);
-    ctx.lineTo(start[0], start[1]);
-    ctx.closePath();
-    ctx.fill();
+  var color = document.querySelector('#brushpane .wheel > .color');
+  var white = color.querySelector('.white');
+  var black = color.querySelector('.black');
+  lightness /= 255;
+  if (lightness < 0.5) {
+    white.style.opacity = 0;
+    black.style.opacity = 1 - (lightness*2);
+  } else {
+    white.style.opacity = (lightness*2)-1;
+    black.style.opacity = 0;
   }
 }
 
@@ -646,6 +652,19 @@ function updateColorFromInputs() {
   });
   updateColor.apply(null, hsla);
   drawWheel();
+}
+function updateOldColorFromInputs() {
+  var hsla = ["color_hue", "color_saturation", "color_lightness", "brush_opacity"].map(function(id) {
+    return parseInt(document.getElementById('old_'+id).value, 10) || 0;
+  });
+  updateOldColor.apply(null, hsla);
+}
+function updateOldColor(hue, saturation, lightness, opacity) {
+  var rgb = hslToRgb(hue/256, saturation/255, lightness/255);
+  ['.swatches > .old'].forEach(function(sel) {
+    var e = document.querySelector('#brushpane '+sel);
+    e.style.color = rgbastring(rgb[0], rgb[1], rgb[2], opacity);
+  });
 }
 function updateColor(hue, saturation, lightness, opacity) {
   var rgb = hslToRgb(hue/256, saturation/255, lightness/255);
@@ -693,8 +712,9 @@ function pageLoaded() {
       fdSliderController.updateSlider('color_lightness');
       updateColorFromInputs();
   };
-  var setHSL = function(h, s, l) {
-    [['color_hue', h], ['color_saturation', s], ['color_lightness', l]].forEach(function(a) {
+  var setHSLA = function(h, s, l, a) {
+    [['color_hue', h], ['color_saturation', s],
+     ['color_lightness', l], ['brush_opacity', a]].forEach(function(a) {
       document.getElementById(a[0]).value=a[1];
       fdSliderController.updateSlider(a[0]);
     });
@@ -709,14 +729,16 @@ function pageLoaded() {
         } else if (sw==='black') {
            setLightness(0);
         } else {
-           /* XXX: use "old color" */
-           setHSL(130, 255, 145);
-           /* update opacity, too */
+           var oldhsla = ['color_hue', 'color_saturation',
+                          'color_lightness', 'brush_opacity'].map(function(id){
+             return parseInt(document.getElementById('old_'+id).value, 10) || 0;
+           });
+           setHSLA.apply(null, oldhsla);
         }
         event.preventDefault();
     });
   });
-  var wheel = document.querySelector('#brushpane .wheel > canvas');
+  var wheel = document.querySelector('#brushpane .wheel > .color');
   var updateThumbFromEvent = function(event) {
     if (event.touches) { // synthesize new event w/ first touch
       if (event.touches.length===0) { return; }
@@ -832,6 +854,7 @@ function pageLoaded() {
   fdSliderController.create();
   updateThumb();
   updateColorFromInputs();
+  updateOldColorFromInputs();
 
   var updateBrush = function() {
     var scroll = this;
@@ -890,7 +913,10 @@ document.addEventListener("DOMContentLoaded", pageLoaded, false);
           </a>
         </div>
         <div class="wheel">
-          <canvas tabindex="0"></canvas>
+          <div class="color" tabindex="0">
+            <div class="white"></div>
+            <div class="black"></div>
+          </div>
           <div class="thumb"></div>
           <input type="hidden" name="color_hue" id="color_hue" value="94" />
           <input type="hidden" name="color_saturation" id="color_saturation" value="250" />
@@ -906,8 +932,11 @@ document.addEventListener("DOMContentLoaded", pageLoaded, false);
     <div class="close_pane">
       <a class="closer" href="#"></a>
     </div>
+    <input type="hidden" name="old_color_hue" id="old_color_hue" value="130" />
+    <input type="hidden" name="old_color_saturation" id="old_color_saturation" value="255" />
+    <input type="hidden" name="old_color_lightness" id="old_color_lightness" value="145" />
+    <input type="hidden" name="old_brush_opacity" id="old_brush_opacity" value="200" />
   </div>
-    
 </div>
 
 </body>

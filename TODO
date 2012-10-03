@@ -15,7 +15,7 @@ x make focused +/-/up buttons prettier
 resize elements instead of using css transform, since transform screws up
  event location parsing.  shrink to ~320px wide and/or use percentages.
 fix slider to allow click and drag off the handle.
-rewrite color wheel to be faster -- opacity on white/black circles perhaps?
+x rewrite color wheel to be faster -- opacity on white/black circles perhaps?
 ----
 x double buffer to implement transparency mechanism.
 x tool bar at top
