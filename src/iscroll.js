@@ -2,7 +2,7 @@
  * iScroll v4.2.2 ~ Copyright (c) 2012 Matteo Spinelli, http://cubiq.org
  * Released under MIT license, http://cubiq.org/license
  */
-(function(window, doc){
+define([], function() { return (function(window, doc) {
 var m = Math,
 	dummyStyle = doc.createElement('div').style,
 	vendor = (function () {
@@ -1115,7 +1115,6 @@ function prefixStyle (style) {
 
 dummyStyle = null;	// for the sake of it
 
-if (typeof exports !== 'undefined') exports.iScroll = iScroll;
-else window.iScroll = iScroll;
+    return iScroll;
 
-})(window, document);
+})(window, document) });
