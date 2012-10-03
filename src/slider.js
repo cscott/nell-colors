@@ -596,6 +596,7 @@ var fdSliderController = (function() {
                                 tweenTo(posx);
                         } else if(clickJump) {
                                 pixelsToValue(posx);
+                                onHandleMouseDown(e);
                         } else {
                                 if (e.type==='mousedown') {
                                     addEvent(document, 'mouseup', onMouseUp);
