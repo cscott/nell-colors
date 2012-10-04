@@ -1,0 +1,1543 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+     viewBox="0 0 512 512">
+<defs>
+ <radialGradient id="hue0" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,64,64)" />
+  <stop offset="100%" style="stop-color:rgb(255,0,0)" />
+ </radialGradient>
+ <radialGradient id="hue1" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,67,64)" />
+  <stop offset="100%" style="stop-color:rgb(255,6,0)" />
+ </radialGradient>
+ <radialGradient id="hue2" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,70,64)" />
+  <stop offset="100%" style="stop-color:rgb(255,12,0)" />
+ </radialGradient>
+ <radialGradient id="hue3" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,73,64)" />
+  <stop offset="100%" style="stop-color:rgb(255,18,0)" />
+ </radialGradient>
+ <radialGradient id="hue4" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,76,64)" />
+  <stop offset="100%" style="stop-color:rgb(255,24,0)" />
+ </radialGradient>
+ <radialGradient id="hue5" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,79,64)" />
+  <stop offset="100%" style="stop-color:rgb(255,30,0)" />
+ </radialGradient>
+ <radialGradient id="hue6" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,82,64)" />
+  <stop offset="100%" style="stop-color:rgb(255,36,0)" />
+ </radialGradient>
+ <radialGradient id="hue7" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,85,64)" />
+  <stop offset="100%" style="stop-color:rgb(255,42,0)" />
+ </radialGradient>
+ <radialGradient id="hue8" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,88,64)" />
+  <stop offset="100%" style="stop-color:rgb(255,48,0)" />
+ </radialGradient>
+ <radialGradient id="hue9" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,91,64)" />
+  <stop offset="100%" style="stop-color:rgb(255,54,0)" />
+ </radialGradient>
+ <radialGradient id="hue10" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,94,64)" />
+  <stop offset="100%" style="stop-color:rgb(255,60,0)" />
+ </radialGradient>
+ <radialGradient id="hue11" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,97,64)" />
+  <stop offset="100%" style="stop-color:rgb(255,66,0)" />
+ </radialGradient>
+ <radialGradient id="hue12" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,100,64)" />
+  <stop offset="100%" style="stop-color:rgb(255,72,0)" />
+ </radialGradient>
+ <radialGradient id="hue13" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,103,64)" />
+  <stop offset="100%" style="stop-color:rgb(255,78,0)" />
+ </radialGradient>
+ <radialGradient id="hue14" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,106,64)" />
+  <stop offset="100%" style="stop-color:rgb(255,84,0)" />
+ </radialGradient>
+ <radialGradient id="hue15" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,109,64)" />
+  <stop offset="100%" style="stop-color:rgb(255,90,0)" />
+ </radialGradient>
+ <radialGradient id="hue16" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,112,64)" />
+  <stop offset="100%" style="stop-color:rgb(255,96,0)" />
+ </radialGradient>
+ <radialGradient id="hue17" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,115,64)" />
+  <stop offset="100%" style="stop-color:rgb(255,102,0)" />
+ </radialGradient>
+ <radialGradient id="hue18" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,118,64)" />
+  <stop offset="100%" style="stop-color:rgb(255,108,0)" />
+ </radialGradient>
+ <radialGradient id="hue19" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,121,64)" />
+  <stop offset="100%" style="stop-color:rgb(255,114,0)" />
+ </radialGradient>
+ <radialGradient id="hue20" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,124,64)" />
+  <stop offset="100%" style="stop-color:rgb(255,120,0)" />
+ </radialGradient>
+ <radialGradient id="hue21" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,127,64)" />
+  <stop offset="100%" style="stop-color:rgb(255,126,0)" />
+ </radialGradient>
+ <radialGradient id="hue22" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,129,64)" />
+  <stop offset="100%" style="stop-color:rgb(255,131,0)" />
+ </radialGradient>
+ <radialGradient id="hue23" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,132,64)" />
+  <stop offset="100%" style="stop-color:rgb(255,137,0)" />
+ </radialGradient>
+ <radialGradient id="hue24" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,135,64)" />
+  <stop offset="100%" style="stop-color:rgb(255,143,0)" />
+ </radialGradient>
+ <radialGradient id="hue25" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,138,64)" />
+  <stop offset="100%" style="stop-color:rgb(255,149,0)" />
+ </radialGradient>
+ <radialGradient id="hue26" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,141,64)" />
+  <stop offset="100%" style="stop-color:rgb(255,155,0)" />
+ </radialGradient>
+ <radialGradient id="hue27" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,144,64)" />
+  <stop offset="100%" style="stop-color:rgb(255,161,0)" />
+ </radialGradient>
+ <radialGradient id="hue28" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,147,64)" />
+  <stop offset="100%" style="stop-color:rgb(255,167,0)" />
+ </radialGradient>
+ <radialGradient id="hue29" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,150,64)" />
+  <stop offset="100%" style="stop-color:rgb(255,173,0)" />
+ </radialGradient>
+ <radialGradient id="hue30" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,153,64)" />
+  <stop offset="100%" style="stop-color:rgb(255,179,0)" />
+ </radialGradient>
+ <radialGradient id="hue31" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,156,64)" />
+  <stop offset="100%" style="stop-color:rgb(255,185,0)" />
+ </radialGradient>
+ <radialGradient id="hue32" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,159,64)" />
+  <stop offset="100%" style="stop-color:rgb(255,191,0)" />
+ </radialGradient>
+ <radialGradient id="hue33" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,162,64)" />
+  <stop offset="100%" style="stop-color:rgb(255,197,0)" />
+ </radialGradient>
+ <radialGradient id="hue34" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,165,64)" />
+  <stop offset="100%" style="stop-color:rgb(255,203,0)" />
+ </radialGradient>
+ <radialGradient id="hue35" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,168,64)" />
+  <stop offset="100%" style="stop-color:rgb(255,209,0)" />
+ </radialGradient>
+ <radialGradient id="hue36" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,171,64)" />
+  <stop offset="100%" style="stop-color:rgb(255,215,0)" />
+ </radialGradient>
+ <radialGradient id="hue37" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,174,64)" />
+  <stop offset="100%" style="stop-color:rgb(255,221,0)" />
+ </radialGradient>
+ <radialGradient id="hue38" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,177,64)" />
+  <stop offset="100%" style="stop-color:rgb(255,227,0)" />
+ </radialGradient>
+ <radialGradient id="hue39" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,180,64)" />
+  <stop offset="100%" style="stop-color:rgb(255,233,0)" />
+ </radialGradient>
+ <radialGradient id="hue40" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,183,64)" />
+  <stop offset="100%" style="stop-color:rgb(255,239,0)" />
+ </radialGradient>
+ <radialGradient id="hue41" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,186,64)" />
+  <stop offset="100%" style="stop-color:rgb(255,245,0)" />
+ </radialGradient>
+ <radialGradient id="hue42" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,189,64)" />
+  <stop offset="100%" style="stop-color:rgb(255,251,0)" />
+ </radialGradient>
+ <radialGradient id="hue43" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(190,191,64)" />
+  <stop offset="100%" style="stop-color:rgb(253,255,0)" />
+ </radialGradient>
+ <radialGradient id="hue44" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(187,191,64)" />
+  <stop offset="100%" style="stop-color:rgb(247,255,0)" />
+ </radialGradient>
+ <radialGradient id="hue45" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(184,191,64)" />
+  <stop offset="100%" style="stop-color:rgb(241,255,0)" />
+ </radialGradient>
+ <radialGradient id="hue46" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(181,191,64)" />
+  <stop offset="100%" style="stop-color:rgb(235,255,0)" />
+ </radialGradient>
+ <radialGradient id="hue47" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(178,191,64)" />
+  <stop offset="100%" style="stop-color:rgb(229,255,0)" />
+ </radialGradient>
+ <radialGradient id="hue48" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(175,191,64)" />
+  <stop offset="100%" style="stop-color:rgb(223,255,0)" />
+ </radialGradient>
+ <radialGradient id="hue49" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(172,191,64)" />
+  <stop offset="100%" style="stop-color:rgb(217,255,0)" />
+ </radialGradient>
+ <radialGradient id="hue50" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(169,191,64)" />
+  <stop offset="100%" style="stop-color:rgb(211,255,0)" />
+ </radialGradient>
+ <radialGradient id="hue51" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(166,191,64)" />
+  <stop offset="100%" style="stop-color:rgb(205,255,0)" />
+ </radialGradient>
+ <radialGradient id="hue52" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(163,191,64)" />
+  <stop offset="100%" style="stop-color:rgb(199,255,0)" />
+ </radialGradient>
+ <radialGradient id="hue53" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(160,191,64)" />
+  <stop offset="100%" style="stop-color:rgb(193,255,0)" />
+ </radialGradient>
+ <radialGradient id="hue54" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(157,191,64)" />
+  <stop offset="100%" style="stop-color:rgb(187,255,0)" />
+ </radialGradient>
+ <radialGradient id="hue55" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(154,191,64)" />
+  <stop offset="100%" style="stop-color:rgb(181,255,0)" />
+ </radialGradient>
+ <radialGradient id="hue56" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(151,191,64)" />
+  <stop offset="100%" style="stop-color:rgb(175,255,0)" />
+ </radialGradient>
+ <radialGradient id="hue57" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(148,191,64)" />
+  <stop offset="100%" style="stop-color:rgb(169,255,0)" />
+ </radialGradient>
+ <radialGradient id="hue58" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(145,191,64)" />
+  <stop offset="100%" style="stop-color:rgb(163,255,0)" />
+ </radialGradient>
+ <radialGradient id="hue59" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(142,191,64)" />
+  <stop offset="100%" style="stop-color:rgb(157,255,0)" />
+ </radialGradient>
+ <radialGradient id="hue60" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(139,191,64)" />
+  <stop offset="100%" style="stop-color:rgb(151,255,0)" />
+ </radialGradient>
+ <radialGradient id="hue61" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(136,191,64)" />
+  <stop offset="100%" style="stop-color:rgb(145,255,0)" />
+ </radialGradient>
+ <radialGradient id="hue62" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(133,191,64)" />
+  <stop offset="100%" style="stop-color:rgb(139,255,0)" />
+ </radialGradient>
+ <radialGradient id="hue63" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(130,191,64)" />
+  <stop offset="100%" style="stop-color:rgb(133,255,0)" />
+ </radialGradient>
+ <radialGradient id="hue64" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(128,191,64)" />
+  <stop offset="100%" style="stop-color:rgb(128,255,0)" />
+ </radialGradient>
+ <radialGradient id="hue65" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(125,191,64)" />
+  <stop offset="100%" style="stop-color:rgb(122,255,0)" />
+ </radialGradient>
+ <radialGradient id="hue66" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(122,191,64)" />
+  <stop offset="100%" style="stop-color:rgb(116,255,0)" />
+ </radialGradient>
+ <radialGradient id="hue67" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(119,191,64)" />
+  <stop offset="100%" style="stop-color:rgb(110,255,0)" />
+ </radialGradient>
+ <radialGradient id="hue68" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(116,191,64)" />
+  <stop offset="100%" style="stop-color:rgb(104,255,0)" />
+ </radialGradient>
+ <radialGradient id="hue69" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(113,191,64)" />
+  <stop offset="100%" style="stop-color:rgb(98,255,0)" />
+ </radialGradient>
+ <radialGradient id="hue70" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(110,191,64)" />
+  <stop offset="100%" style="stop-color:rgb(92,255,0)" />
+ </radialGradient>
+ <radialGradient id="hue71" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(107,191,64)" />
+  <stop offset="100%" style="stop-color:rgb(86,255,0)" />
+ </radialGradient>
+ <radialGradient id="hue72" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(104,191,64)" />
+  <stop offset="100%" style="stop-color:rgb(80,255,0)" />
+ </radialGradient>
+ <radialGradient id="hue73" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(101,191,64)" />
+  <stop offset="100%" style="stop-color:rgb(74,255,0)" />
+ </radialGradient>
+ <radialGradient id="hue74" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(98,191,64)" />
+  <stop offset="100%" style="stop-color:rgb(68,255,0)" />
+ </radialGradient>
+ <radialGradient id="hue75" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(95,191,64)" />
+  <stop offset="100%" style="stop-color:rgb(62,255,0)" />
+ </radialGradient>
+ <radialGradient id="hue76" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(92,191,64)" />
+  <stop offset="100%" style="stop-color:rgb(56,255,0)" />
+ </radialGradient>
+ <radialGradient id="hue77" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(89,191,64)" />
+  <stop offset="100%" style="stop-color:rgb(50,255,0)" />
+ </radialGradient>
+ <radialGradient id="hue78" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(86,191,64)" />
+  <stop offset="100%" style="stop-color:rgb(44,255,0)" />
+ </radialGradient>
+ <radialGradient id="hue79" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(83,191,64)" />
+  <stop offset="100%" style="stop-color:rgb(38,255,0)" />
+ </radialGradient>
+ <radialGradient id="hue80" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(80,191,64)" />
+  <stop offset="100%" style="stop-color:rgb(32,255,0)" />
+ </radialGradient>
+ <radialGradient id="hue81" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(77,191,64)" />
+  <stop offset="100%" style="stop-color:rgb(26,255,0)" />
+ </radialGradient>
+ <radialGradient id="hue82" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(74,191,64)" />
+  <stop offset="100%" style="stop-color:rgb(20,255,0)" />
+ </radialGradient>
+ <radialGradient id="hue83" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(71,191,64)" />
+  <stop offset="100%" style="stop-color:rgb(14,255,0)" />
+ </radialGradient>
+ <radialGradient id="hue84" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(68,191,64)" />
+  <stop offset="100%" style="stop-color:rgb(8,255,0)" />
+ </radialGradient>
+ <radialGradient id="hue85" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(65,191,64)" />
+  <stop offset="100%" style="stop-color:rgb(2,255,0)" />
+ </radialGradient>
+ <radialGradient id="hue86" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,191,66)" />
+  <stop offset="100%" style="stop-color:rgb(0,255,4)" />
+ </radialGradient>
+ <radialGradient id="hue87" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,191,69)" />
+  <stop offset="100%" style="stop-color:rgb(0,255,10)" />
+ </radialGradient>
+ <radialGradient id="hue88" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,191,72)" />
+  <stop offset="100%" style="stop-color:rgb(0,255,16)" />
+ </radialGradient>
+ <radialGradient id="hue89" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,191,75)" />
+  <stop offset="100%" style="stop-color:rgb(0,255,22)" />
+ </radialGradient>
+ <radialGradient id="hue90" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,191,78)" />
+  <stop offset="100%" style="stop-color:rgb(0,255,28)" />
+ </radialGradient>
+ <radialGradient id="hue91" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,191,81)" />
+  <stop offset="100%" style="stop-color:rgb(0,255,34)" />
+ </radialGradient>
+ <radialGradient id="hue92" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,191,84)" />
+  <stop offset="100%" style="stop-color:rgb(0,255,40)" />
+ </radialGradient>
+ <radialGradient id="hue93" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,191,87)" />
+  <stop offset="100%" style="stop-color:rgb(0,255,46)" />
+ </radialGradient>
+ <radialGradient id="hue94" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,191,90)" />
+  <stop offset="100%" style="stop-color:rgb(0,255,52)" />
+ </radialGradient>
+ <radialGradient id="hue95" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,191,93)" />
+  <stop offset="100%" style="stop-color:rgb(0,255,58)" />
+ </radialGradient>
+ <radialGradient id="hue96" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,191,96)" />
+  <stop offset="100%" style="stop-color:rgb(0,255,64)" />
+ </radialGradient>
+ <radialGradient id="hue97" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,191,99)" />
+  <stop offset="100%" style="stop-color:rgb(0,255,70)" />
+ </radialGradient>
+ <radialGradient id="hue98" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,191,102)" />
+  <stop offset="100%" style="stop-color:rgb(0,255,76)" />
+ </radialGradient>
+ <radialGradient id="hue99" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,191,105)" />
+  <stop offset="100%" style="stop-color:rgb(0,255,82)" />
+ </radialGradient>
+ <radialGradient id="hue100" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,191,108)" />
+  <stop offset="100%" style="stop-color:rgb(0,255,88)" />
+ </radialGradient>
+ <radialGradient id="hue101" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,191,111)" />
+  <stop offset="100%" style="stop-color:rgb(0,255,94)" />
+ </radialGradient>
+ <radialGradient id="hue102" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,191,114)" />
+  <stop offset="100%" style="stop-color:rgb(0,255,100)" />
+ </radialGradient>
+ <radialGradient id="hue103" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,191,117)" />
+  <stop offset="100%" style="stop-color:rgb(0,255,106)" />
+ </radialGradient>
+ <radialGradient id="hue104" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,191,120)" />
+  <stop offset="100%" style="stop-color:rgb(0,255,112)" />
+ </radialGradient>
+ <radialGradient id="hue105" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,191,123)" />
+  <stop offset="100%" style="stop-color:rgb(0,255,118)" />
+ </radialGradient>
+ <radialGradient id="hue106" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,191,126)" />
+  <stop offset="100%" style="stop-color:rgb(0,255,124)" />
+ </radialGradient>
+ <radialGradient id="hue107" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,191,128)" />
+  <stop offset="100%" style="stop-color:rgb(0,255,129)" />
+ </radialGradient>
+ <radialGradient id="hue108" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,191,131)" />
+  <stop offset="100%" style="stop-color:rgb(0,255,135)" />
+ </radialGradient>
+ <radialGradient id="hue109" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,191,134)" />
+  <stop offset="100%" style="stop-color:rgb(0,255,141)" />
+ </radialGradient>
+ <radialGradient id="hue110" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,191,137)" />
+  <stop offset="100%" style="stop-color:rgb(0,255,147)" />
+ </radialGradient>
+ <radialGradient id="hue111" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,191,140)" />
+  <stop offset="100%" style="stop-color:rgb(0,255,153)" />
+ </radialGradient>
+ <radialGradient id="hue112" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,191,143)" />
+  <stop offset="100%" style="stop-color:rgb(0,255,159)" />
+ </radialGradient>
+ <radialGradient id="hue113" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,191,146)" />
+  <stop offset="100%" style="stop-color:rgb(0,255,165)" />
+ </radialGradient>
+ <radialGradient id="hue114" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,191,149)" />
+  <stop offset="100%" style="stop-color:rgb(0,255,171)" />
+ </radialGradient>
+ <radialGradient id="hue115" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,191,152)" />
+  <stop offset="100%" style="stop-color:rgb(0,255,177)" />
+ </radialGradient>
+ <radialGradient id="hue116" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,191,155)" />
+  <stop offset="100%" style="stop-color:rgb(0,255,183)" />
+ </radialGradient>
+ <radialGradient id="hue117" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,191,158)" />
+  <stop offset="100%" style="stop-color:rgb(0,255,189)" />
+ </radialGradient>
+ <radialGradient id="hue118" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,191,161)" />
+  <stop offset="100%" style="stop-color:rgb(0,255,195)" />
+ </radialGradient>
+ <radialGradient id="hue119" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,191,164)" />
+  <stop offset="100%" style="stop-color:rgb(0,255,201)" />
+ </radialGradient>
+ <radialGradient id="hue120" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,191,167)" />
+  <stop offset="100%" style="stop-color:rgb(0,255,207)" />
+ </radialGradient>
+ <radialGradient id="hue121" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,191,170)" />
+  <stop offset="100%" style="stop-color:rgb(0,255,213)" />
+ </radialGradient>
+ <radialGradient id="hue122" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,191,173)" />
+  <stop offset="100%" style="stop-color:rgb(0,255,219)" />
+ </radialGradient>
+ <radialGradient id="hue123" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,191,176)" />
+  <stop offset="100%" style="stop-color:rgb(0,255,225)" />
+ </radialGradient>
+ <radialGradient id="hue124" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,191,179)" />
+  <stop offset="100%" style="stop-color:rgb(0,255,231)" />
+ </radialGradient>
+ <radialGradient id="hue125" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,191,182)" />
+  <stop offset="100%" style="stop-color:rgb(0,255,237)" />
+ </radialGradient>
+ <radialGradient id="hue126" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,191,185)" />
+  <stop offset="100%" style="stop-color:rgb(0,255,243)" />
+ </radialGradient>
+ <radialGradient id="hue127" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,191,188)" />
+  <stop offset="100%" style="stop-color:rgb(0,255,249)" />
+ </radialGradient>
+ <radialGradient id="hue128" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,191,191)" />
+  <stop offset="100%" style="stop-color:rgb(0,255,255)" />
+ </radialGradient>
+ <radialGradient id="hue129" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,188,191)" />
+  <stop offset="100%" style="stop-color:rgb(0,249,255)" />
+ </radialGradient>
+ <radialGradient id="hue130" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,185,191)" />
+  <stop offset="100%" style="stop-color:rgb(0,243,255)" />
+ </radialGradient>
+ <radialGradient id="hue131" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,182,191)" />
+  <stop offset="100%" style="stop-color:rgb(0,237,255)" />
+ </radialGradient>
+ <radialGradient id="hue132" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,179,191)" />
+  <stop offset="100%" style="stop-color:rgb(0,231,255)" />
+ </radialGradient>
+ <radialGradient id="hue133" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,176,191)" />
+  <stop offset="100%" style="stop-color:rgb(0,225,255)" />
+ </radialGradient>
+ <radialGradient id="hue134" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,173,191)" />
+  <stop offset="100%" style="stop-color:rgb(0,219,255)" />
+ </radialGradient>
+ <radialGradient id="hue135" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,170,191)" />
+  <stop offset="100%" style="stop-color:rgb(0,213,255)" />
+ </radialGradient>
+ <radialGradient id="hue136" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,167,191)" />
+  <stop offset="100%" style="stop-color:rgb(0,207,255)" />
+ </radialGradient>
+ <radialGradient id="hue137" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,164,191)" />
+  <stop offset="100%" style="stop-color:rgb(0,201,255)" />
+ </radialGradient>
+ <radialGradient id="hue138" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,161,191)" />
+  <stop offset="100%" style="stop-color:rgb(0,195,255)" />
+ </radialGradient>
+ <radialGradient id="hue139" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,158,191)" />
+  <stop offset="100%" style="stop-color:rgb(0,189,255)" />
+ </radialGradient>
+ <radialGradient id="hue140" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,155,191)" />
+  <stop offset="100%" style="stop-color:rgb(0,183,255)" />
+ </radialGradient>
+ <radialGradient id="hue141" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,152,191)" />
+  <stop offset="100%" style="stop-color:rgb(0,177,255)" />
+ </radialGradient>
+ <radialGradient id="hue142" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,149,191)" />
+  <stop offset="100%" style="stop-color:rgb(0,171,255)" />
+ </radialGradient>
+ <radialGradient id="hue143" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,146,191)" />
+  <stop offset="100%" style="stop-color:rgb(0,165,255)" />
+ </radialGradient>
+ <radialGradient id="hue144" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,143,191)" />
+  <stop offset="100%" style="stop-color:rgb(0,159,255)" />
+ </radialGradient>
+ <radialGradient id="hue145" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,140,191)" />
+  <stop offset="100%" style="stop-color:rgb(0,153,255)" />
+ </radialGradient>
+ <radialGradient id="hue146" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,137,191)" />
+  <stop offset="100%" style="stop-color:rgb(0,147,255)" />
+ </radialGradient>
+ <radialGradient id="hue147" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,134,191)" />
+  <stop offset="100%" style="stop-color:rgb(0,141,255)" />
+ </radialGradient>
+ <radialGradient id="hue148" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,131,191)" />
+  <stop offset="100%" style="stop-color:rgb(0,135,255)" />
+ </radialGradient>
+ <radialGradient id="hue149" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,128,191)" />
+  <stop offset="100%" style="stop-color:rgb(0,129,255)" />
+ </radialGradient>
+ <radialGradient id="hue150" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,126,191)" />
+  <stop offset="100%" style="stop-color:rgb(0,124,255)" />
+ </radialGradient>
+ <radialGradient id="hue151" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,123,191)" />
+  <stop offset="100%" style="stop-color:rgb(0,118,255)" />
+ </radialGradient>
+ <radialGradient id="hue152" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,120,191)" />
+  <stop offset="100%" style="stop-color:rgb(0,112,255)" />
+ </radialGradient>
+ <radialGradient id="hue153" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,117,191)" />
+  <stop offset="100%" style="stop-color:rgb(0,106,255)" />
+ </radialGradient>
+ <radialGradient id="hue154" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,114,191)" />
+  <stop offset="100%" style="stop-color:rgb(0,100,255)" />
+ </radialGradient>
+ <radialGradient id="hue155" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,111,191)" />
+  <stop offset="100%" style="stop-color:rgb(0,94,255)" />
+ </radialGradient>
+ <radialGradient id="hue156" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,108,191)" />
+  <stop offset="100%" style="stop-color:rgb(0,88,255)" />
+ </radialGradient>
+ <radialGradient id="hue157" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,105,191)" />
+  <stop offset="100%" style="stop-color:rgb(0,82,255)" />
+ </radialGradient>
+ <radialGradient id="hue158" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,102,191)" />
+  <stop offset="100%" style="stop-color:rgb(0,76,255)" />
+ </radialGradient>
+ <radialGradient id="hue159" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,99,191)" />
+  <stop offset="100%" style="stop-color:rgb(0,70,255)" />
+ </radialGradient>
+ <radialGradient id="hue160" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,96,191)" />
+  <stop offset="100%" style="stop-color:rgb(0,64,255)" />
+ </radialGradient>
+ <radialGradient id="hue161" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,93,191)" />
+  <stop offset="100%" style="stop-color:rgb(0,58,255)" />
+ </radialGradient>
+ <radialGradient id="hue162" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,90,191)" />
+  <stop offset="100%" style="stop-color:rgb(0,52,255)" />
+ </radialGradient>
+ <radialGradient id="hue163" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,87,191)" />
+  <stop offset="100%" style="stop-color:rgb(0,46,255)" />
+ </radialGradient>
+ <radialGradient id="hue164" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,84,191)" />
+  <stop offset="100%" style="stop-color:rgb(0,40,255)" />
+ </radialGradient>
+ <radialGradient id="hue165" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,81,191)" />
+  <stop offset="100%" style="stop-color:rgb(0,34,255)" />
+ </radialGradient>
+ <radialGradient id="hue166" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,78,191)" />
+  <stop offset="100%" style="stop-color:rgb(0,28,255)" />
+ </radialGradient>
+ <radialGradient id="hue167" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,75,191)" />
+  <stop offset="100%" style="stop-color:rgb(0,22,255)" />
+ </radialGradient>
+ <radialGradient id="hue168" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,72,191)" />
+  <stop offset="100%" style="stop-color:rgb(0,16,255)" />
+ </radialGradient>
+ <radialGradient id="hue169" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,69,191)" />
+  <stop offset="100%" style="stop-color:rgb(0,10,255)" />
+ </radialGradient>
+ <radialGradient id="hue170" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(64,66,191)" />
+  <stop offset="100%" style="stop-color:rgb(0,4,255)" />
+ </radialGradient>
+ <radialGradient id="hue171" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(65,64,191)" />
+  <stop offset="100%" style="stop-color:rgb(2,0,255)" />
+ </radialGradient>
+ <radialGradient id="hue172" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(68,64,191)" />
+  <stop offset="100%" style="stop-color:rgb(8,0,255)" />
+ </radialGradient>
+ <radialGradient id="hue173" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(71,64,191)" />
+  <stop offset="100%" style="stop-color:rgb(14,0,255)" />
+ </radialGradient>
+ <radialGradient id="hue174" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(74,64,191)" />
+  <stop offset="100%" style="stop-color:rgb(20,0,255)" />
+ </radialGradient>
+ <radialGradient id="hue175" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(77,64,191)" />
+  <stop offset="100%" style="stop-color:rgb(26,0,255)" />
+ </radialGradient>
+ <radialGradient id="hue176" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(80,64,191)" />
+  <stop offset="100%" style="stop-color:rgb(32,0,255)" />
+ </radialGradient>
+ <radialGradient id="hue177" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(83,64,191)" />
+  <stop offset="100%" style="stop-color:rgb(38,0,255)" />
+ </radialGradient>
+ <radialGradient id="hue178" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(86,64,191)" />
+  <stop offset="100%" style="stop-color:rgb(44,0,255)" />
+ </radialGradient>
+ <radialGradient id="hue179" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(89,64,191)" />
+  <stop offset="100%" style="stop-color:rgb(50,0,255)" />
+ </radialGradient>
+ <radialGradient id="hue180" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(92,64,191)" />
+  <stop offset="100%" style="stop-color:rgb(56,0,255)" />
+ </radialGradient>
+ <radialGradient id="hue181" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(95,64,191)" />
+  <stop offset="100%" style="stop-color:rgb(62,0,255)" />
+ </radialGradient>
+ <radialGradient id="hue182" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(98,64,191)" />
+  <stop offset="100%" style="stop-color:rgb(68,0,255)" />
+ </radialGradient>
+ <radialGradient id="hue183" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(101,64,191)" />
+  <stop offset="100%" style="stop-color:rgb(74,0,255)" />
+ </radialGradient>
+ <radialGradient id="hue184" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(104,64,191)" />
+  <stop offset="100%" style="stop-color:rgb(80,0,255)" />
+ </radialGradient>
+ <radialGradient id="hue185" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(107,64,191)" />
+  <stop offset="100%" style="stop-color:rgb(86,0,255)" />
+ </radialGradient>
+ <radialGradient id="hue186" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(110,64,191)" />
+  <stop offset="100%" style="stop-color:rgb(92,0,255)" />
+ </radialGradient>
+ <radialGradient id="hue187" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(113,64,191)" />
+  <stop offset="100%" style="stop-color:rgb(98,0,255)" />
+ </radialGradient>
+ <radialGradient id="hue188" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(116,64,191)" />
+  <stop offset="100%" style="stop-color:rgb(104,0,255)" />
+ </radialGradient>
+ <radialGradient id="hue189" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(119,64,191)" />
+  <stop offset="100%" style="stop-color:rgb(110,0,255)" />
+ </radialGradient>
+ <radialGradient id="hue190" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(122,64,191)" />
+  <stop offset="100%" style="stop-color:rgb(116,0,255)" />
+ </radialGradient>
+ <radialGradient id="hue191" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(125,64,191)" />
+  <stop offset="100%" style="stop-color:rgb(122,0,255)" />
+ </radialGradient>
+ <radialGradient id="hue192" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(127,64,191)" />
+  <stop offset="100%" style="stop-color:rgb(127,0,255)" />
+ </radialGradient>
+ <radialGradient id="hue193" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(130,64,191)" />
+  <stop offset="100%" style="stop-color:rgb(133,0,255)" />
+ </radialGradient>
+ <radialGradient id="hue194" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(133,64,191)" />
+  <stop offset="100%" style="stop-color:rgb(139,0,255)" />
+ </radialGradient>
+ <radialGradient id="hue195" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(136,64,191)" />
+  <stop offset="100%" style="stop-color:rgb(145,0,255)" />
+ </radialGradient>
+ <radialGradient id="hue196" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(139,64,191)" />
+  <stop offset="100%" style="stop-color:rgb(151,0,255)" />
+ </radialGradient>
+ <radialGradient id="hue197" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(142,64,191)" />
+  <stop offset="100%" style="stop-color:rgb(157,0,255)" />
+ </radialGradient>
+ <radialGradient id="hue198" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(145,64,191)" />
+  <stop offset="100%" style="stop-color:rgb(163,0,255)" />
+ </radialGradient>
+ <radialGradient id="hue199" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(148,64,191)" />
+  <stop offset="100%" style="stop-color:rgb(169,0,255)" />
+ </radialGradient>
+ <radialGradient id="hue200" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(151,64,191)" />
+  <stop offset="100%" style="stop-color:rgb(175,0,255)" />
+ </radialGradient>
+ <radialGradient id="hue201" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(154,64,191)" />
+  <stop offset="100%" style="stop-color:rgb(181,0,255)" />
+ </radialGradient>
+ <radialGradient id="hue202" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(157,64,191)" />
+  <stop offset="100%" style="stop-color:rgb(187,0,255)" />
+ </radialGradient>
+ <radialGradient id="hue203" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(160,64,191)" />
+  <stop offset="100%" style="stop-color:rgb(193,0,255)" />
+ </radialGradient>
+ <radialGradient id="hue204" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(163,64,191)" />
+  <stop offset="100%" style="stop-color:rgb(199,0,255)" />
+ </radialGradient>
+ <radialGradient id="hue205" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(166,64,191)" />
+  <stop offset="100%" style="stop-color:rgb(205,0,255)" />
+ </radialGradient>
+ <radialGradient id="hue206" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(169,64,191)" />
+  <stop offset="100%" style="stop-color:rgb(211,0,255)" />
+ </radialGradient>
+ <radialGradient id="hue207" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(172,64,191)" />
+  <stop offset="100%" style="stop-color:rgb(217,0,255)" />
+ </radialGradient>
+ <radialGradient id="hue208" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(175,64,191)" />
+  <stop offset="100%" style="stop-color:rgb(223,0,255)" />
+ </radialGradient>
+ <radialGradient id="hue209" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(178,64,191)" />
+  <stop offset="100%" style="stop-color:rgb(229,0,255)" />
+ </radialGradient>
+ <radialGradient id="hue210" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(181,64,191)" />
+  <stop offset="100%" style="stop-color:rgb(235,0,255)" />
+ </radialGradient>
+ <radialGradient id="hue211" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(184,64,191)" />
+  <stop offset="100%" style="stop-color:rgb(241,0,255)" />
+ </radialGradient>
+ <radialGradient id="hue212" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(187,64,191)" />
+  <stop offset="100%" style="stop-color:rgb(247,0,255)" />
+ </radialGradient>
+ <radialGradient id="hue213" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(190,64,191)" />
+  <stop offset="100%" style="stop-color:rgb(253,0,255)" />
+ </radialGradient>
+ <radialGradient id="hue214" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,64,189)" />
+  <stop offset="100%" style="stop-color:rgb(255,0,251)" />
+ </radialGradient>
+ <radialGradient id="hue215" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,64,186)" />
+  <stop offset="100%" style="stop-color:rgb(255,0,245)" />
+ </radialGradient>
+ <radialGradient id="hue216" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,64,183)" />
+  <stop offset="100%" style="stop-color:rgb(255,0,239)" />
+ </radialGradient>
+ <radialGradient id="hue217" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,64,180)" />
+  <stop offset="100%" style="stop-color:rgb(255,0,233)" />
+ </radialGradient>
+ <radialGradient id="hue218" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,64,177)" />
+  <stop offset="100%" style="stop-color:rgb(255,0,227)" />
+ </radialGradient>
+ <radialGradient id="hue219" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,64,174)" />
+  <stop offset="100%" style="stop-color:rgb(255,0,221)" />
+ </radialGradient>
+ <radialGradient id="hue220" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,64,171)" />
+  <stop offset="100%" style="stop-color:rgb(255,0,215)" />
+ </radialGradient>
+ <radialGradient id="hue221" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,64,168)" />
+  <stop offset="100%" style="stop-color:rgb(255,0,209)" />
+ </radialGradient>
+ <radialGradient id="hue222" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,64,165)" />
+  <stop offset="100%" style="stop-color:rgb(255,0,203)" />
+ </radialGradient>
+ <radialGradient id="hue223" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,64,162)" />
+  <stop offset="100%" style="stop-color:rgb(255,0,197)" />
+ </radialGradient>
+ <radialGradient id="hue224" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,64,159)" />
+  <stop offset="100%" style="stop-color:rgb(255,0,191)" />
+ </radialGradient>
+ <radialGradient id="hue225" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,64,156)" />
+  <stop offset="100%" style="stop-color:rgb(255,0,185)" />
+ </radialGradient>
+ <radialGradient id="hue226" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,64,153)" />
+  <stop offset="100%" style="stop-color:rgb(255,0,179)" />
+ </radialGradient>
+ <radialGradient id="hue227" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,64,150)" />
+  <stop offset="100%" style="stop-color:rgb(255,0,173)" />
+ </radialGradient>
+ <radialGradient id="hue228" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,64,147)" />
+  <stop offset="100%" style="stop-color:rgb(255,0,167)" />
+ </radialGradient>
+ <radialGradient id="hue229" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,64,144)" />
+  <stop offset="100%" style="stop-color:rgb(255,0,161)" />
+ </radialGradient>
+ <radialGradient id="hue230" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,64,141)" />
+  <stop offset="100%" style="stop-color:rgb(255,0,155)" />
+ </radialGradient>
+ <radialGradient id="hue231" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,64,138)" />
+  <stop offset="100%" style="stop-color:rgb(255,0,149)" />
+ </radialGradient>
+ <radialGradient id="hue232" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,64,135)" />
+  <stop offset="100%" style="stop-color:rgb(255,0,143)" />
+ </radialGradient>
+ <radialGradient id="hue233" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,64,132)" />
+  <stop offset="100%" style="stop-color:rgb(255,0,137)" />
+ </radialGradient>
+ <radialGradient id="hue234" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,64,129)" />
+  <stop offset="100%" style="stop-color:rgb(255,0,131)" />
+ </radialGradient>
+ <radialGradient id="hue235" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,64,127)" />
+  <stop offset="100%" style="stop-color:rgb(255,0,126)" />
+ </radialGradient>
+ <radialGradient id="hue236" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,64,124)" />
+  <stop offset="100%" style="stop-color:rgb(255,0,120)" />
+ </radialGradient>
+ <radialGradient id="hue237" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,64,121)" />
+  <stop offset="100%" style="stop-color:rgb(255,0,114)" />
+ </radialGradient>
+ <radialGradient id="hue238" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,64,118)" />
+  <stop offset="100%" style="stop-color:rgb(255,0,108)" />
+ </radialGradient>
+ <radialGradient id="hue239" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,64,115)" />
+  <stop offset="100%" style="stop-color:rgb(255,0,102)" />
+ </radialGradient>
+ <radialGradient id="hue240" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,64,112)" />
+  <stop offset="100%" style="stop-color:rgb(255,0,96)" />
+ </radialGradient>
+ <radialGradient id="hue241" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,64,109)" />
+  <stop offset="100%" style="stop-color:rgb(255,0,90)" />
+ </radialGradient>
+ <radialGradient id="hue242" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,64,106)" />
+  <stop offset="100%" style="stop-color:rgb(255,0,84)" />
+ </radialGradient>
+ <radialGradient id="hue243" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,64,103)" />
+  <stop offset="100%" style="stop-color:rgb(255,0,78)" />
+ </radialGradient>
+ <radialGradient id="hue244" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,64,100)" />
+  <stop offset="100%" style="stop-color:rgb(255,0,72)" />
+ </radialGradient>
+ <radialGradient id="hue245" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,64,97)" />
+  <stop offset="100%" style="stop-color:rgb(255,0,66)" />
+ </radialGradient>
+ <radialGradient id="hue246" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,64,94)" />
+  <stop offset="100%" style="stop-color:rgb(255,0,60)" />
+ </radialGradient>
+ <radialGradient id="hue247" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,64,91)" />
+  <stop offset="100%" style="stop-color:rgb(255,0,54)" />
+ </radialGradient>
+ <radialGradient id="hue248" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,64,88)" />
+  <stop offset="100%" style="stop-color:rgb(255,0,48)" />
+ </radialGradient>
+ <radialGradient id="hue249" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,64,85)" />
+  <stop offset="100%" style="stop-color:rgb(255,0,42)" />
+ </radialGradient>
+ <radialGradient id="hue250" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,64,82)" />
+  <stop offset="100%" style="stop-color:rgb(255,0,36)" />
+ </radialGradient>
+ <radialGradient id="hue251" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,64,79)" />
+  <stop offset="100%" style="stop-color:rgb(255,0,30)" />
+ </radialGradient>
+ <radialGradient id="hue252" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,64,76)" />
+  <stop offset="100%" style="stop-color:rgb(255,0,24)" />
+ </radialGradient>
+ <radialGradient id="hue253" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,64,73)" />
+  <stop offset="100%" style="stop-color:rgb(255,0,18)" />
+ </radialGradient>
+ <radialGradient id="hue254" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,64,70)" />
+  <stop offset="100%" style="stop-color:rgb(255,0,12)" />
+ </radialGradient>
+ <radialGradient id="hue255" cx="256" cy="256" r="256" fx="256" fy="256" gradientUnits="userSpaceOnUse">
+  <stop offset="0%" style="stop-color:rgb(128,128,128)" />
+  <stop offset="50%" style="stop-color:rgb(191,64,67)" />
+  <stop offset="100%" style="stop-color:rgb(255,0,6)" />
+ </radialGradient>
+</defs>
+<g>
+<path d="M256,256 L511.95662893973076,260.71212285588604 A256,256 0 0,0 511.95662893973076,251.28787714411396 Z" fill="url(#hue0)" />
+<path d="M256,256 L511.9951808723459,254.42921352981645 A256,256 0 0,0 511.76389830467724,245.00780622465516 Z" fill="url(#hue1)" />
+<path d="M256,256 L511.87953088027984,248.14725038678102 A256,256 0 0,0 511.41710506091306,238.734356591702 Z" fill="url(#hue2)" />
+<path d="M256,256 L511.60974862676346,241.87001744647938 A256,256 0 0,0 510.9164581037209,232.47130713673403 Z" fill="url(#hue3)" />
+<path d="M256,256 L511.1859966185384,235.60129587931388 A256,256 0 0,0 510.26225900410736,226.22243048655238 Z" fill="url(#hue4)" />
+<path d="M256,256 L510.6085301079694,229.34486172875404 A256,256 0 0,0 509.4549018271481,219.9914907307906 Z" fill="url(#hue5)" />
+<path d="M256,256 L509.8776969392895,223.10448363678896 A256,256 0 0,0 508.4948728946173,213.7822411545677 Z" fill="url(#hue6)" />
+<path d="M256,256 L508.99393733907186,216.88392057383848 A256,256 0 0,0 507.38275049204617,207.59842197764962 Z" fill="url(#hue7)" />
+<path d="M256,256 L507.95778365105383,210.68691957448993 A256,256 0 0,0 506.1192045203851,201.44375810148063 Z" fill="url(#hue8)" />
+<path d="M256,256 L506.7698600154728,204.51721348042446 A256,256 0 0,0 504.7049960924804,195.321956865442 Z" fill="url(#hue9)" />
+<path d="M256,256 L505.4308819931074,198.37851869189302 A256,256 0 0,0 503.1409770746085,189.23670581368947 Z" fill="url(#hue10)" />
+<path d="M256,256 L503.9416561342508,192.27453292909564 A256,256 0 0,0 501.42808957334313,183.1916704739144 Z" fill="url(#hue11)" />
+<path d="M256,256 L502.30307949287464,186.20893300481305 A256,256 0 0,0 499.56736536806613,177.19049214936706 Z" fill="url(#hue12)" />
+<path d="M256,256 L500.51613908627735,180.1853726096323 A256,256 0 0,0 497.55992528946183,171.23678572547163 Z" fill="url(#hue13)" />
+<path d="M256,256 L498.5819113005417,174.20748011109998 A256,256 0 0,0 495.4069785443706,165.33413749235447 Z" fill="url(#hue14)" />
+<path d="M256,256 L496.5015612421606,168.27885636812942 A256,256 0 0,0 493.1098219874077,159.48610298459693 Z" fill="url(#hue15)" />
+<path d="M256,256 L494.27634203621983,162.4030725619779 A256,256 0 0,0 490.6698393397869,153.69620483951442 Z" fill="url(#hue16)" />
+<path d="M256,256 L491.90759407156276,156.58366804510047 A256,256 0 0,0 488.0885003558183,147.9679306752513 Z" fill="url(#hue17)" />
+<path d="M256,256 L489.3967441933901,150.8241482091766 A256,256 0 0,0 485.3673599375834,142.30473098997012 Z" fill="url(#hue18)" />
+<path d="M256,256 L486.74530484378164,145.1279823735931 A256,256 0 0,0 482.5080571983201,136.71001708340066 Z" fill="url(#hue19)" />
+<path d="M256,256 L483.95487315065805,139.49860169565596 A256,256 0 0,0 479.51231447508223,131.18715900200039 Z" fill="url(#hue20)" />
+<path d="M256,256 L481.0271299657302,133.93939710378953 A256,256 0 0,0 476.3819362912684,125.73948350896461 Z" fill="url(#hue21)" />
+<path d="M256,256 L477.9638388520173,128.45371725496784 A256,256 0 0,0 473.1188082696441,120.37027208030858 Z" fill="url(#hue22)" />
+<path d="M256,256 L474.7668450215425,123.04486651760905 A256,256 0 0,0 469.7248959965133,115.08275892822917 Z" fill="url(#hue23)" />
+<path d="M256,256 L471.438074223846,117.71610298114743 A256,256 0 0,0 466.2022438377228,109.88012905293638 Z" fill="url(#hue24)" />
+<path d="M256,256 L467.97953158598546,112.47063649348198 A256,256 0 0,0 462.55297370721263,104.76551632412821 Z" fill="url(#hue25)" />
+<path d="M256,256 L464.3933004047228,107.31162672748428 A256,256 0 0,0 458.7792837888544,99.74200159326477 Z" fill="url(#hue26)" />
+<path d="M256,256 L460.6815408916237,102.24218127772954 A256,256 0 0,0 454.8834472123475,94.81261083777869 Z" fill="url(#hue27)" />
+<path d="M256,256 L456.84648887182726,97.26535378859799 A256,256 0 0,0 450.867810683971,89.98031333833922 Z" fill="url(#hue28)" />
+<path d="M256,256 L452.89045443726843,92.38414211487341 A256,256 0 0,0 446.73479307301534,85.24801989026881 Z" fill="url(#hue29)" />
+<path d="M256,256 L448.8158205551648,87.60148651594787 A256,256 0 0,0 442.4868839547456,80.61858105018871 Z" fill="url(#hue30)" />
+<path d="M256,256 L444.62504163260667,82.92026788471912 A256,256 0 0,0 438.1266421107754,76.09478541895032 Z" fill="url(#hue31)" />
+<path d="M256,256 L440.3206420381137,78.34330601224858 A256,256 0 0,0 433.6566939877514,71.6793579618863 Z" fill="url(#hue32)" />
+<path d="M256,256 L435.9052145810497,73.8733578892246 A256,256 0 0,0 429.0797321152809,67.37495836739333 Z" fill="url(#hue33)" />
+<path d="M256,256 L431.3814189498113,69.51311604525435 A256,256 0 0,0 424.39851348405216,63.18417944483522 Z" fill="url(#hue34)" />
+<path d="M256,256 L426.7519801097312,65.26520692698472 A256,256 0 0,0 419.6158578851266,59.109545562731626 Z" fill="url(#hue35)" />
+<path d="M256,256 L422.0196866616608,61.132189316028985 A256,256 0 0,0 414.73464621140204,55.15351112817274 Z" fill="url(#hue36)" />
+<path d="M256,256 L417.18738916222134,57.116552787652495 A256,256 0 0,0 409.7578187222705,51.31845910837632 Z" fill="url(#hue37)" />
+<path d="M256,256 L412.2579984067352,53.22071621114563 A256,256 0 0,0 404.6883732725157,47.606699595277234 Z" fill="url(#hue38)" />
+<path d="M256,256 L407.23448367587184,49.4470262927874 A256,256 0 0,0 399.52936350651805,44.020468414014516 Z" fill="url(#hue39)" />
+<path d="M256,256 L402.11987094706365,45.79775616227721 A256,256 0 0,0 394.2838970188526,40.56192577615403 Z" fill="url(#hue40)" />
+<path d="M256,256 L396.91724107177083,42.27510400348672 A256,256 0 0,0 388.9551334823909,37.23315497845746 Z" fill="url(#hue41)" />
+<path d="M256,256 L391.6297279196915,38.88119173035594 A256,256 0 0,0 383.54628274503216,34.03616114798268 Z" fill="url(#hue42)" />
+<path d="M256,256 L386.2605164910354,35.61806370873157 A256,256 0 0,0 378.0606028962105,30.972870034269846 Z" fill="url(#hue43)" />
+<path d="M256,256 L380.8128409979996,32.48768552491774 A256,256 0 0,0 372.50139830434404,28.045126849341983 Z" fill="url(#hue44)" />
+<path d="M256,256 L375.28998291659934,29.491942801679926 A256,256 0 0,0 366.8720176264069,25.25469515621836 Z" fill="url(#hue45)" />
+<path d="M256,256 L369.6952690100299,26.632640062416613 A256,256 0 0,0 361.1758517908234,22.60325580660995 Z" fill="url(#hue46)" />
+<path d="M256,256 L364.03206932474876,23.911499644181674 A256,256 0 0,0 355.41633195489953,20.092405928437273 Z" fill="url(#hue47)" />
+<path d="M256,256 L358.3037951604856,21.330160660213068 A256,256 0 0,0 349.59692743802213,17.72365796378017 Z" fill="url(#hue48)" />
+<path d="M256,256 L352.5138970154031,18.890178012592315 A256,256 0 0,0 343.7211436318706,15.49843875783938 Z" fill="url(#hue49)" />
+<path d="M256,256 L346.66586250764556,16.59302145562944 A256,256 0 0,0 337.7925198889,13.41808869945828 Z" fill="url(#hue50)" />
+<path d="M256,256 L340.76321427452837,14.440074710538141 A256,256 0 0,0 331.8146273903677,11.483860913722708 Z" fill="url(#hue51)" />
+<path d="M256,256 L334.80950785063294,12.432634631933865 A256,256 0 0,0 325.79106699518695,9.696920507125355 Z" fill="url(#hue52)" />
+<path d="M256,256 L328.8083295260856,10.57191042665687 A256,256 0 0,0 319.7254670709044,8.05834386574918 Z" fill="url(#hue53)" />
+<path d="M256,256 L322.76329418631053,8.859022925391514 A256,256 0 0,0 313.6214813081069,6.56911800689258 Z" fill="url(#hue54)" />
+<path d="M256,256 L316.67804313455804,7.295003907519543 A256,256 0 0,0 307.48278651957554,5.230139984527227 Z" fill="url(#hue55)" />
+<path d="M256,256 L310.5562418985194,5.880795479614875 A256,256 0 0,0 301.3130804255101,4.0422163489461695 Z" fill="url(#hue56)" />
+<path d="M256,256 L304.4015780223504,4.617249507953858 A256,256 0 0,0 295.1160794261615,3.006062660928137 Z" fill="url(#hue57)" />
+<path d="M256,256 L298.21775884543234,3.5051271053827406 A256,256 0 0,0 288.8955163632111,2.1223030607105215 Z" fill="url(#hue58)" />
+<path d="M256,256 L292.0085092692094,2.5450981728519366 A256,256 0 0,0 282.655138271246,1.3914698920306137 Z" fill="url(#hue59)" />
+<path d="M256,256 L285.77756951344765,1.737740995892608 A256,256 0 0,0 276.3987041206861,0.814003381461589 Z" fill="url(#hue60)" />
+<path d="M256,256 L279.528692863266,1.0835418962790868 A256,256 0 0,0 270.1299825535207,0.3902513732365378 Z" fill="url(#hue61)" />
+<path d="M256,256 L273.265643408298,0.5828949390869411 A256,256 0 0,0 263.852749613219,0.1204691197201555 Z" fill="url(#hue62)" />
+<path d="M256,256 L266.9921937753449,0.23610169532278746 A256,256 0 0,0 257.5707864701836,0.004819127654116073 Z" fill="url(#hue63)" />
+<path d="M256,256 L260.71212285588604,0.04337106026920878 A256,256 0 0,0 251.287877144114,0.04337106026920878 Z" fill="url(#hue64)" />
+<path d="M256,256 L254.42921352981648,0.004819127654116073 A256,256 0 0,0 245.00780622465516,0.23610169532278746 Z" fill="url(#hue65)" />
+<path d="M256,256 L248.14725038678105,0.1204691197201555 A256,256 0 0,0 238.734356591702,0.5828949390869411 Z" fill="url(#hue66)" />
+<path d="M256,256 L241.87001744647938,0.3902513732365378 A256,256 0 0,0 232.47130713673405,1.0835418962790868 Z" fill="url(#hue67)" />
+<path d="M256,256 L235.6012958793139,0.8140033814615606 A256,256 0 0,0 226.22243048655238,1.737740995892608 Z" fill="url(#hue68)" />
+<path d="M256,256 L229.344861728754,1.3914698920306137 A256,256 0 0,0 219.99149073079062,2.5450981728519366 Z" fill="url(#hue69)" />
+<path d="M256,256 L223.10448363678896,2.1223030607105215 A256,256 0 0,0 213.78224115456769,3.5051271053827406 Z" fill="url(#hue70)" />
+<path d="M256,256 L216.8839205738385,3.006062660928137 A256,256 0 0,0 207.59842197764962,4.617249507953858 Z" fill="url(#hue71)" />
+<path d="M256,256 L210.68691957448993,4.0422163489461695 A256,256 0 0,0 201.44375810148063,5.880795479614875 Z" fill="url(#hue72)" />
+<path d="M256,256 L204.5172134804245,5.230139984527227 A256,256 0 0,0 195.321956865442,7.295003907519543 Z" fill="url(#hue73)" />
+<path d="M256,256 L198.37851869189308,6.56911800689258 A256,256 0 0,0 189.23670581368947,8.859022925391514 Z" fill="url(#hue74)" />
+<path d="M256,256 L192.27453292909564,8.058343865749151 A256,256 0 0,0 183.19167047391443,10.57191042665687 Z" fill="url(#hue75)" />
+<path d="M256,256 L186.2089330048131,9.696920507125355 A256,256 0 0,0 177.19049214936706,12.432634631933865 Z" fill="url(#hue76)" />
+<path d="M256,256 L180.18537260963228,11.483860913722708 A256,256 0 0,0 171.23678572547166,14.440074710538141 Z" fill="url(#hue77)" />
+<path d="M256,256 L174.20748011109998,13.418088699458252 A256,256 0 0,0 165.33413749235444,16.59302145562941 Z" fill="url(#hue78)" />
+<path d="M256,256 L168.27885636812948,15.49843875783938 A256,256 0 0,0 159.48610298459693,18.890178012592287 Z" fill="url(#hue79)" />
+<path d="M256,256 L162.4030725619779,17.72365796378017 A256,256 0 0,0 153.69620483951445,21.330160660213068 Z" fill="url(#hue80)" />
+<path d="M256,256 L156.5836680451005,20.092405928437245 A256,256 0 0,0 147.9679306752513,23.911499644181674 Z" fill="url(#hue81)" />
+<path d="M256,256 L150.82414820917663,22.60325580660995 A256,256 0 0,0 142.30473098997015,26.632640062416584 Z" fill="url(#hue82)" />
+<path d="M256,256 L145.1279823735931,25.25469515621836 A256,256 0 0,0 136.71001708340071,29.491942801679897 Z" fill="url(#hue83)" />
+<path d="M256,256 L139.49860169565602,28.045126849341955 A256,256 0 0,0 131.18715900200044,32.48768552491771 Z" fill="url(#hue84)" />
+<path d="M256,256 L133.9393971037896,30.972870034269818 A256,256 0 0,0 125.73948350896458,35.6180637087316 Z" fill="url(#hue85)" />
+<path d="M256,256 L128.4537172549679,34.036161147982654 A256,256 0 0,0 120.37027208030855,38.88119173035591 Z" fill="url(#hue86)" />
+<path d="M256,256 L123.04486651760905,37.23315497845746 A256,256 0 0,0 115.0827589282292,42.27510400348669 Z" fill="url(#hue87)" />
+<path d="M256,256 L117.71610298114743,40.561925776154 A256,256 0 0,0 109.88012905293641,45.79775616227718 Z" fill="url(#hue88)" />
+<path d="M256,256 L112.470636493482,44.020468414014516 A256,256 0 0,0 104.76551632412824,49.44702629278734 Z" fill="url(#hue89)" />
+<path d="M256,256 L107.31162672748431,47.60669959527718 A256,256 0 0,0 99.74200159326475,53.22071621114566 Z" fill="url(#hue90)" />
+<path d="M256,256 L102.2421812777296,51.31845910837626 A256,256 0 0,0 94.81261083777866,57.116552787652495 Z" fill="url(#hue91)" />
+<path d="M256,256 L97.26535378859796,55.15351112817277 A256,256 0 0,0 89.98031333833922,61.132189316028956 Z" fill="url(#hue92)" />
+<path d="M256,256 L92.38414211487341,59.109545562731626 A256,256 0 0,0 85.24801989026884,65.26520692698469 Z" fill="url(#hue93)" />
+<path d="M256,256 L87.60148651594787,63.184179444835195 A256,256 0 0,0 80.61858105018874,69.51311604525432 Z" fill="url(#hue94)" />
+<path d="M256,256 L82.92026788471915,67.37495836739328 A256,256 0 0,0 76.09478541895038,73.87335788922454 Z" fill="url(#hue95)" />
+<path d="M256,256 L78.34330601224863,71.67935796188627 A256,256 0 0,0 71.6793579618863,78.34330601224858 Z" fill="url(#hue96)" />
+<path d="M256,256 L73.87335788922456,76.09478541895035 A256,256 0 0,0 67.3749583673933,82.92026788471912 Z" fill="url(#hue97)" />
+<path d="M256,256 L69.51311604525435,80.61858105018871 A256,256 0 0,0 63.18417944483522,87.60148651594784 Z" fill="url(#hue98)" />
+<path d="M256,256 L65.26520692698472,85.24801989026878 A256,256 0 0,0 59.109545562731654,92.38414211487338 Z" fill="url(#hue99)" />
+<path d="M256,256 L61.13218931602901,89.98031333833919 A256,256 0 0,0 55.153511128172795,97.2653537885979 Z" fill="url(#hue100)" />
+<path d="M256,256 L57.11655278765252,94.81261083777864 A256,256 0 0,0 51.31845910837629,102.24218127772957 Z" fill="url(#hue101)" />
+<path d="M256,256 L53.220716211145685,99.74200159326472 A256,256 0 0,0 47.606699595277206,107.31162672748428 Z" fill="url(#hue102)" />
+<path d="M256,256 L49.44702629278737,104.76551632412821 A256,256 0 0,0 44.020468414014545,112.47063649348195 Z" fill="url(#hue103)" />
+<path d="M256,256 L45.79775616227721,109.88012905293638 A256,256 0 0,0 40.56192577615403,117.7161029811474 Z" fill="url(#hue104)" />
+<path d="M256,256 L42.27510400348672,115.08275892822914 A256,256 0 0,0 37.23315497845749,123.04486651760902 Z" fill="url(#hue105)" />
+<path d="M256,256 L38.88119173035594,120.37027208030852 A256,256 0 0,0 34.036161147982654,128.45371725496787 Z" fill="url(#hue106)" />
+<path d="M256,256 L35.618063708731626,125.73948350896453 A256,256 0 0,0 30.972870034269818,133.93939710378953 Z" fill="url(#hue107)" />
+<path d="M256,256 L32.48768552491774,131.1871590020004 A256,256 0 0,0 28.045126849341983,139.49860169565596 Z" fill="url(#hue108)" />
+<path d="M256,256 L29.491942801679926,136.71001708340066 A256,256 0 0,0 25.25469515621839,145.12798237359306 Z" fill="url(#hue109)" />
+<path d="M256,256 L26.632640062416613,142.3047309899701 A256,256 0 0,0 22.60325580660998,150.82414820917654 Z" fill="url(#hue110)" />
+<path d="M256,256 L23.911499644181674,147.96793067525124 A256,256 0 0,0 20.0924059284373,156.5836680451004 Z" fill="url(#hue111)" />
+<path d="M256,256 L21.330160660213096,153.69620483951434 A256,256 0 0,0 17.72365796378017,162.40307256197792 Z" fill="url(#hue112)" />
+<path d="M256,256 L18.890178012592287,159.48610298459695 A256,256 0 0,0 15.49843875783938,168.27885636812942 Z" fill="url(#hue113)" />
+<path d="M256,256 L16.59302145562941,165.33413749235444 A256,256 0 0,0 13.41808869945828,174.20748011109995 Z" fill="url(#hue114)" />
+<path d="M256,256 L14.440074710538141,171.23678572547163 A256,256 0 0,0 11.483860913722708,180.18537260963225 Z" fill="url(#hue115)" />
+<path d="M256,256 L12.432634631933865,177.19049214936703 A256,256 0 0,0 9.696920507125384,186.208933004813 Z" fill="url(#hue116)" />
+<path d="M256,256 L10.571910426656899,183.19167047391434 A256,256 0 0,0 8.058343865749151,192.27453292909564 Z" fill="url(#hue117)" />
+<path d="M256,256 L8.859022925391542,189.23670581368938 A256,256 0 0,0 6.56911800689258,198.37851869189302 Z" fill="url(#hue118)" />
+<path d="M256,256 L7.295003907519543,195.32195686544202 A256,256 0 0,0 5.230139984527227,204.51721348042446 Z" fill="url(#hue119)" />
+<path d="M256,256 L5.880795479614875,201.4437581014806 A256,256 0 0,0 4.0422163489461695,210.68691957448988 Z" fill="url(#hue120)" />
+<path d="M256,256 L4.617249507953858,207.59842197764956 A256,256 0 0,0 3.006062660928137,216.88392057383842 Z" fill="url(#hue121)" />
+<path d="M256,256 L3.505127105382769,213.78224115456766 A256,256 0 0,0 2.1223030607105215,223.10448363678898 Z" fill="url(#hue122)" />
+<path d="M256,256 L2.545098172851965,219.99149073079053 A256,256 0 0,0 1.3914698920306137,229.34486172875404 Z" fill="url(#hue123)" />
+<path d="M256,256 L1.737740995892608,226.22243048655238 A256,256 0 0,0 0.814003381461589,235.60129587931388 Z" fill="url(#hue124)" />
+<path d="M256,256 L1.0835418962790868,232.47130713673403 A256,256 0 0,0 0.3902513732365378,241.87001744647932 Z" fill="url(#hue125)" />
+<path d="M256,256 L0.5828949390869411,238.73435659170198 A256,256 0 0,0 0.1204691197201555,248.14725038678097 Z" fill="url(#hue126)" />
+<path d="M256,256 L0.23610169532278746,245.0078062246551 A256,256 0 0,0 0.004819127654116073,254.42921352981637 Z" fill="url(#hue127)" />
+<path d="M256,256 L0.04337106026920878,251.2878771441139 A256,256 0 0,0 0.04337106026920878,260.71212285588604 Z" fill="url(#hue128)" />
+<path d="M256,256 L0.004819127654116073,257.5707864701836 A256,256 0 0,0 0.23610169532278746,266.99219377534484 Z" fill="url(#hue129)" />
+<path d="M256,256 L0.1204691197201555,263.852749613219 A256,256 0 0,0 0.5828949390869411,273.265643408298 Z" fill="url(#hue130)" />
+<path d="M256,256 L0.3902513732365378,270.1299825535206 A256,256 0 0,0 1.0835418962790868,279.5286928632659 Z" fill="url(#hue131)" />
+<path d="M256,256 L0.8140033814615606,276.3987041206861 A256,256 0 0,0 1.7377409958925796,285.77756951344753 Z" fill="url(#hue132)" />
+<path d="M256,256 L1.3914698920305852,282.6551382712459 A256,256 0 0,0 2.5450981728519366,292.0085092692094 Z" fill="url(#hue133)" />
+<path d="M256,256 L2.1223030607105215,288.89551636321096 A256,256 0 0,0 3.5051271053827406,298.2177588454323 Z" fill="url(#hue134)" />
+<path d="M256,256 L3.006062660928137,295.1160794261615 A256,256 0 0,0 4.617249507953858,304.40157802235035 Z" fill="url(#hue135)" />
+<path d="M256,256 L4.042216348946141,301.31308042551007 A256,256 0 0,0 5.880795479614875,310.5562418985194 Z" fill="url(#hue136)" />
+<path d="M256,256 L5.230139984527227,307.4827865195755 A256,256 0 0,0 7.295003907519515,316.6780431345579 Z" fill="url(#hue137)" />
+<path d="M256,256 L6.56911800689258,313.6214813081069 A256,256 0 0,0 8.859022925391514,322.76329418631053 Z" fill="url(#hue138)" />
+<path d="M256,256 L8.058343865749151,319.7254670709043 A256,256 0 0,0 10.57191042665687,328.8083295260856 Z" fill="url(#hue139)" />
+<path d="M256,256 L9.696920507125355,325.79106699518695 A256,256 0 0,0 12.432634631933837,334.80950785063294 Z" fill="url(#hue140)" />
+<path d="M256,256 L11.48386091372268,331.8146273903677 A256,256 0 0,0 14.440074710538141,340.7632142745283 Z" fill="url(#hue141)" />
+<path d="M256,256 L13.418088699458252,337.79251988889996 A256,256 0 0,0 16.593021455629383,346.66586250764544 Z" fill="url(#hue142)" />
+<path d="M256,256 L15.498438757839352,343.7211436318705 A256,256 0 0,0 18.89017801259226,352.513897015403 Z" fill="url(#hue143)" />
+<path d="M256,256 L17.72365796378014,349.596927438022 A256,256 0 0,0 21.330160660213068,358.3037951604856 Z" fill="url(#hue144)" />
+<path d="M256,256 L20.092405928437273,355.41633195489953 A256,256 0 0,0 23.911499644181646,364.0320693247487 Z" fill="url(#hue145)" />
+<path d="M256,256 L22.60325580660995,361.1758517908234 A256,256 0 0,0 26.632640062416584,369.69526901002985 Z" fill="url(#hue146)" />
+<path d="M256,256 L25.25469515621836,366.8720176264069 A256,256 0 0,0 29.491942801679897,375.2899829165993 Z" fill="url(#hue147)" />
+<path d="M256,256 L28.045126849341955,372.501398304344 A256,256 0 0,0 32.48768552491771,380.8128409979995 Z" fill="url(#hue148)" />
+<path d="M256,256 L30.97287003426979,378.0606028962104 A256,256 0 0,0 35.61806370873157,386.26051649103545 Z" fill="url(#hue149)" />
+<path d="M256,256 L34.036161147982625,383.54628274503204 A256,256 0 0,0 38.88119173035591,391.6297279196914 Z" fill="url(#hue150)" />
+<path d="M256,256 L37.23315497845746,388.9551334823909 A256,256 0 0,0 42.27510400348669,396.91724107177083 Z" fill="url(#hue151)" />
+<path d="M256,256 L40.561925776154,394.2838970188526 A256,256 0 0,0 45.79775616227718,402.1198709470636 Z" fill="url(#hue152)" />
+<path d="M256,256 L44.020468414014516,399.529363506518 A256,256 0 0,0 49.44702629278734,407.23448367587173 Z" fill="url(#hue153)" />
+<path d="M256,256 L47.60669959527718,404.68837327251566 A256,256 0 0,0 53.22071621114566,412.2579984067352 Z" fill="url(#hue154)" />
+<path d="M256,256 L51.31845910837626,409.7578187222704 A256,256 0 0,0 57.116552787652495,417.1873891622213 Z" fill="url(#hue155)" />
+<path d="M256,256 L55.15351112817274,414.73464621140204 A256,256 0 0,0 61.132189316028956,422.0196866616608 Z" fill="url(#hue156)" />
+<path d="M256,256 L59.1095455627316,419.6158578851266 A256,256 0 0,0 65.26520692698469,426.75198010973116 Z" fill="url(#hue157)" />
+<path d="M256,256 L63.184179444835166,424.3985134840521 A256,256 0 0,0 69.51311604525429,431.38141894981123 Z" fill="url(#hue158)" />
+<path d="M256,256 L67.37495836739328,429.0797321152809 A256,256 0 0,0 73.87335788922454,435.9052145810496 Z" fill="url(#hue159)" />
+<path d="M256,256 L71.67935796188624,433.6566939877514 A256,256 0 0,0 78.34330601224858,440.3206420381137 Z" fill="url(#hue160)" />
+<path d="M256,256 L76.09478541895032,438.1266421107754 A256,256 0 0,0 82.9202678847191,444.62504163260667 Z" fill="url(#hue161)" />
+<path d="M256,256 L80.61858105018871,442.4868839547456 A256,256 0 0,0 87.60148651594784,448.8158205551648 Z" fill="url(#hue162)" />
+<path d="M256,256 L85.24801989026878,446.7347930730152 A256,256 0 0,0 92.38414211487336,452.8904544372683 Z" fill="url(#hue163)" />
+<path d="M256,256 L89.98031333833927,450.8678106839711 A256,256 0 0,0 97.2653537885979,456.8464888718272 Z" fill="url(#hue164)" />
+<path d="M256,256 L94.81261083777872,454.8834472123475 A256,256 0 0,0 102.24218127772946,460.6815408916236 Z" fill="url(#hue165)" />
+<path d="M256,256 L99.7420015932648,458.7792837888544 A256,256 0 0,0 107.31162672748417,464.3933004047227 Z" fill="url(#hue166)" />
+<path d="M256,256 L104.76551632412819,462.5529737072126 A256,256 0 0,0 112.47063649348186,467.9795315859854 Z" fill="url(#hue167)" />
+<path d="M256,256 L109.88012905293635,466.2022438377228 A256,256 0 0,0 117.71610298114746,471.438074223846 Z" fill="url(#hue168)" />
+<path d="M256,256 L115.08275892822914,469.7248959965133 A256,256 0 0,0 123.04486651760911,474.76684502154257 Z" fill="url(#hue169)" />
+<path d="M256,256 L120.3702720803085,473.1188082696441 A256,256 0 0,0 128.45371725496784,477.9638388520173 Z" fill="url(#hue170)" />
+<path d="M256,256 L125.73948350896453,476.3819362912684 A256,256 0 0,0 133.93939710378953,481.0271299657302 Z" fill="url(#hue171)" />
+<path d="M256,256 L131.1871590020003,479.51231447508223 A256,256 0 0,0 139.49860169565596,483.95487315065805 Z" fill="url(#hue172)" />
+<path d="M256,256 L136.71001708340054,482.50805719832 A256,256 0 0,0 145.12798237359306,486.7453048437816 Z" fill="url(#hue173)" />
+<path d="M256,256 L142.30473098996998,485.36735993758333 A256,256 0 0,0 150.82414820917654,489.39674419339 Z" fill="url(#hue174)" />
+<path d="M256,256 L147.96793067525132,488.0885003558184 A256,256 0 0,0 156.58366804510038,491.9075940715627 Z" fill="url(#hue175)" />
+<path d="M256,256 L153.69620483951445,490.6698393397869 A256,256 0 0,0 162.40307256197778,494.27634203621983 Z" fill="url(#hue176)" />
+<path d="M256,256 L159.48610298459693,493.1098219874077 A256,256 0 0,0 168.2788563681293,496.50156124216056 Z" fill="url(#hue177)" />
+<path d="M256,256 L165.33413749235444,495.4069785443706 A256,256 0 0,0 174.20748011110004,498.5819113005417 Z" fill="url(#hue178)" />
+<path d="M256,256 L171.2367857254716,497.55992528946183 A256,256 0 0,0 180.18537260963234,500.51613908627735 Z" fill="url(#hue179)" />
+<path d="M256,256 L177.190492149367,499.56736536806613 A256,256 0 0,0 186.2089330048131,502.30307949287464 Z" fill="url(#hue180)" />
+<path d="M256,256 L183.19167047391431,501.4280895733431 A256,256 0 0,0 192.27453292909564,503.9416561342508 Z" fill="url(#hue181)" />
+<path d="M256,256 L189.23670581368935,503.1409770746085 A256,256 0 0,0 198.37851869189302,505.4308819931074 Z" fill="url(#hue182)" />
+<path d="M256,256 L195.32195686544188,504.7049960924804 A256,256 0 0,0 204.51721348042443,506.7698600154728 Z" fill="url(#hue183)" />
+<path d="M256,256 L201.44375810148046,506.1192045203851 A256,256 0 0,0 210.68691957448985,507.95778365105383 Z" fill="url(#hue184)" />
+<path d="M256,256 L207.59842197764968,507.38275049204617 A256,256 0 0,0 216.8839205738384,508.99393733907186 Z" fill="url(#hue185)" />
+<path d="M256,256 L213.78224115456774,508.4948728946173 A256,256 0 0,0 223.10448363678884,509.8776969392895 Z" fill="url(#hue186)" />
+<path d="M256,256 L219.99149073079062,509.4549018271481 A256,256 0 0,0 229.3448617287539,510.6085301079694 Z" fill="url(#hue187)" />
+<path d="M256,256 L226.22243048655238,510.26225900410736 A256,256 0 0,0 235.60129587931374,511.1859966185384 Z" fill="url(#hue188)" />
+<path d="M256,256 L232.471307136734,510.9164581037209 A256,256 0 0,0 241.87001744647944,511.60974862676346 Z" fill="url(#hue189)" />
+<path d="M256,256 L238.73435659170195,511.41710506091306 A256,256 0 0,0 248.14725038678105,511.87953088027984 Z" fill="url(#hue190)" />
+<path d="M256,256 L245.00780622465507,511.76389830467724 A256,256 0 0,0 254.42921352981648,511.9951808723459 Z" fill="url(#hue191)" />
+<path d="M256,256 L251.28787714411388,511.95662893973076 A256,256 0 0,0 260.71212285588604,511.95662893973076 Z" fill="url(#hue192)" />
+<path d="M256,256 L257.57078647018346,511.9951808723459 A256,256 0 0,0 266.99219377534484,511.76389830467724 Z" fill="url(#hue193)" />
+<path d="M256,256 L263.85274961321886,511.87953088027984 A256,256 0 0,0 273.26564340829793,511.41710506091306 Z" fill="url(#hue194)" />
+<path d="M256,256 L270.12998255352045,511.60974862676346 A256,256 0 0,0 279.5286928632659,510.9164581037209 Z" fill="url(#hue195)" />
+<path d="M256,256 L276.39870412068615,511.1859966185384 A256,256 0 0,0 285.77756951344753,510.2622590041074 Z" fill="url(#hue196)" />
+<path d="M256,256 L282.655138271246,510.6085301079694 A256,256 0 0,0 292.0085092692093,509.4549018271481 Z" fill="url(#hue197)" />
+<path d="M256,256 L288.8955163632111,509.8776969392895 A256,256 0 0,0 298.2177588454322,508.4948728946173 Z" fill="url(#hue198)" />
+<path d="M256,256 L295.1160794261615,508.99393733907186 A256,256 0 0,0 304.40157802235024,507.38275049204617 Z" fill="url(#hue199)" />
+<path d="M256,256 L301.31308042551007,507.9577836510539 A256,256 0 0,0 310.55624189851943,506.1192045203851 Z" fill="url(#hue200)" />
+<path d="M256,256 L307.4827865195755,506.7698600154728 A256,256 0 0,0 316.67804313455804,504.7049960924804 Z" fill="url(#hue201)" />
+<path d="M256,256 L313.6214813081069,505.43088199310745 A256,256 0 0,0 322.76329418631053,503.1409770746085 Z" fill="url(#hue202)" />
+<path d="M256,256 L319.72546707090424,503.9416561342508 A256,256 0 0,0 328.8083295260856,501.42808957334313 Z" fill="url(#hue203)" />
+<path d="M256,256 L325.79106699518684,502.30307949287464 A256,256 0 0,0 334.8095078506329,499.56736536806613 Z" fill="url(#hue204)" />
+<path d="M256,256 L331.81462739036755,500.51613908627735 A256,256 0 0,0 340.7632142745283,497.55992528946183 Z" fill="url(#hue205)" />
+<path d="M256,256 L337.79251988889985,498.5819113005418 A256,256 0 0,0 346.66586250764544,495.40697854437065 Z" fill="url(#hue206)" />
+<path d="M256,256 L343.72114363187063,496.5015612421606 A256,256 0 0,0 352.51389701540296,493.1098219874077 Z" fill="url(#hue207)" />
+<path d="M256,256 L349.59692743802213,494.27634203621983 A256,256 0 0,0 358.3037951604855,490.66983933978696 Z" fill="url(#hue208)" />
+<path d="M256,256 L355.41633195489953,491.9075940715627 A256,256 0 0,0 364.0320693247486,488.0885003558184 Z" fill="url(#hue209)" />
+<path d="M256,256 L361.1758517908234,489.3967441933901 A256,256 0 0,0 369.69526901002996,485.3673599375834 Z" fill="url(#hue210)" />
+<path d="M256,256 L366.8720176264069,486.7453048437817 A256,256 0 0,0 375.28998291659934,482.50805719832005 Z" fill="url(#hue211)" />
+<path d="M256,256 L372.501398304344,483.95487315065805 A256,256 0 0,0 380.8128409979996,479.51231447508223 Z" fill="url(#hue212)" />
+<path d="M256,256 L378.0606028962104,481.0271299657302 A256,256 0 0,0 386.2605164910354,476.3819362912684 Z" fill="url(#hue213)" />
+<path d="M256,256 L383.54628274503204,477.9638388520174 A256,256 0 0,0 391.6297279196914,473.1188082696441 Z" fill="url(#hue214)" />
+<path d="M256,256 L388.9551334823908,474.7668450215426 A256,256 0 0,0 396.91724107177083,469.7248959965133 Z" fill="url(#hue215)" />
+<path d="M256,256 L394.2838970188525,471.4380742238461 A256,256 0 0,0 402.11987094706353,466.20224383772285 Z" fill="url(#hue216)" />
+<path d="M256,256 L399.52936350651805,467.97953158598546 A256,256 0 0,0 407.23448367587173,462.5529737072127 Z" fill="url(#hue217)" />
+<path d="M256,256 L404.6883732725157,464.39330040472277 A256,256 0 0,0 412.25799840673517,458.7792837888544 Z" fill="url(#hue218)" />
+<path d="M256,256 L409.7578187222705,460.6815408916237 A256,256 0 0,0 417.1873891622212,454.8834472123476 Z" fill="url(#hue219)" />
+<path d="M256,256 L414.73464621140204,456.84648887182726 A256,256 0 0,0 422.01968666166067,450.86781068397113 Z" fill="url(#hue220)" />
+<path d="M256,256 L419.61585788512656,452.89045443726843 A256,256 0 0,0 426.7519801097312,446.7347930730152 Z" fill="url(#hue221)" />
+<path d="M256,256 L424.3985134840521,448.8158205551648 A256,256 0 0,0 431.3814189498113,442.4868839547456 Z" fill="url(#hue222)" />
+<path d="M256,256 L429.0797321152808,444.6250416326067 A256,256 0 0,0 435.9052145810497,438.1266421107754 Z" fill="url(#hue223)" />
+<path d="M256,256 L433.6566939877514,440.32064203811376 A256,256 0 0,0 440.32064203811365,433.6566939877514 Z" fill="url(#hue224)" />
+<path d="M256,256 L438.1266421107753,435.9052145810498 A256,256 0 0,0 444.62504163260667,429.0797321152809 Z" fill="url(#hue225)" />
+<path d="M256,256 L442.48688395474557,431.3814189498114 A256,256 0 0,0 448.81582055516475,424.39851348405216 Z" fill="url(#hue226)" />
+<path d="M256,256 L446.73479307301517,426.75198010973133 A256,256 0 0,0 452.8904544372683,419.6158578851266 Z" fill="url(#hue227)" />
+<path d="M256,256 L450.867810683971,422.0196866616608 A256,256 0 0,0 456.8464888718272,414.73464621140215 Z" fill="url(#hue228)" />
+<path d="M256,256 L454.8834472123475,417.1873891622213 A256,256 0 0,0 460.6815408916236,409.75781872227054 Z" fill="url(#hue229)" />
+<path d="M256,256 L458.7792837888544,412.2579984067352 A256,256 0 0,0 464.3933004047227,404.68837327251583 Z" fill="url(#hue230)" />
+<path d="M256,256 L462.5529737072126,407.23448367587184 A256,256 0 0,0 467.97953158598534,399.52936350651817 Z" fill="url(#hue231)" />
+<path d="M256,256 L466.2022438377228,402.11987094706365 A256,256 0 0,0 471.438074223846,394.28389701885254 Z" fill="url(#hue232)" />
+<path d="M256,256 L469.7248959965133,396.9172410717709 A256,256 0 0,0 474.7668450215425,388.9551334823909 Z" fill="url(#hue233)" />
+<path d="M256,256 L473.1188082696441,391.6297279196915 A256,256 0 0,0 477.9638388520173,383.54628274503216 Z" fill="url(#hue234)" />
+<path d="M256,256 L476.3819362912684,386.2605164910355 A256,256 0 0,0 481.0271299657302,378.06060289621047 Z" fill="url(#hue235)" />
+<path d="M256,256 L479.51231447508223,380.81284099799973 A256,256 0 0,0 483.954873150658,372.5013983043441 Z" fill="url(#hue236)" />
+<path d="M256,256 L482.50805719832,375.28998291659946 A256,256 0 0,0 486.7453048437816,366.87201762640694 Z" fill="url(#hue237)" />
+<path d="M256,256 L485.36735993758333,369.69526901003 A256,256 0 0,0 489.39674419338996,361.17585179082346 Z" fill="url(#hue238)" />
+<path d="M256,256 L488.0885003558184,364.0320693247487 A256,256 0 0,0 491.9075940715627,355.41633195489965 Z" fill="url(#hue239)" />
+<path d="M256,256 L490.6698393397869,358.3037951604856 A256,256 0 0,0 494.2763420362198,349.59692743802225 Z" fill="url(#hue240)" />
+<path d="M256,256 L493.1098219874077,352.5138970154031 A256,256 0 0,0 496.50156124216056,343.7211436318707 Z" fill="url(#hue241)" />
+<path d="M256,256 L495.40697854437053,346.66586250764556 A256,256 0 0,0 498.5819113005417,337.79251988889996 Z" fill="url(#hue242)" />
+<path d="M256,256 L497.55992528946183,340.7632142745284 A256,256 0 0,0 500.51613908627735,331.81462739036766 Z" fill="url(#hue243)" />
+<path d="M256,256 L499.56736536806613,334.809507850633 A256,256 0 0,0 502.30307949287464,325.79106699518695 Z" fill="url(#hue244)" />
+<path d="M256,256 L501.4280895733431,328.8083295260857 A256,256 0 0,0 503.9416561342508,319.72546707090436 Z" fill="url(#hue245)" />
+<path d="M256,256 L503.1409770746085,322.76329418631065 A256,256 0 0,0 505.4308819931074,313.621481308107 Z" fill="url(#hue246)" />
+<path d="M256,256 L504.7049960924804,316.67804313455815 A256,256 0 0,0 506.7698600154728,307.4827865195756 Z" fill="url(#hue247)" />
+<path d="M256,256 L506.1192045203851,310.55624189851954 A256,256 0 0,0 507.95778365105383,301.3130804255102 Z" fill="url(#hue248)" />
+<path d="M256,256 L507.38275049204617,304.40157802235035 A256,256 0 0,0 508.99393733907186,295.1160794261616 Z" fill="url(#hue249)" />
+<path d="M256,256 L508.4948728946173,298.2177588454323 A256,256 0 0,0 509.8776969392894,288.8955163632112 Z" fill="url(#hue250)" />
+<path d="M256,256 L509.4549018271481,292.0085092692094 A256,256 0 0,0 510.6085301079694,282.65513827124613 Z" fill="url(#hue251)" />
+<path d="M256,256 L510.26225900410736,285.77756951344765 A256,256 0 0,0 511.1859966185384,276.39870412068626 Z" fill="url(#hue252)" />
+<path d="M256,256 L510.9164581037209,279.52869286326603 A256,256 0 0,0 511.60974862676346,270.12998255352056 Z" fill="url(#hue253)" />
+<path d="M256,256 L511.41710506091306,273.26564340829805 A256,256 0 0,0 511.87953088027984,263.852749613219 Z" fill="url(#hue254)" />
+<path d="M256,256 L511.76389830467724,266.99219377534496 A256,256 0 0,0 511.9951808723459,257.5707864701835 Z" fill="url(#hue255)" />
+</g>
+</svg>
