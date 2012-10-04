@@ -22,6 +22,7 @@ define(['./color','./coords'], function(Color, Coords) {
         var handleMouseDown, handleMouseMove, handleMouseUp, handleMouseOut;
         handleMouseDown = function(event) {
             this._updateThumbFromEvent(event);
+            this.domElement.querySelector('.color').focus();
             if (event.type==='mousedown') {
                 addEvent('mousemove', handleMouseMove);
                 addEvent('mouseup', handleMouseUp);
