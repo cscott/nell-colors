@@ -343,8 +343,27 @@ define(['domReady!', 'text!./brushdialog.html', './brush', './color', './colorwh
         // set up brush (and adjust sliders)
         this.preview.setFromBrush(brush);
         this.preview.update();
-        // make visible
-        this.brushpane.classList.add('visible');
+        // default to brush type pane
+        // then make visible (after brush pane switch has been processed)
+        var panes = this.brushpane.querySelector('.panes');
+        var makeVisible = function() {
+            this.brushpane.classList.add('visible');
+            ['transitionend','oTransitionEnd','webkitTransitionEnd'].
+                forEach(function(evname) {
+                    panes.removeEventListener(evname, makeVisible, true);
+                });
+        }.bind(this);
+        if (!this.brushpane.classList.contains('brush')) {
+            // wait for pane transition to end before making visible
+            ['transitionend','oTransitionEnd','webkitTransitionEnd'].
+                forEach(function(evname) {
+                    panes.addEventListener(evname, makeVisible, true);
+                });
+            this.brushpane.classList.remove('color');
+            this.brushpane.classList.add('brush');
+        } else {
+            makeVisible();
+        }
     };
     BrushDialog.prototype.close = function() {
         /* this method does *not* invoke the callback */
