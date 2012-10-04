@@ -19,28 +19,28 @@ define(['domReady!', 'text!./brushdialog.html', './brush', './color', './colorwh
         this.layer.resize(this.width, this.height,
                           window.devicePixelRatio || 1);
         this.domElement.appendChild(this.layer.domElement);
-        this.type = 0;
-        this.size = 32;
-        this.spacing = 22;
-        this.opacity = 255;
+        this.lastBrush = new Brush(Color.BLACK/* ensure we do first update */);
+        this.setFromBrush(this.lastBrush);
     };
     BrushPreview.prototype.setFromBrush = function(brush) {
         this.type = brush.type;
         this.size = Math.round(brush.size);
         this.spacing = Math.round(brush.spacing*100);
-        this.opacity = brush.color.alpha;
+        this.opacity = brush.opacity*255;
     };
-    BrushPreview.prototype.toBrush = function(rgbaColor) {
-        return new Brush(rgbaColor, this.type, this.size,
+    BrushPreview.prototype.toBrush = function(rgbColor) {
+        return new Brush(rgbColor, this.type, this.size,
                          this.opacity/255, this.spacing/100);
     };
     BrushPreview.prototype.update = function() {
         /* don't let preview opacity go below 20/255 */
         var brush = new Brush(Color.WHITE, this.type, this.size,
                               Math.max(20, this.opacity)/255, this.spacing/100);
+        if (brush.equals(this.lastBrush)) { return; /* unneeded update */ }
+        this.lastBrush = brush;
         this.layer.clear();
         // draw a sine wave with NUM_POINTS points
-        var NUM_POINTS = 5;
+        var NUM_POINTS = 30;
         var minx = brush.size/2; /* half maximum brush size */
         var maxx = this.width - minx;
         var miny = brush.size/2; /* again, half max brush size */
@@ -332,17 +332,18 @@ define(['domReady!', 'text!./brushdialog.html', './brush', './color', './colorwh
     };
     BrushDialog.prototype.open = function(brush, callback) {
         this.callback = callback;
-        var hslColor = HSLColor.from_color(brush.color);
+        // set up brush (and adjust sliders)
+        this.preview.setFromBrush(brush);
+        this.preview.update();
         // set up color and oldcolor
+        var hslColor = HSLColor.from_color(brush.color);
+        hslColor.opacity = this.preview.opacity; /* brush.color is opaque */
         this._setInputs(hslColor);
         this._setInputs(hslColor, 'old_color_');
         this._updateColor(hslColor);
         this._updateOldColor(hslColor);
         this.wheel.setHSL(hslColor.hue, hslColor.saturation,
                           hslColor.lightness);
-        // set up brush (and adjust sliders)
-        this.preview.setFromBrush(brush);
-        this.preview.update();
         // default to brush type pane
         // then make visible (after brush pane switch has been processed)
         var panes = this.brushpane.querySelector('.panes');
@@ -371,7 +372,7 @@ define(['domReady!', 'text!./brushdialog.html', './brush', './color', './colorwh
     };
     BrushDialog.prototype._invokeCallback = function() {
         var hslColor = this._colorFromInputs();
-        // convert the color to rgb and make opaque
+        // convert the color to rgb and make opaque (by adding to opaque black)
         var rgbColor = hslColor.rgbaColor().add(Color.BLACK);
         var brush = this.preview.toBrush(rgbColor);
         if (this.callback) {
