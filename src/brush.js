@@ -9,18 +9,14 @@ define(['img!../brushes/brush-tile-129.png', './color'], function(brushesImg, Co
     // Inspired by canvas.h of Colors! XO activity, GPL license.
     
     // names/indexes of brushes in brushesImg
-    var BrushTypes = {
-        hard: 0,
-        medium: 1,
-        'rough fine': 2,
-        'rough coarse': 3,
-        soft: 4,
-        'dots small': 5,
-        'dots large': 6,
-        rect: 7,
-        splotch: 8,
-        'splotches coarse': 9
-    };
+    var BrushTypes = ['hard', 'medium', 'rough fine', 'rough coarse',
+                      'soft', 'dots small', 'dots large', 'rect',
+                      'splotch', 'splotches coarse'];
+    // map name to index and vice versa
+    BrushTypes.forEach(function(type, idx) {
+        BrushTypes[type] = idx;
+    });
+
     var NUM_BRUSHES = 0;
     if (brushesImg) {
         NUM_BRUSHES = brushesImg.width / brushesImg.height;
@@ -57,7 +53,7 @@ define(['img!../brushes/brush-tile-129.png', './color'], function(brushesImg, Co
         this.color = color || Color.BLACK;
         this.type = type || 'hard';
         this.size = size || 32;
-        this.opacity = opacity || 1.0;
+        this.opacity = (typeof(opacity)==='number') ? opacity : 1.0;
         this.spacing = spacing || 0.225; // fraction of brush size
     };
 
