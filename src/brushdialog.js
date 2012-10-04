@@ -11,10 +11,28 @@ define(['domReady!', 'text!./brushdialog.html', './color', './colorwheel', './co
         };
     };
 
+    /* global var to ensure that multiple brush dialogs (if we ever do that)
+     * have different <input> ids. */
+    var cnt=0;
+
     var BrushDialog = function(brushpane) {
+        this.id = (cnt++); /* unique for each BrushDialog */
         this.brushpane = brushpane;
         /* fill in the markup! */
         this.brushpane.innerHTML = innerhtml;
+
+        var assignID = function(className) {
+            var elem = brushpane.querySelector('input.'+className);
+            elem.name = elem.id = className+'_'+this.id;
+            return elem;
+        }.bind(this);
+
+        /* make input elements have unique ids */
+        ['hue','saturation','lightness','opacity'].forEach(function(name) {
+            ['color_','old_color_'].forEach(function(prefix) {
+                assignID(prefix+name);
+            }.bind(this));
+        }.bind(this));
 
         var PAGES = ['brush', 'color'];
         PAGES.forEach(function(p) {
@@ -39,10 +57,11 @@ define(['domReady!', 'text!./brushdialog.html', './color', './colorwheel', './co
             ['minus','plus'].forEach(function(dir) {
                 var e = brushpane.querySelector('.'+type+' .'+dir);
                 e.addEventListener("click", noDefault(function(event) {
-                    Slider.increment('brush_'+type, (dir==='minus')?-1:1);
-                }));
-            });
-        });
+                    Slider.increment('brush_'+type+'_'+this.id,
+                                     (dir==='minus') ? -1 : 1);
+                }.bind(this)));
+            }.bind(this));
+        }.bind(this));
 
         /* Memoize update function so that it is invoked later in a
          * requestAnimationFrame callback. */
@@ -79,14 +98,14 @@ define(['domReady!', 'text!./brushdialog.html', './color', './colorwheel', './co
                                     brushpane);
         this.wheel.hsCallback = function(hue, saturation) {
             var c = colorFromInputs();
-            document.getElementById('color_hue').value = hue;
-            document.getElementById('color_saturation').value = saturation;
+            brushpane.querySelector('input.color_hue').value = hue;
+            brushpane.querySelector('input.color_saturation').value= saturation;
             updateColor(new HSLColor(hue, saturation, c.lightness, c.opacity));
-        };
+        }.bind(this);
         var wheel_setHSL = onAnim('wheel_setHSL', function(h, s, l) {
             this.wheel.setHSL(h, s, l);
         }.bind(this));
-        var updateColorFromInputs = window.updateColorFromInputs = function() {
+        var updateColorFromInputs = function() {
             var c = colorFromInputs();
             updateColor(c);
             wheel_setHSL(c.hue, c.saturation, c.lightness);
@@ -97,10 +116,11 @@ define(['domReady!', 'text!./brushdialog.html', './color', './colorwheel', './co
         };
 
         var setLightness = function(l) {
-            document.getElementById('color_lightness').value=Math.round(l);
-            Slider.updateSlider('color_lightness');
+            brushpane.querySelector('input.color_lightness').value =
+                Math.round(l);
+            Slider.updateSlider('color_lightness_'+this.id);
             updateColorFromInputs();
-        };
+        }.bind(this);
         var setHSLA = function(hslColor) {
             this._setInputs(hslColor);
             updateColorFromInputs();
@@ -119,7 +139,43 @@ define(['domReady!', 'text!./brushdialog.html', './color', './colorwheel', './co
             }));
         });
 
-        Slider.create();
+        // set up brush size/spacing sliders
+        Slider.createSlider({
+            inp: assignID('brush_spacing'),
+            range: [5,300],
+            inc: "1",
+            clickJump: true,
+            hideInput: true,
+            callbacks: {
+                update: []
+            }
+        });
+        Slider.createSlider({
+            inp: assignID('brush_size'),
+            range: [1,128],
+            inc: "1",
+            clickJump: true,
+            hideInput: true,
+            callbacks: {
+                update: []
+            }
+        });
+        // set up lightness/opacity sliders
+        var color_slider_callbacks = {};
+        ['lightness', 'opacity'].forEach(function(id) {
+            var elem = brushpane.querySelector('input.color_'+id);
+            Slider.createSlider({
+                inp: elem,
+                range: [0, 255],
+                inc: "1",
+                clickJump: true,
+                hideInput: true,
+                callbacks: color_slider_callbacks
+            });
+        }.bind(this));
+        // hook up update callback only after slider has been inited.
+        // (otherwise we get a rogue update on the first animation frame)
+        color_slider_callbacks.update = [updateColorFromInputs];
 
         var updateBrush = function() {
             var scroll = this;
@@ -150,18 +206,19 @@ define(['domReady!', 'text!./brushdialog.html', './color', './colorwheel', './co
     BrushDialog.prototype._colorFromInputs = function(opt_prefix) {
         var prefix = opt_prefix || 'color_';
         var hsla = ['hue', 'saturation', 'lightness', 'opacity'];
-        hsla = hsla.map(function(id) {
-            return parseInt(document.getElementById(prefix+id).value,
-                            10) || 0;
-        });
+        hsla = hsla.map(function(a) {
+            var input = this.brushpane.querySelector('input.'+prefix+a);
+            return parseInt(input.value, 10) || 0;
+        }.bind(this));
         return new HSLColor(hsla[0], hsla[1], hsla[2], hsla[3]);
     };
     BrushDialog.prototype._setInputs = function(hslColor, opt_prefix) {
         var prefix = opt_prefix || 'color_';
         ['hue', 'saturation', 'lightness', 'opacity'].forEach(function(a) {
-            document.getElementById(prefix+a).value=hslColor[a];
-            Slider.updateSlider(prefix+a);
-        });
+            var input = this.brushpane.querySelector('input.'+prefix+a);
+            input.value = hslColor[a];
+            Slider.updateSlider(prefix+a+'_'+this.id);
+        }.bind(this));
     };
     BrushDialog.prototype._updateOldColor = function(hslColor) {
         var colorString = hslColor.rgbString();
