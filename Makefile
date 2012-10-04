@@ -11,14 +11,14 @@ build/index.js: index.js # and other stuff
 build/ncolors.js: ncolors.js src/audio-map.js # and other stuff
 	mkdir -p build
 	node r.js -o name=ncolors out=$@ baseUrl=. $(OPT) include=drw!samples/r.json $(foreach p,$(PLUGINS),paths.$(p)=plugins/$(p))
-build/brush.js: brush.js # and other stuff
+build/brushdemo.js: brushdemo.js # and other stuff
 	mkdir -p build
-	node r.js -o name=brush out=$@ baseUrl=. $(OPT) $(foreach p,$(PLUGINS),paths.$(p)=plugins/$(p))
+	node r.js -o name=brushdemo out=$@ baseUrl=. $(OPT) $(foreach p,$(PLUGINS),paths.$(p)=plugins/$(p))
 build/src/recogworker.js: src/recogworker.js # and other stuff
 	mkdir -p build
 	node r.js -o name=recogworker out=$@ baseUrl=src $(foreach p,$(PLUGINS),paths.$(p)=../plugins/$(p)) $(OPT)
 
-build-all: build/index.js build/ncolors.js build/brush.js build/src/recogworker.js brushes/brush-tile-129.png
+build-all: build/index.js build/ncolors.js build/brushdemo.js build/src/recogworker.js brushes/brush-tile-129.png
 	mkdir -p build/icons build/audio build/brushes build/samples \
 		build/fonts build/style
 	for f in index.html ncolors.html ; do \
@@ -34,7 +34,7 @@ build-all: build/index.js build/ncolors.js build/brush.js build/src/recogworker.
 	cp style/*.css build/style
 	cp samples/*.json build/samples
 	# 'brush' dialog demo
-	cp brush.html build/
+	cp brushdemo.html build/
 	# offline manifest (everything!)
 	( echo "CACHE MANIFEST" ; \
 	  echo -n '# ' ; find build -type f | fgrep -v manifest | \
