@@ -16,10 +16,19 @@ require.config({
         text: "../plugins/text"
     }
 });
-define(['domReady!', './src/brushdialog', './src/color', './src/hslcolor'], function(document, BrushDialog, Color, HSLColor) {
+define(['domReady!', './src/brush', './src/brushdialog', './src/color'], function(document, Brush, BrushDialog, Color) {
     'use strict';
 
     var brushpane = document.querySelector("#brushpane");
     var brushdialog = new BrushDialog(brushpane);
-    brushdialog.open(HSLColor.from_color(Color.DARK_RED), null);
+    var open, closed;
+    open = function() {
+        brushdialog.open(new Brush(Color.DARK_RED, 'soft', 32, 0.75, 0.225),
+                         closed);
+    };
+    closed = function(brush) {
+        console.log('closed', brush);
+        window.setTimeout(open, 3000);
+    };
+    open();
 });

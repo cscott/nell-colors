@@ -3,12 +3,58 @@
   trailing:true, es5:true, globalstrict:true
  */
 /*global define:false, console:false, document:false, window:false */
-define(['domReady!', 'text!./brushdialog.html', './color', './colorwheel', './coords', './compat', './hslcolor', './iscroll', './slider'], function(document, innerhtml, Color, ColorWheel, Coords, Compat, HSLColor, iScroll, Slider) {
+define(['domReady!', 'text!./brushdialog.html', './brush', './color', './colorwheel', './coords', './compat', './drawcommand', './hslcolor', './iscroll', './layer', './slider'], function(document, innerhtml, Brush, Color, ColorWheel, Coords, Compat, DrawCommand, HSLColor, iScroll, Layer, Slider) {
     var noDefault = function(f) {
         return function(event) {
             event.preventDefault(); /* don't change history on click */
             f(event);
         };
+    };
+
+    var BrushPreview = function(domElement) {
+        this.domElement = domElement;
+        this.width = this.domElement.clientWidth;
+        this.height= this.domElement.clientHeight;
+        this.layer = new Layer();
+        this.layer.resize(this.width, this.height,
+                          window.devicePixelRatio || 1);
+        this.domElement.appendChild(this.layer.domElement);
+        this.type = 0;
+        this.size = 32;
+        this.spacing = 22;
+        this.opacity = 255;
+    };
+    BrushPreview.prototype.setFromBrush = function(brush) {
+        this.type = brush.type;
+        this.size = Math.round(brush.size);
+        this.spacing = Math.round(brush.spacing*100);
+        this.opacity = brush.color.alpha;
+    };
+    BrushPreview.prototype.toBrush = function(rgbaColor) {
+        return new Brush(rgbaColor, this.type, this.size,
+                         this.opacity/255, this.spacing/100);
+    };
+    BrushPreview.prototype.update = function() {
+        /* don't let preview opacity go below 20/255 */
+        var brush = new Brush(Color.WHITE, this.type, this.size,
+                              Math.max(20, this.opacity)/255, this.spacing/100);
+        this.layer.clear();
+        // draw a sine wave with NUM_POINTS points
+        var NUM_POINTS = 5;
+        var minx = brush.size/2; /* half maximum brush size */
+        var maxx = this.width - minx;
+        var miny = brush.size/2; /* again, half max brush size */
+        var maxy = this.height - miny;
+        var i, theta, pos = { x:0, y:0 };
+        this.layer.execCommand(DrawCommand.create_draw_start(), brush);
+        for (i=0; i<NUM_POINTS; i++) {
+            // stroke looks nicer if we trim edges of sine wave cycle
+            theta = (i/(NUM_POINTS-1)) * 0.8 + 0.1;
+            pos.x = minx + i*(maxx-minx)/(NUM_POINTS-1);
+            pos.y = miny + (0.5 + Math.sin(2*Math.PI*theta)/2) * (maxy-miny);
+            this.layer.execCommand(DrawCommand.create_draw(pos), brush);
+        }
+        this.layer.execCommand(DrawCommand.create_draw_end(), brush);
     };
 
     /* global var to ensure that multiple brush dialogs (if we ever do that)
@@ -20,6 +66,9 @@ define(['domReady!', 'text!./brushdialog.html', './color', './colorwheel', './co
         this.brushpane = brushpane;
         /* fill in the markup! */
         this.brushpane.innerHTML = innerhtml;
+        /* brush preview */
+        var preview = this.preview =
+            new BrushPreview(brushpane.querySelector('.stroke'));
 
         var assignID = function(className) {
             var elem = brushpane.querySelector('input.'+className);
@@ -50,7 +99,7 @@ define(['domReady!', 'text!./brushdialog.html', './color', './colorwheel', './co
             .addEventListener("click", noDefault(function(event) {
                 this.close();
                 this._invokeCallback();
-            }), false);
+            }.bind(this)), false);
 
         /* set up plus/minus button handlers */
         ['size','spacing'].forEach(function(type) {
@@ -105,10 +154,17 @@ define(['domReady!', 'text!./brushdialog.html', './color', './colorwheel', './co
         var wheel_setHSL = onAnim('wheel_setHSL', function(h, s, l) {
             this.wheel.setHSL(h, s, l);
         }.bind(this));
+        var preview_update = onAnim('preview_update', function() {
+            preview.update();
+        });
         var updateColorFromInputs = function() {
             var c = colorFromInputs();
             updateColor(c);
             wheel_setHSL(c.hue, c.saturation, c.lightness);
+            if (preview.opacity !== c.opacity) {
+                preview.opacity = c.opacity;
+                preview_update();
+            }
         };
         var updateOldColorFromInputs = function() {
             var c = colorFromInputs('old_color_');
@@ -140,26 +196,34 @@ define(['domReady!', 'text!./brushdialog.html', './color', './colorwheel', './co
         });
 
         // set up brush size/spacing sliders
+        var spacing_callbacks = {};
         Slider.createSlider({
             inp: assignID('brush_spacing'),
-            range: [5,300],
+            range: [5,200],
             inc: "1",
             clickJump: true,
             hideInput: true,
-            callbacks: {
-                update: []
-            }
+            callbacks: spacing_callbacks
         });
+        spacing_callbacks.update = [function() {
+            var input = brushpane.querySelector('input.brush_spacing');
+            preview.spacing = parseInt(input.value, 10) || 5;
+            preview_update();
+        }];
+        var size_callbacks = {};
         Slider.createSlider({
             inp: assignID('brush_size'),
             range: [1,128],
             inc: "1",
             clickJump: true,
             hideInput: true,
-            callbacks: {
-                update: []
-            }
+            callbacks: size_callbacks
         });
+        size_callbacks.update = [function() {
+            var input = brushpane.querySelector('input.brush_size');
+            preview.size = parseInt(input.value, 10) || 1;
+            preview_update();
+        }];
         // set up lightness/opacity sliders
         var color_slider_callbacks = {};
         ['lightness', 'opacity'].forEach(function(id) {
@@ -177,12 +241,16 @@ define(['domReady!', 'text!./brushdialog.html', './color', './colorwheel', './co
         // (otherwise we get a rogue update on the first animation frame)
         color_slider_callbacks.update = [updateColorFromInputs];
 
-        var updateBrush = function() {
+        var updateBrushType = function() {
             var scroll = this;
-            console.log("Brush updated", scroll.currPageX);
+            preview.type = Brush.Types[scroll.currPageX];
+            preview_update();
         };
         var brushes = brushpane.querySelector('.shape > .scrollwrapper');
-        var brushscroll = new iScroll(brushes, { vScroll: false, snap: 100, onAnimationEnd: updateBrush });
+        var brushscroll = new iScroll(brushes, {
+            vScroll: false, snap: 100,
+            onAnimationEnd: updateBrushType
+        });
         /* listen to arrow key events on scroller */
         var shape = brushpane.querySelector('.shape');
         shape.addEventListener('keypress', function(e) {
@@ -200,7 +268,23 @@ define(['domReady!', 'text!./brushdialog.html', './color', './colorwheel', './co
             e.stopPropagation(); e.preventDefault();
             return false;
         }, true);
-
+        /* override preview.setFromBrush method to ensure that iScroll and
+         * sliders are kept in sync */
+        preview.setFromBrush = (function(super_setFromBrush) {
+            var id = this.id;
+            return function(brush) {
+                super_setFromBrush.call(this, brush);
+                // update iScroll window
+                brushscroll.scrollToPage(Brush.Types[this.type]);
+                // update brush property sliders
+                [['brush_size', this.size], ['brush_spacing', this.spacing]].
+                    forEach(function(a) {
+                        var input = brushpane.querySelector('input.'+a[0]);
+                        input.value = a[1];
+                        Slider.updateSlider(a[0]+'_'+id);
+                    });
+            };
+        }.bind(this))(preview.setFromBrush);
     };
     BrushDialog.prototype = {};
     BrushDialog.prototype._colorFromInputs = function(opt_prefix) {
@@ -246,8 +330,9 @@ define(['domReady!', 'text!./brushdialog.html', './color', './colorwheel', './co
             e.style.color = rgbSatString;
         }.bind(this));
     };
-    BrushDialog.prototype.open = function(hslColor, callback) {
+    BrushDialog.prototype.open = function(brush, callback) {
         this.callback = callback;
+        var hslColor = HSLColor.from_color(brush.color);
         // set up color and oldcolor
         this._setInputs(hslColor);
         this._setInputs(hslColor, 'old_color_');
@@ -255,6 +340,9 @@ define(['domReady!', 'text!./brushdialog.html', './color', './colorwheel', './co
         this._updateOldColor(hslColor);
         this.wheel.setHSL(hslColor.hue, hslColor.saturation,
                           hslColor.lightness);
+        // set up brush (and adjust sliders)
+        this.preview.setFromBrush(brush);
+        this.preview.update();
         // make visible
         this.brushpane.classList.add('visible');
     };
@@ -263,9 +351,12 @@ define(['domReady!', 'text!./brushdialog.html', './color', './colorwheel', './co
         this.brushpane.classList.remove('visible');
     };
     BrushDialog.prototype._invokeCallback = function() {
-        var color = this._colorFromInputs();
+        var hslColor = this._colorFromInputs();
+        // convert the color to rgb and make opaque
+        var rgbColor = hslColor.rgbaColor().add(Color.BLACK);
+        var brush = this.preview.toBrush(rgbColor);
         if (this.callback) {
-            this.callback.call(null, color);
+            this.callback.call(null, brush);
         }
     };
     return BrushDialog;
