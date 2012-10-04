@@ -32,6 +32,7 @@ define(['./drawcommand', './brush', './point'], function(DrawCommand, Brush, Poi
         // line state
         this.isDrawingPath = false;
         this.lastPoint = new Point();
+        this.spentDist = 0;
         // temporaries, to avoid reallocating points every time we invoke
         // execDraw()
         this._draw_from = new Point();
@@ -50,10 +51,12 @@ define(['./drawcommand', './brush', './point'], function(DrawCommand, Brush, Poi
             return this.brush_stamp;
         },
         _drawStamp: function(pos, brush) {
-            this.lastPoint.set(Math.round(pos.x), Math.round(pos.y));
+            this.lastPoint.set_from_point(pos);
+            this.spentDist = 0;
             var stamp = this._getBrushStamp(brush);
-            var center = Math.floor(stamp.width / 2);
+            var center = stamp.width / 2;
             var x = this.lastPoint.x - center, y = this.lastPoint.y - center;
+            //x = Math.round(x); y = Math.round(y);
             this.progressContext.drawImage(stamp, x, y);
         },
         execDraw: function(x, y, brush) {
@@ -72,14 +75,17 @@ define(['./drawcommand', './brush', './point'], function(DrawCommand, Brush, Poi
                 var dist = Point.dist(from, to), d;
                 // step should never be less than 1 px.
                 var step = Math.max(1, brush.size * brush.spacing);
-                if (dist < step) {
+                for (d = (step-this.spentDist); d < dist; d+= step) {
+                    this._drawStamp(Point.interp(from, to, d/dist, tmp),
+                                    brush);
+                    drawn = true;
+                }
+                // what's left over?
+                this.spentDist = dist - (d-step);
+                this.lastPoint.set_from_point(to);
+
+                if (!drawn) {
                     // XXX idle?
-                } else {
-                    for (d = step; d < dist; d+= step) {
-                        this._drawStamp(Point.interp(from, to, d/dist, tmp),
-                                        brush);
-                        drawn = true;
-                    }
                 }
             }
             return drawn;
