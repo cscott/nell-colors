@@ -2,6 +2,20 @@
  * dialog's wrapper div.   For example:
  *  #brushdialog { @import "brushdialog"; }
  */
+@import "compass/css3";
+
+@mixin no-select {
+  // disable text selection in this element
+  -webkit-user-select: none;
+  -moz-user-select: -moz-none;
+}
+@mixin outline($value) {
+  -moz-outline: $value;
+  outline: $value;
+}
+@mixin no-outline {
+  @include outline(0px none);
+}
 
 & {
   position: absolute; top: 0; left: 50%; margin-left: -200px;
@@ -10,36 +24,18 @@
   min-height: 400px;
   overflow: hidden;
 
-  -webkit-border-bottom-right-radius: 15px;
-  -webkit-border-bottom-left-radius: 15px;
-  -moz-border-radius-bottomright: 15px;
-  -moz-border-radius-bottomleft: 15px;
-  border-bottom-right-radius: 15px;
-  border-bottom-left-radius: 15px;
-  -webkit-transition-property: -webkit-transform;
-  -webkit-transition-duration: 1s;
-  -webkit-transform: translate3d(0,-100%,0);
-  -webkit-transform-origin: top center;
-  -moz-transition-property: -moz-transform;
-  -moz-transition-duration: 1s;
-  -moz-transform: translate(0,-100%);
-  -moz-transform-origin: top center;
-  transition-property: transform;
-  transition-duration: 1s;
-  transform: translate(0,-100%);
-  transform-origin: top center;
-  -webkit-user-select: none;
-  -moz-user-select: -moz-none;
+  @include border-bottom-radius(15px);
+  @include transition(transform 1s);
+  @include translate3d(0,-100%,0); // 3d for safari
+  @include transform-origin(center, top);
+  @include no-select;
 }
 &.visible {
-  -webkit-transform: translate3d(0,0,0);
-  -moz-transform: translate(0,0);
-  transform: translate(0,0);
+  @include translate3d(0,0,0);
 }
 a:focus,
 .wheel > .color:focus {
-  -moz-outline: 2px dotted #888;
-  outline: 2px dotted #888;
+  @include outline(2px dotted #888);
 }
 
 /*
@@ -72,88 +68,72 @@ a:focus,
 .panes {
   width: 200%;
   min-height: 400px;
-  -webkit-transform: translate3d(0,0,0);
-  -moz-transform: translate(0,0);
-  transform: translate(0,0);
+  @include translate3d(0,0,0);
    /* duration is 0s to allow quick configuration when invisible */
-  -webkit-transition: -webkit-transform 0s ease-in-out;
-     -moz-transition:    -moz-transform 0s ease-in-out;
-          transition:         transform 0s ease-in-out;
+  @include transition(transform 0s ease-in-out);
 
-  -webkit-user-select: none;
-  -moz-user-select: -moz-none;
+  @include no-select;
+
+  &:after {
+    content: "";
+    clear: both;
+  }
 }
 &.visible .panes {
   /* only animate when visible */
-  -webkit-transition-duration: 0.5s;
-     -moz-transition-duration: 0.5s;
-          transition-duration: 0.5s;
+  @include transition-duration(0.5s);
 }
 .color_options,
 .brush_options {
-  /* hiding inactive panes is needed to work around FF keyboard focus issues */
-  visibility: hidden;
-  -webkit-transition: visibility 0s linear 0.5s;
-     -moz-transition: visibility 0s linear 0.5s;
-          transition: visibility 0s linear 0.5s;
-}
-&.color .color_options,
-&.brush .brush_options {
-  visibility: visible;
-  -webkit-transition-delay: 0s;
-     -moz-transition-delay: 0s;
-          transition-delay: 0s;
-}
-&.color .panes {
-  -webkit-transform: translate3d(-50%,0,0);
-     -moz-transform: translate(-50%,0);
-          transform: translate(-50%,0);
-}
-.panes:after {
-  content: "";
-  clear: both;
-}
-.panes .brush_options,
-.panes .color_options {
   float: left;
   width: 50%;
   /* workaround for FF not clipping .allbrushes:before to .scrollwrapper
      properly: */
   overflow: hidden;
+  /* hiding inactive panes is needed to work around FF keyboard focus issues */
+  visibility: hidden;
+  @include transition(visibility 0s linear 0.5s);
+}
+&.color .color_options,
+&.brush .brush_options {
+  visibility: visible;
+  @include transition-delay(0s);
+}
+&.color .panes {
+  @include translate3d(-50%,0,0);
 }
 &.color .brush_options *,
 &.brush .color_options * {
   /* this should work, but FF removed it:
    *   https://bugzilla.mozilla.org/show_bug.cgi?id=379939 */
   -moz-user-focus: ignore;
-  user-focus: ignore;
+      user-focus: ignore;
   -moz-user-input: none;
-  user-input: none;
+       user-input: none;
 }
 
 /* --------- page selector and close widgets ------- */
 .page_select {
   text-align: center;
   padding: 17px;
-}
-.page_select > a {
-  display: inline-block;
-  height: 39px; width: 39px;
-  margin: 0 32px;
-  position: relative; /* use this as position reference for pseudo-elements */
-}
-.page_select > a:focus {
-  -moz-outline: 0px none;
-  outline: 0px none;
-}
-.page_select > a:before {
-  content: ""; /* needs to be present or pseudo-element isn't created */
-  position: absolute; top: -2px; bottom: -2px; left: -2px; right: -2px;
-  border-radius: 5px;
-  border: 2px dotted transparent;
-}
-.page_select > a:focus:before {
-  border-color: #555;
+
+  & > a {
+    @include inline-block;
+    height: 39px; width: 39px;
+    margin: 0 32px;
+    position: relative; /* use this as position reference for pseudo-elements */
+
+    &:focus { @include no-outline; }
+    &:before {
+      content: ""; /* needs to be present or pseudo-element isn't created */
+      position: absolute; top: -2px; bottom: -2px; left: -2px; right: -2px;
+      @include border-radius(5px);
+      border: 2px dotted transparent;
+    }
+    &:focus:before {
+      border-color: #555;
+    }
+  }
 }
 &.brush .page_select > .brush_select:before,
 &.color .page_select > .color_select:before {
@@ -167,11 +147,9 @@ a:focus,
 .page_select > .color_select:after {
   content: ""; /* needs to be present or pseudo-element isn't created */
   position: absolute; top: 2px; bottom: 2px; left: 2px; right: 2px;
-  -moz-border-radius: 50%;
-  -webkit-border-radius: 50%;
-  border-radius: 50%;
+  @include border-radius(50%);
   border: 2px solid #666;
-  background: url('../icons/checkerboard.svg');
+  background: image-url('checkerboard.svg');
   background-position: center;
 }
 .page_select > .color_select > span {
@@ -179,17 +157,15 @@ a:focus,
   display: block;
   background: currentColor;
   z-index: 2;
-  -moz-border-radius: 50%;
-  -webkit-border-radius: 50%;
-  border-radius: 50%;
+  @include border-radius(50%);
 }
 &.color .page_select > .color_select:after {
   border-color: #888;
 }
 .page_select > .brush_select:after {
-  background-image: url('../icons/tool-brush.svg');
+  background-image: image-url('tool-brush.svg');
   background-repeat: no-repeat;
-  background-size: 49px;
+  @include background-size(49px);
   background-position: center center;
   content: ""; /* needs to be present or pseudo-element isn't created */
   position: absolute; top: 0; bottom: 0; left: 0; right: 0;
@@ -198,27 +174,30 @@ a:focus,
 & > .close_pane {
   text-align: center;
   padding: 13px;
-}
-.closer {
-  display: inline-block;
-  background: url('../icons/up-arrow.svg') no-repeat;
-  width: 32px; height: 20px;
-  background-position: center center;
+
+  .closer {
+    @include inline-block;
+    background: image-url('up-arrow.svg') no-repeat;
+    width: 32px; height: 20px;
+    background-position: center center;
+  }
 }
 
 /* --------- general slider styling --------- */
+%fd-round-with-border {
+  border: 2px solid #666;
+  @include border-radius(5px);
+}
 .fd-slider {
-  display: inline-block;
+  @include inline-block;
   position: relative;
   width: 302px; height: 30px;
   text-align: center;
   border: 0 none;
-  -moz-user-select:none;
-  -webkit-user-select:none;
   cursor:pointer;
+  @include no-select;
 }
-.fd-slider-inner,
-.fd-slider-bar {
+.fd-slider-inner {
   position: absolute; left: 0; right: 0;
   display: block;
   z-index: 1;
@@ -226,14 +205,10 @@ a:focus,
   height:10px;
   text-align:left;
   background: #333;
-}
-.fd-slider-inner, .fd-slider-bar, .fd-slider-handle {
-  border: 2px solid #666;
-  border-radius: 5px;      
-  -moz-border-radius: 5px;
-  -webkit-border-radius: 5px;
+  @extend %fd-round-with-border;
 }
 .fd-slider-bar {
+  @extend .fd-slider-inner;
   display: none; /* this would be a line running down the center typically */
   z-index: 2;
 }
@@ -244,15 +219,12 @@ a:focus,
   z-index: 3;
   width: 15px; height: 30px;
   background: #8c8c8c;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  box-sizing: border-box;
+  @include box-sizing(border-box);
+  @include no-select;
+  @extend %fd-round-with-border;
+  &, &:focus { @include no-outline; }
+  &:focus::-moz-focus-inner { border-color: transparent; }
 }
-.fd-slider-handle, .fd-slider-handle:focus {
-  -moz-outline:0px none;               
-  outline: 0px none;
-}
-.fd-slider-handle:focus::-moz-focus-inner { border-color: transparent; }
 /* hover effect */
 .fd-slider-hover .fd-slider-handle {
   border: 2px solid #777;
@@ -284,60 +256,64 @@ input.fd_slider { display: none; } /* hide slider input */
   margin: 0 2px;
   position: relative;
   -moz-user-focus: normal; /* allow to take focus */
+  &:focus {
+    border: 2px dotted #888;
+    @include no-outline;
+  }
+  &:before, &:after {
+    content: "";
+    position: absolute; left: 50%; top: 0;
+    width: 0; height: 0;
+  }
+  &:before {
+    margin-left: -11px;
+    border-left: 11px solid transparent;
+    border-right: 11px solid transparent;
+    border-top: 11px solid #666;
+  }
+  &:after {
+    top: -3px;
+    margin-left: -11px;
+    border-left: 11px solid transparent;
+    border-right: 11px solid transparent;
+    border-top: 11px solid #404040;
+  }
+
+  & > .scrollwrapper {
+    height: 120px;
+    overflow: hidden;
+
+    & > .allbrushes {
+      /* 10 100px brushes, plus borders on each side */
+      height: 100px; width: 1292px;
+      position: relative;
+
+      &:before {
+        content: "";
+        position: absolute; left: 148px; top: 8px;
+        width: 1000px;
+        height: 100px;
+        background-image: url('../brushes/brush-tile-129.png');
+        background-repeat: no-repeat;
+        @include background-size(auto 100px);
+      }
+    }
+  }
 }
-.shape:focus {
-  border: 2px dotted #888;
-  -moz-outline: 0px none;
-  outline: 0px none;
-}
-.shape:before, .shape:after {
-  content: "";
-  position: absolute; left: 50%; top: 0;
-  width: 0; height: 0;
-}
-.shape:before {
-  margin-left: -11px;
-  border-left: 11px solid transparent;
-  border-right: 11px solid transparent;
-  border-top: 11px solid #666;
-}
-.shape:after {
-  top: -3px;
-  margin-left: -11px;
-  border-left: 11px solid transparent;
-  border-right: 11px solid transparent;
-  border-top: 11px solid #404040;
-}
-.shape > .scrollwrapper {
-  height: 120px;
-  overflow: hidden;
-}
-.shape > .scrollwrapper > .allbrushes {
-  /* 10 100px brushes, plus borders on each side */
-  height: 100px; width: 1292px;
-  position: relative;
-}
-.shape > .scrollwrapper > .allbrushes:before {
-  content: "";
-  position: absolute; left: 148px; top: 8px;
-  width: 1000px;
-  height: 100px;
-  background-image: url('../brushes/brush-tile-129.png');
-  background-repeat: no-repeat;
-  background-size: auto 100px;
-}
-.minus, .plus {
-  display: inline-block;
+%plusminus {
+  @include inline-block;
   width: 32px; height: 32px;
   background-position: center center;
   background-repeat: no-repeat;
   margin-top: -1px; margin-bottom: -1px; /* effectively 30px tall */
 }
 .minus {
-  background-image: url('../icons/circle-minus.svg');
+  @extend %plusminus;
+  background-image: image-url('circle-minus.svg');
 }
 .plus {
-  background-image: url('../icons/circle-plus.svg');
+  @extend %plusminus;
+  background-image: image-url('circle-plus.svg');
 }
 .spacing {
   margin-top: 10px;
@@ -346,67 +322,57 @@ input.fd_slider { display: none; } /* hide slider input */
 .spacing {
   padding: 17px 30px;
   text-align: center;
+
+  .fd-slider {
+    width: 252px;
+    margin: 0 12px;
+  }
 }
-.size .fd-slider,
-.spacing .fd-slider {
-  width: 252px;
-  margin: 0 12px;
-}
+
 /* -------------- color options ------------- */
 .swatches {
   text-align: center;
-}
-.swatches > a {
-  position: relative;
-  display: inline-block;
-  border: 2px solid #666;
-  height: 28px;
-  width: 77px;
-  margin-left: 4px; margin-right: 4px;
-  background: currentColor;
-}
-.swatches > a:focus {
-  -moz-outline: 0px none;
-  outline: 0px none;
-}
-.swatches > a[href]:focus {
-  border: 2px dotted #888;
-}
-.swatches > .old,
-.swatches > a.old[href]:focus {
-  border-right: none;
-  margin-right: 0;
-}
-.swatches > .new,
-.swatches > .new:focus {
-  border-left: none;
-  margin-left: 0;
-}
-.swatches > .new:before,
-.swatches > .old:before {
-  position: absolute; left: 0; right: 0; top: 0; bottom: 0;
-  background: url('../icons/checkerboard.svg');
-  background-position: center;
-  z-index: -1;
-  content: "";
-}
-.swatches > .white {
-  background: white;
-  -webkit-border-top-left-radius: 5px;
-  -webkit-border-bottom-left-radius: 5px;
-  -moz-border-radius-topleft: 5px;
-  -moz-border-radius-bottomleft: 5px;
-  border-top-left-radius: 5px;
-  border-bottom-left-radius: 5px;
-}
-.swatches > .black {
-  background: black;
-  -webkit-border-top-right-radius: 5px;
-  -webkit-border-bottom-right-radius: 5px;
-  -moz-border-radius-topright: 5px;
-  -moz-border-radius-bottomright: 5px;
-  border-top-right-radius: 5px;
-  border-bottom-right-radius: 5px;
+
+  & > a {
+    position: relative;
+    @include inline-block;
+    border: 2px solid #666;
+    height: 28px;
+    width: 77px;
+    margin-left: 4px; margin-right: 4px;
+    background: currentColor;
+
+    &:focus { @include no-outline; }
+    &[href]:focus {
+      border: 2px dotted #888;
+    }
+    &.old,
+    &.old[href]:focus {
+      border-right: none;
+      margin-right: 0;
+    }
+    &.new,
+    &.new:focus {
+      border-left: none;
+      margin-left: 0;
+    }
+    &.new:before,
+    &.old:before {
+      position: absolute; left: 0; right: 0; top: 0; bottom: 0;
+      background: image-url('checkerboard.svg');
+      background-position: center;
+      z-index: -1;
+      content: "";
+    }
+    &.white {
+      background: white;
+      @include border-left-radius(5px);
+    }
+    &.black {
+      background: black;
+      @include border-right-radius(5px);
+    }
+  }
 }
 
 .wheel {
@@ -415,83 +381,82 @@ input.fd_slider { display: none; } /* hide slider input */
   margin-top: 10px;
   width: 302px;
   margin-left: auto; margin-right: auto; /* center */
-  -webkit-user-select: none;
-  -moz-user-select: -moz-none;
-}
-.wheel > .color,
-.wheel > .color > div,
-.wheel > .thumb,
-.wheel > .thumb:after {
-  -moz-border-radius: 50%;
-  -webkit-border-radius: 50%;
-  border-radius: 50%;
-  cursor: pointer;
-  -webkit-user-select: none;
-  -moz-user-select: -moz-none;
-}
-.wheel > .color {
-  position: relative; /* z-ordering with thumb */
-  border: 2px solid #666;
-  display: inline-block;
-  width: 298px; height: 298px;
-  /*
-  background: url('../icons/color-wheel.svg');
-  */
-  background-image: url('../icons/color-wheel.png');
-  background-size: 100%;
-}
-.wheel > .color > div {
-  position: absolute;
-  top: 0; bottom: 0; left: 0; right: 0;
-}
-.wheel > .color > .white {
-  background: white;
-  opacity: 0;
-}
-.wheel > .color > .black {
-  background: black;
-  opacity: 0;
-}
-.wheel > .thumb {
-  position: absolute; left: 2px; top: 2px; /* offset past border */
-  width: 22px; height: 22px;
-  margin-left: -11px; margin-top: -11px;
-  border: 2px solid black;
-  background: currentColor;
-  pointer-events: none;
-  -webkit-transform: translate3d(0,0,0);
-     -moz-transform: translate(0,0);
-          transform: translate(0,0);
-}
-.wheel > .thumb:after {
-  position: absolute; left: -1px; right: -1px; top: -1px; bottom: -1px;
-  border: 2px solid white;
-  content: "";
-  pointer-events: none;
+  @include no-select;
+
+  %circle {
+    @include border-radius(50%);
+    cursor: pointer;
+    @include no-select;
+  }
+  & > .color {
+    @extend %circle;
+    @include inline-block;
+    position: relative; /* z-ordering with thumb */
+    border: 2px solid #666;
+    width: 298px; height: 298px;
+    //background: image-url('color-wheel.svg');
+    background-image: image-url('color-wheel.png');
+    @include background-size(100%);
+
+    & > div {
+      position: absolute;
+      top: 0; bottom: 0; left: 0; right: 0;
+      @extend %circle;
+
+      &.white {
+        background: white;
+        opacity: 0;
+      }
+      &.black {
+        background: black;
+        opacity: 0;
+      }
+    }
+  }
+  & > .thumb {
+    position: absolute; left: 2px; top: 2px; /* offset past border */
+    width: 22px; height: 22px;
+    margin-left: -11px; margin-top: -11px;
+    border: 2px solid black;
+    background: currentColor;
+    pointer-events: none;
+    @include translate3d(0,0,0);
+    @extend %circle;
+
+    &:after {
+      position: absolute; left: -1px; right: -1px; top: -1px; bottom: -1px;
+      border: 2px solid white;
+      content: "";
+      pointer-events: none;
+      @extend %circle;
+    }
+  }
 }
 
 .lightness {
   text-align: center;
   padding: 17px 0;
-}
-.lightness .fd-slider-inner {
-  background: -webkit-linear-gradient(left, black, currentColor 50%, white 100%);
-  background: -moz-linear-gradient(left, black, currentColor 50%, white 100%);
-  background: linear-gradient(to right, black, currentColor 50%, white 100%);
+
+  .fd-slider-inner {
+    @include background(linear-gradient(left, black, currentColor 50%, white 100%));
+    /* XXX compass doesn't emit the proper unprefixed gradient */
+    background: linear-gradient(to right, black, currentColor 50%, white 100%);
+  }
 }
 
 /* -------------- opacity slider ------------ */
 .opacity_options {
   text-align: center;
   padding: 17px 0;
-}
-.opacity_options .fd-slider-inner {
-  background: url('../icons/checkerboard.svg');
-  background-position: center;
-}
-.opacity_options .fd-slider-bar {
-  display: block;
-  background: -webkit-linear-gradient(left, transparent, currentColor 100%);
-  background: -moz-linear-gradient(left, transparent, currentColor 100%);
-  background: linear-gradient(to right, transparent, currentColor 100%);
+
+  .fd-slider-inner {
+    background: image-url('checkerboard.svg');
+    background-position: center;
+  }
+  .fd-slider-bar {
+    display: block;
+    @include background(linear-gradient(left, transparent, currentColor 100%));
+    /* XXX compass doesn't emit the proper unprefixed gradient */
+    background: linear-gradient(to right, transparent, currentColor 100%);
+  }
 }
