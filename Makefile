@@ -37,7 +37,7 @@ build-all: build/index.js build/ncolors.js build/brushdemo.js build/src/recogwor
 	cp icons/*.png icons/*.ico icons/*.svg build/icons/
 	cp audio/*.webm build/audio/
 	cp brushes/brush-tile-129.png build/brushes
-	cp fonts/*.eot fonts/*.ttf fonts/*.css build/fonts
+	cp fonts/*.css build/fonts
 	cp style/*.css build/style
 	cp samples/*.json build/samples
 	# 'brush' dialog demo

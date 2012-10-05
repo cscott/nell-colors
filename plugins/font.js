@@ -33,7 +33,9 @@ define(['propertyParser','webfont'], function (propertyParser, WebFont) {
                 onLoad(null); //avoid errors on the optimizer
             } else {
                 var data = parseName(name);
-                data.active = onLoad;
+                data.active = function() {
+                    onLoad(true);
+                };
                 data.inactive = function(){
                     onLoad(false);
                 };

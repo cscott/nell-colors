@@ -16,7 +16,7 @@ require.config({
         text: "../plugins/text"
     }
 });
-define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/color', './src/compat', './src/dom', './src/drawcommand', './src/drawing', './src/layer', './src/gallery', './lib/hammer', './src/postmessage', './src/prandom!', './src/recog', './src/sound', './src/sync', './lib/BlobBuilder', './lib/FileSaver', 'font!custom,families:[Delius],urls:[fonts/style.css]'], function(require, document, /*audioMap,*/ Brush, Color, Compat, Dom, DrawCommand, Drawing, Layer, Gallery, Hammer, postMessage, prandom, Recog, Sound, Sync, BlobBuilder, saveAs) {
+define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/color', './src/compat', './src/dom', './src/drawcommand', './src/drawing', './src/layer', './src/gallery', './lib/hammer', './src/postmessage', './src/prandom!', './src/recog', './src/sound', './src/sync', './lib/BlobBuilder', './lib/FileSaver', 'font!custom,families:[Delius,DejaVu LGC Sans Book],urls:[fonts/style.css]'], function(require, document, /*audioMap,*/ Brush, Color, Compat, Dom, DrawCommand, Drawing, Layer, Gallery, Hammer, postMessage, prandom, Recog, Sound, Sync, BlobBuilder, saveAs) {
     'use strict';
     // Android browser doesn't support MessageChannel
     // -- however, it also has a losing canvas. so don't worry too much.
