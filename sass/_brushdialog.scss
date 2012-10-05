@@ -2,7 +2,6 @@
  * dialog's wrapper div.   For example:
  *  #brushdialog { @import "brushdialog"; }
  */
-@import "compass/css3";
 
 @mixin no-select {
   // disable text selection in this element
