@@ -101,3 +101,47 @@ iframe {
 .swatch.black > span { background: black; }
 
 #loading { text-align:center; font-size: 30px; }
+
+%maxed {
+  display: block;
+  position: absolute;
+  top: 0; bottom: 0; right: 0; left: 0;
+  content: "";
+  background-repeat: no-repeat;
+}
+#splash {
+  @extend %maxed;
+  background-color: #8594FF; // original splash screen background was #85fdff
+  background-image: image-url('colors_splash_clouds_landscape.svg');
+  background-position: center center;
+  @include background-size(contain);
+  /* different cloud arrangement if we're in portrait */
+  @media (orientation:portrait) {
+    background-image: image-url('colors_splash_clouds_portrait.svg');
+    @include background-size(cover);
+  }
+  &:before { /* paintbrush in center */
+    @extend %maxed;
+    background-image: image-url('colors_splash_center.svg');
+    background-position: center center;
+    @include background-size(contain);
+  }
+  &:after { /* princess at bottom */
+    @extend %maxed;
+    background-image: image-url('colors_splash_bottom.svg');
+    background-position: right bottom;
+    @include background-size(cover);
+  }
+}
+/* animation properties (fade out splash screen) */
+#splash {
+  visibility: hidden;
+  opacity: 0;
+  @include transition(visibility 0s linear 0.5s, opacity 0.5s);
+}
+body.splash > #splash {
+  visibility: visible;
+  opacity: 1;
+  @include transition-duration(0s);
+  @include transition-delay(0s);
+}

@@ -66,6 +66,7 @@ define(['domReady!', './src/dom', './lib/hammer'], function(document, Dom, Hamme
             break;
         case 'childReady':
             console.assert(evt.source===appIframe.contentWindow);
+            document.body.classList.remove('splash');
             //console.log("Got toolbar port", evt);
             if (evt.ports && evt.ports.length>0) {
                 // use real MessageChannel
