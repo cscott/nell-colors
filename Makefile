@@ -3,7 +3,9 @@ all: build-all
 #OPT=optimize=none
 OPT=
 
+COMPASS=$(HOME)/OLPC/Narrative/compass
 PLUGINS=domReady font img drw json text propertyParser webfont
+STYLES=style/brushdemo.css style/index.css style/ncolors.css
 
 build/index.js: index.js # and other stuff
 	mkdir -p build
@@ -18,7 +20,10 @@ build/src/recogworker.js: src/recogworker.js # and other stuff
 	mkdir -p build
 	node r.js -o name=recogworker out=$@ baseUrl=src $(foreach p,$(PLUGINS),paths.$(p)=../plugins/$(p)) $(OPT)
 
-build-all: build/index.js build/ncolors.js build/brushdemo.js build/src/recogworker.js brushes/brush-tile-129.png
+$(STYLES): sass/*.scss
+	cd $(COMPASS) ; bin/compass compile $(abspath .)
+
+build-all: build/index.js build/ncolors.js build/brushdemo.js build/src/recogworker.js brushes/brush-tile-129.png $(STYLES)
 	mkdir -p build/icons build/audio build/brushes build/samples \
 		build/fonts build/style
 	for f in index.html ncolors.html ; do \
@@ -53,7 +58,7 @@ build-all: build/index.js build/ncolors.js build/brushdemo.js build/src/recogwor
 	  > build/.htaccess
 
 clean:
-	$(RM) -rf build
+	$(RM) -rf build $(STYLES)
 
 ##########################################
 audio/%.b64: audio/%

@@ -2,3 +2,7 @@ build
 brushes/*-129.png
 audio-map.js
 audio/*.b64
+style/brushdemo.css
+style/index.css
+style/ncolors.css
+.sass-cache
