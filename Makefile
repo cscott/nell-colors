@@ -3,7 +3,7 @@ all: build-all
 #OPT=optimize=none
 OPT=
 
-COMPASS=$(HOME)/OLPC/Narrative/compass
+COMPASS=compass
 PLUGINS=domReady font img drw json text propertyParser webfont
 STYLES=style/brushdemo.css style/index.css style/ncolors.css
 
@@ -20,8 +20,10 @@ build/src/recogworker.js: src/recogworker.js # and other stuff
 	mkdir -p build
 	node r.js -o name=recogworker out=$@ baseUrl=src $(foreach p,$(PLUGINS),paths.$(p)=../plugins/$(p)) $(OPT)
 
+# requires compass 0.13 and sass 3.2.1
+css: $(STYLES)
 $(STYLES): sass/*.scss
-	cd $(COMPASS) ; bin/compass compile $(abspath .)
+	$(COMPASS) compile $(abspath .)
 
 build-all: build/index.js build/ncolors.js build/brushdemo.js build/src/recogworker.js brushes/brush-tile-129.png $(STYLES)
 	mkdir -p build/icons build/audio build/brushes build/samples \
