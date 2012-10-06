@@ -1,6 +1,8 @@
 @charset "utf-8";
 /* Initialize stylesheets with common variables, frameworks, etc. */
 @import "compass/css3";
+@import "compass/typography";
+@import "compass/utilities";
 body {
   font-family: 'DejaVu LGC Sans Book', sans-serif;
 }

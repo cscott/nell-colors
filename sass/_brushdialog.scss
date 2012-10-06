@@ -17,15 +17,27 @@
 }
 
 & {
-  position: absolute; top: 0; left: 50%; margin-left: -200px;
+  position: absolute; top: 0;
   background: #404040; /* "toolbar grey" */
-  width: 400px;
-  min-height: 400px;
+  /* horizontal centering with max-width */
+  left: 0; right: 0; margin-left: auto; margin-right: auto;
+
+  /* option 1: use extra space if available */
+  /*
+  max-width: 400px;
+  height: 100%;
+  min-height: 484px;
+  max-height: 600px; // XXX to see how it looks expanded
+  */
+  /* option 2: as compact as possible */
+  max-width: 320px;
+  height: 484px;
+
   overflow: hidden;
 
   @include border-bottom-radius(15px);
   @include transition(transform 1s);
-  @include translate3d(0,-100%,0); // 3d for safari
+  @include translate3d(0,-590px,0); // 3d for safari; matches max-height above
   @include transform-origin(center, top);
   @include no-select;
 }
@@ -37,46 +49,15 @@ a:focus,
   @include outline(2px dotted #888);
 }
 
-/*
-@media (-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 1.5dppx) {
-  & {
-    -webkit-transform: translate3d(0,-100%,0) scale(0.66);
-    -moz-transform: translate(0,-100%) scale(0.66);
-    transform: translate(0,-100%) scale(0.66);
-  }
-  &.visible {
-    -webkit-transform: translate3d(0,0,0) scale(0.66);
-    -moz-transform: translate(0,0) scale(0.66);
-    transform: translate(0,0) scale(0.66);
-  }
-}
-@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 2dppx) {
-  & {
-    -webkit-transform: translate3d(0,-100%,0) scale(0.5);
-    -moz-transform: translate(0,-100%) scale(0.5);
-    transform: translate(0,-100%) scale(0.5);
-  }
-  &.visible {
-    -webkit-transform: translate3d(0,0,0) scale(0.5);
-    -moz-transform: translate(0,0) scale(0.5);
-    transform: translate(0,0) scale(0.5);
-  }
-}
-*/
-
 .panes {
   width: 200%;
-  min-height: 400px;
   @include translate3d(0,0,0);
    /* duration is 0s to allow quick configuration when invisible */
   @include transition(transform 0s ease-in-out);
 
   @include no-select;
 
-  &:after {
-    content: "";
-    clear: both;
-  }
+  @include pie-clearfix;
 }
 &.visible .panes {
   /* only animate when visible */
@@ -114,70 +95,88 @@ a:focus,
 /* --------- page selector and close widgets ------- */
 .page_select {
   text-align: center;
-  padding: 17px;
+  @include nowrap;
 
   & > a {
     @include inline-block;
-    height: 39px; width: 39px;
-    margin: 0 32px;
+    width: 50%;
+    min-width: 42px;
+    min-height: 42px;
+
     position: relative; /* use this as position reference for pseudo-elements */
 
     &:focus { @include no-outline; }
+
+    &:before, & > span {
+      position: absolute; top: 0; bottom: 0;
+      display: block;
+      width: 42px; height: 42px;
+      margin-left: -21px; margin-right: -21px;
+      @include box-sizing(border-box);
+      border: 2px solid transparent;
+      content: ""; /* or else :before doesn't show up */
+      background-repeat: no-repeat;
+    }
     &:before {
-      content: ""; /* needs to be present or pseudo-element isn't created */
-      position: absolute; top: -2px; bottom: -2px; left: -2px; right: -2px;
       @include border-radius(5px);
-      border: 2px dotted transparent;
+      border-color: #404040;
     }
     &:focus:before {
-      border-color: #555;
+      border: 2px dotted #555;
+    }
+    &.brush_select:before, &.brush_select > span {
+      right: 33%;
+    }
+    &.color_select:before, &.color_select > span {
+      left: 33%;
+    }
+    &.brush_select > span {
+      background-image: image-url('tool-brush.svg');
+      @include background-size(49px);
+      background-position: center center;
+    }
+    &.color_select > span {
+      border: 2px solid #666;
+      @include border-radius(50%);
+      background: currentColor;
+      width: 34px; height: 34px; top: 4px;
+      margin-left: -17px; margin-right: -17px;
+      &:before {
+        /* checkerboard pattern behind the color swatch */
+        display: block;
+        position: absolute;
+        top: 0; bottom: 0; left: 0; right: 0;
+        @include border-radius(50%);
+        background: image-url('checkerboard.svg');
+        background-position: center;
+        content: "";
+        z-index: -1; /* put this behind the color swatch */
+      }
     }
   }
 }
-&.brush .page_select > .brush_select:before,
-&.color .page_select > .color_select:before {
-  background: #666; /* highlight */
+&.brush a.brush_select,
+&.color a.color_select {
+  /* selected */
+  &:before {
+    background-color: #666; /* highlight */
+  }
+  &:before:focus {
+    border-color: #888; /* lighten focus border when highlighted */
+  }
 }
-&.brush .page_select > .brush_select:focus:before,
-&.color .page_select > .color_select:focus:before {
-  border-color: #888; /* lighten highlight */
-}
-
-.page_select > .color_select:after {
-  content: ""; /* needs to be present or pseudo-element isn't created */
-  position: absolute; top: 2px; bottom: 2px; left: 2px; right: 2px;
-  @include border-radius(50%);
-  border: 2px solid #666;
-  background: image-url('checkerboard.svg');
-  background-position: center;
-}
-.page_select > .color_select > span {
-  position: absolute; top: 4px; bottom: 4px; left: 4px; right: 4px;
-  display: block;
-  background: currentColor;
-  z-index: 2;
-  @include border-radius(50%);
-}
-&.color .page_select > .color_select:after {
+&.color a.color_select > span {
   border-color: #888;
-}
-.page_select > .brush_select:after {
-  background-image: image-url('tool-brush.svg');
-  background-repeat: no-repeat;
-  @include background-size(49px);
-  background-position: center center;
-  content: ""; /* needs to be present or pseudo-element isn't created */
-  position: absolute; top: 0; bottom: 0; left: 0; right: 0;
 }
 
 & > .close_pane {
   text-align: center;
-  padding: 13px;
 
   .closer {
-    @include inline-block;
+    display: block;
     background: image-url('up-arrow.svg') no-repeat;
-    width: 32px; height: 20px;
+    background-size: 32px 20px;
+    height: 20px;
     background-position: center center;
   }
 }
@@ -284,12 +283,18 @@ input.fd_slider { display: none; } /* hide slider input */
 
     & > .allbrushes {
       /* 10 100px brushes, plus borders on each side */
-      height: 100px; width: 1292px;
-      position: relative;
+      height: 100px;
+      /* we want 1000px + (100% - 2*50px) wide.  use *non* borderbox sizing
+       * to accomplish this. */
+      @include box-sizing(content-box);
+      width: 100%;
+      border-right: 1000px - 2*50px solid transparent;
 
       &:before {
         content: "";
-        position: absolute; left: 148px; top: 8px;
+        position: absolute; top: 8px;
+        /* left hand edge should be at 50% - 50px */
+        left: 50%; margin-left: -50px;
         width: 1000px;
         height: 100px;
         background-image: url('../brushes/brush-tile-129.png');
@@ -300,7 +305,8 @@ input.fd_slider { display: none; } /* hide slider input */
   }
 }
 %plusminus {
-  @include inline-block;
+  display: block;
+  position: absolute;
   width: 32px; height: 32px;
   background-position: center center;
   background-repeat: no-repeat;
@@ -319,55 +325,81 @@ input.fd_slider { display: none; } /* hide slider input */
 }
 .size,
 .spacing {
-  padding: 17px 30px;
   text-align: center;
+  @include nowrap;
+  /* use border-box sizing, and then stick the buttons in the fixed-width
+   * border areas.  32px for buttons + 12px margin on each side. */
+  @include box-sizing(border-box);
+  border-right: 56px solid transparent;
+  border-left: 56px solid transparent;
+  width: 100%;
+  position: relative;
+  /* limit max width, but center */
+  max-width: 302px + 2*12px + 32px;
+  margin-left: auto; margin-right: auto;
+
+  .plus {
+    top: 0; left: -12px - 32px;
+  }
+  .minus {
+    top: 0; right: -12px - 32px;
+  }
 
   .fd-slider {
-    width: 252px;
-    margin: 0 12px;
+    width: 100%;
   }
 }
 
 /* -------------- color options ------------- */
 .swatches {
+  /* put padding in border */
+  border-right: 8px solid transparent;
+  border-left:  8px solid transparent;
+  @include box-sizing(border-box);
+  width: 100%;
+  max-width: 302px + 2*8px + 2*4px;
+  margin-left: auto; margin-right: auto;
+  position: relative;
   text-align: center;
+  @include nowrap;
 
   & > a {
     position: relative;
     @include inline-block;
-    border: 2px solid #666;
-    height: 28px;
-    width: 77px;
-    margin-left: 4px; margin-right: 4px;
-    background: currentColor;
-
+    @include box-sizing(border-box);
+    width: 25%;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    height: 32px;
+    & > span {
+      position: absolute;
+      top: 0; bottom: 0; left: 0; right: 0;
+      background: currentColor;
+      border: 2px solid #666;
+    }
     &:focus { @include no-outline; }
-    &[href]:focus {
+    &[href]:focus > span {
       border: 2px dotted #888;
     }
-    &.old,
-    &.old[href]:focus {
-      border-right: none;
-      margin-right: 0;
+
+    &.old, &.old > span, &.old[href]:focus > span { border-right: none; }
+    &.new, &.new > span, &.new:focus > span { border-left: none; }
+
+    &.new, &.old {
+      & > span:before {
+        position: absolute; left: 0; right: 0; top: 0; bottom: 0;
+        background: image-url('checkerboard.svg');
+        background-position: center;
+        z-index: -1;
+        content: "";
+      }
     }
-    &.new,
-    &.new:focus {
-      border-left: none;
-      margin-left: 0;
-    }
-    &.new:before,
-    &.old:before {
-      position: absolute; left: 0; right: 0; top: 0; bottom: 0;
-      background: image-url('checkerboard.svg');
-      background-position: center;
-      z-index: -1;
-      content: "";
-    }
-    &.white {
+
+    &.white > span {
       background: white;
       @include border-left-radius(5px);
     }
-    &.black {
+    &.black > span {
       background: black;
       @include border-right-radius(5px);
     }
@@ -377,9 +409,8 @@ input.fd_slider { display: none; } /* hide slider input */
 .wheel {
   text-align: center;
   position: relative;
-  margin-top: 10px;
+  margin: 5px auto; /* center */
   width: 302px;
-  margin-left: auto; margin-right: auto; /* center */
   @include no-select;
 
   %circle {
@@ -432,9 +463,22 @@ input.fd_slider { display: none; } /* hide slider input */
   }
 }
 
-.lightness {
+%fullwidth-slider {
+  /* put padding in border so we can use 100% width for slider */
+  border-right: 12px solid transparent;
+  border-left: 12px solid transparent;
+  @include box-sizing(border-box);
+  width: 100%;
+  position: relative;
   text-align: center;
-  padding: 17px 0;
+
+  .fd-slider {
+    width: 100%;
+    max-width: 302px;
+  }
+}
+.lightness {
+  @extend %fullwidth-slider;
 
   .fd-slider-inner {
     @include background(linear-gradient(left, black, currentColor 50%, white 100%));
@@ -445,8 +489,7 @@ input.fd_slider { display: none; } /* hide slider input */
 
 /* -------------- opacity slider ------------ */
 .opacity_options {
-  text-align: center;
-  padding: 17px 0;
+  @extend %fullwidth-slider;
 
   .fd-slider-inner {
     background: image-url('checkerboard.svg');
@@ -458,4 +501,11 @@ input.fd_slider { display: none; } /* hide slider input */
     /* XXX compass doesn't emit the proper unprefixed gradient */
     background: linear-gradient(to right, transparent, currentColor 100%);
   }
+}
+
+/* -------- interwidget spacing -------- */
+/* minimum spacings */
+.page_select, .spacing, .size, .lightness, .opacity_options, .close_pane {
+  border-top: 2px solid transparent;
+  border-bottom: 2px solid transparent;
 }

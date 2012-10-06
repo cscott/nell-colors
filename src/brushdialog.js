@@ -306,7 +306,7 @@ define(['domReady!', 'text!./brushdialog.html', './brush', './color', './colorwh
     };
     BrushDialog.prototype._updateOldColor = function(hslColor) {
         var colorString = hslColor.rgbString();
-        ['.swatches > .old'].forEach(function(sel) {
+        ['.swatches > .old > span'].forEach(function(sel) {
             var e = this.brushpane.querySelector(sel);
             e.style.color = colorString;
         }.bind(this));
@@ -319,7 +319,7 @@ define(['domReady!', 'text!./brushdialog.html', './brush', './color', './colorwh
             var e = this.brushpane.querySelector(sel);
             e.style.color = rgbString;
         }.bind(this));
-        ['.swatches > .new'].forEach(function(sel) {
+        ['.swatches > .new > span'].forEach(function(sel) {
             var e = this.brushpane.querySelector(sel);
             e.style.color = rgbaString;
         }.bind(this));
