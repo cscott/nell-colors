@@ -1,13 +1,13 @@
 CACHE MANIFEST
-# fe0ddd41f6e4db5c7cdb4a109278407f  -
+# 3fb7f34e4c6471b5e463c36c81f06020  -
 
 CACHE:
+./brushdemo.js
+./index.js
+./ncolors.js
 ./src/worker.js
 ./src/recogworker.js
 ./src/appcacheui.js
-./index.js
-./ncolors.js
-./brush.js
 ./icons/color-wheel.png
 ./icons/colors_icon-128x128.png
 ./icons/colors_icon-16x16.png
@@ -28,6 +28,10 @@ CACHE:
 ./icons/circle-minus.svg
 ./icons/circle-plus.svg
 ./icons/color-wheel.svg
+./icons/colors_splash_bottom.svg
+./icons/colors_splash_center.svg
+./icons/colors_splash_clouds_landscape.svg
+./icons/colors_splash_clouds_portrait.svg
 ./icons/tool-brush.svg
 ./icons/up-arrow.svg
 ./audio/A.webm
@@ -62,12 +66,12 @@ CACHE:
 ./samples/lounge.json
 ./samples/r.json
 ./samples/roger.json
-./fonts/Delius-Regular.eot
-./fonts/Delius-Regular.ttf
 ./fonts/style.css
-./style/appcacheui.css
+./style/brushdemo.css
+./style/index.css
+./style/ncolors.css
 ./style/normalize.css
 ./index.html
 ./ncolors.html
 ./require.js
-./brush.html
+./brushdemo.html
