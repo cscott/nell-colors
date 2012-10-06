@@ -338,10 +338,10 @@ input.fd_slider { display: none; } /* hide slider input */
   max-width: 302px + 2*12px + 32px;
   margin-left: auto; margin-right: auto;
 
-  .plus {
+  .minus {
     top: 0; left: -12px - 32px;
   }
-  .minus {
+  .plus {
     top: 0; right: -12px - 32px;
   }
 
