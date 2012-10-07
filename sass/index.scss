@@ -114,11 +114,10 @@ iframe {
   background-color: #8594FF; // original splash screen background was #85fdff
   background-image: image-url('colors_splash_clouds_landscape.svg');
   background-position: center center;
-  @include background-size(contain);
+  @include background-size(cover);
   /* different cloud arrangement if we're in portrait */
   @media (orientation:portrait) {
     background-image: image-url('colors_splash_clouds_portrait.svg');
-    @include background-size(cover);
   }
   &:before { /* paintbrush in center */
     @extend %maxed;
