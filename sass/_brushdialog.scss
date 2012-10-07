@@ -650,4 +650,15 @@ input.fd_slider { display: none; } /* hide slider input */
       & > .stroke { margin-top: -5px; margin-bottom: -5px; }
     }
   }
+  // only firefox supports @supports, but webkit supports flex so all's good.
+  @supports not ((display: flex) or
+                 (display: -webkit-flex) or
+                 (display: -moz-flex)) {
+    & { height: auto; }
+    .wheel { margin: 5px auto; }
+    .spacing {
+      margin-top: 10px;
+      @include respond-to(short-screen) { margin-top: 2px; }
+    }
+  }
 }
