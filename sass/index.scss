@@ -24,81 +24,93 @@ iframe {
   /* from http://wiki.sugarlabs.org/go/Human_Interface_Guidelines */
   background: #404040; /* "toolbar grey" */
   overflow: hidden;
-}
 
-#toolbar .buttons {
-  position: relative;
-  margin-left: 10px;
-  margin-top: 7px;
-  white-space: nowrap;
-}
+  .buttons {
+    position: relative;
+    margin-left: 10px;
+    margin-top: 7px;
+    white-space: nowrap;
+  }
+  %toolbar-item {
+    display: inline-block;//@include inline-block;
+    margin-left: 5px;
+    padding: 0;
+  }
 
-#toolbar .swatch, #toolbar .icon {
-  display: inline-block;
-  margin-left: 5px;
-  padding: 0;
-}
+  %svg-icon {
+    @include background-size(100%);
+    background-position: center center;
+  }
+  .icon {
+    @extend %toolbar-item;
+    width: 30px;
+    height: 30px;
+    border: none;
+    opacity: 0.9;
+    &:hover {
+      opacity: 1.0;
+    }
+    &.play {
+      background-image: image-url('media-playback-start.svg');
+      @extend %svg-icon;
+      &.playing {
+        background-image: image-url('media-seek-forward.svg');
+      }
+    }
+    &.undo {
+      background-image: image-url('edit-undo.svg');
+      @extend %svg-icon;
+      @include background-size(190%);
+    }
+    &.redo {
+      background-image: image-url('edit-redo.svg');
+      @extend %svg-icon;
+      @include background-size(190%);
+    }
+    &.hard {
+      background: url('../icons/hard.png');
+    }
+    &.soft {
+      background: url('../icons/soft.png');
+    }
+    &.save {
+      background-image: image-url('document-save.svg');
+      @extend %svg-icon;
+    }
+  }
 
-#toolbar .icon {
-  width: 30px;
-  height: 30px;
-  border: none;
-  opacity: 0.9;
-}
-#toolbar .icon:hover {
-  opacity: 1.0;
-}
-#toolbar .play {
-  background: url('../icons/play.png');
-}
-#toolbar .play.playing {
-  background: url('../icons/forward.png');
-}
-#toolbar .undo {
-  background: url('../icons/undo.png');
-}
-#toolbar .redo {
-  background: url('../icons/redo.png');
-}
-#toolbar .hard {
-  background: url('../icons/hard.png');
-}
-#toolbar .soft {
-  background: url('../icons/soft.png');
-}
-#toolbar .save {
-  background: url('../icons/save.png');
-}
+  .hard, .play, .red, input, .save {
+    margin-left: 10px;
+  }
 
-#toolbar .hard, #toolbar .play, #toolbar .red, #toolbar input, #toolbar .save {
-  margin-left: 10px;
-}
+  .swatch {
+    @extend %toolbar-item;
+    width: 26px;
+    height: 26px;
+    border: 2px solid #a6a6a6;
+    background: url('../icons/trans.png');
+    background-position-x: 1px;
+    background-position-y: 1px;
 
-#toolbar .swatch {
-  width: 26px;
-  height: 26px;
-  border: 2px solid #a6a6a6;
-  background: url('../icons/trans.png');
-  background-position-x: 1px;
-  background-position-y: 1px;
+    &:hover {
+      border-color: #ddd;
+    }
+    & > span {
+      display: block;
+      width: 26px; height: 26px;
+    }
+    &.red > span { background: red; }
+    &.orange > span { background: orange; }
+    &.yellow > span { background: yellow; }
+    &.green > span { background: green; }
+    &.blue > span { background: blue; }
+    &.indigo > span { background: indigo; }
+    &.violet > span { background: violet; }
+    &.white > span { background: white; }
+    &.brown > span { background: brown; }
+    &.black > span { background: black; }
+  }
 }
-#toolbar .swatch:hover {
-  border-color: #ddd;
-}
-#toolbar .swatch > span {
-  display: block;
-  width: 26px; height: 26px;
-}
-.swatch.red > span { background: red; }
-.swatch.orange > span { background: orange; }
-.swatch.yellow > span { background: yellow; }
-.swatch.green > span { background: green; }
-.swatch.blue > span { background: blue; }
-.swatch.indigo > span { background: indigo; }
-.swatch.violet > span { background: violet; }
-.swatch.white > span { background: white; }
-.swatch.brown > span { background: brown; }
-.swatch.black > span { background: black; }
 
 #loading { text-align:center; font-size: 30px; }
 
