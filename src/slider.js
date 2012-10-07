@@ -296,7 +296,7 @@ define([], function() {
                         } catch(err) {};
 
                         clearTimeout(timer);
-                        outerWrapper.className = outerWrapper.className.replace("slider-disabled", "") + " slider-disabled";
+                        outerWrapper.classList.add('slider-disabled');
                         outerWrapper.setAttribute("aria-disabled", true);
                         inp.disabled = disabled = true;
 
@@ -325,7 +325,7 @@ define([], function() {
                         addEvent(handle, "touchend",  onHandleMouseUp);
                         addEvent(handle, "touchcancel",onHandleMouseUp);
 
-                        outerWrapper.className = outerWrapper.className.replace("slider-disabled", "");
+                        outerWrapper.classList.remove("slider-disabled");
                         outerWrapper.setAttribute("aria-disabled", false);
                         inp.disabled = disabled = false;
 
@@ -378,7 +378,7 @@ define([], function() {
                 };
 
                 function onFocus(e) {
-                        outerWrapper.className = outerWrapper.className.replace('focused','') + ' focused';
+                        outerWrapper.classList.add('focused');
                         if(mouseWheelEnabled && !noMWheel) {
                                 addEvent(window, 'DOMMouseScroll', trackMouseWheel);
                                 addEvent(document, 'mousewheel', trackMouseWheel);
@@ -388,7 +388,9 @@ define([], function() {
                 };
 
                 function onBlur(e) {
-                        outerWrapper.className = outerWrapper.className.replace(/focused|fd-fc-slider-hover|fd-slider-hover/g,'');
+                        outerWrapper.classList.remove('focused');
+                        outerWrapper.classList.remove('fd-fc-slider-hover');
+                        outerWrapper.classList.remove('fd-slider-hover');
                         if(mouseWheelEnabled && !noMWheel) {
                                 removeEvent(document, 'mousewheel', trackMouseWheel);
                                 removeEvent(window, 'DOMMouseScroll', trackMouseWheel);
@@ -463,22 +465,22 @@ define([], function() {
                         /*@cc_on@*/
                         /*@if(@_jscript_version <= 5.6)
                         if(this.className.search(/focused/) != -1) {
-                                this.className = this.className.replace("fd-fc-slider-hover", "") +' fd-fc-slider-hover';
+                                this.classList.add('fd-fc-slider-hover');
                                 return;
                         }
                         /*@end@*/
-                        this.className = this.className.replace(/fd\-slider\-hover/g,"") +' fd-slider-hover';
+                        this.classList.add('fd-slider-hover');
                 };
 
                 function onMouseOut( e ) {
                         /*@cc_on@*/
                         /*@if(@_jscript_version <= 5.6)
                         if(this.className.search(/focused/) != -1) {
-                                this.className = this.className.replace("fd-fc-slider-hover", "");
+                                this.classList.remove('fd-fc-slider-hover');
                                 return;
                         }
                         /*@end@*/
-                        this.className = this.className.replace(/fd\-slider\-hover/g,"");
+                        this.classList.remove('fd-slider-hover');
                 };
 
                 function onHandleMouseUp(e) {
@@ -496,7 +498,8 @@ define([], function() {
 
                         // Opera fires the blur event when the mouseup event occurs on a button, so we attept to force a focus
                         if(window.opera) try { setTimeout(function() { onfocus(); }, 0); } catch(err) {};
-                        document.body.className = document.body.className.replace(/slider-drag-vertical|slider-drag-horizontal/g, "");
+                        document.body.classList.remove('slider-drag-vertical');
+                        document.body.classList.remove('slider-drag-horizontal');
 
                         return stopEvent(e);
                 };
@@ -527,7 +530,7 @@ define([], function() {
                         // Force a "focus" on the button on mouse events
                         if(window.devicePixelRatio || (document.all && !window.opera)) try { setTimeout(function() { handle.focus(); }, 0); } catch(err) {};
 
-                        document.body.className += " slider-drag-" + (vertical ? "vertical" : "horizontal");
+                        document.body.classList.add("slider-drag-" + (vertical ? "vertical" : "horizontal"));
                 };
 
                 function onMouseUp( e ) {
@@ -750,7 +753,7 @@ define([], function() {
                 };
 
                 (function() {
-                        if(hideInput) { inp.className += " fd_hide_slider_input"; }
+                        if(hideInput) { inp.classList.add("fd_hide_slider_input"); }
                         else { addEvent(inp, 'change', onChange); };
 
                         outerWrapper              = document.createElement('div');
