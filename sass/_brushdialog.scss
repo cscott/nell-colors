@@ -585,6 +585,9 @@ input.fd_slider { display: none; } /* hide slider input */
     margin-top: auto;
     margin-bottom: auto;
     min-height: auto;
+    @media only screen and (max-height: 320px) {
+      &.stroke { margin-top: -5px; margin-bottom: -5px; }
+    }
   }
 }
 
