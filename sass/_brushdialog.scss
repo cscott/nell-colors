@@ -68,6 +68,7 @@ a:focus,
 .brush_options {
   float: left;
   width: 50%;
+  min-width: 50%; /* used for flexbox layout, below */
   /* workaround for FF not clipping .allbrushes:before to .scrollwrapper
      properly: */
   overflow: hidden;
@@ -555,4 +556,95 @@ input.fd_slider { display: none; } /* hide slider input */
 }
 @include respond-to(short-screen) {
   .page_select { border-top: none; border-bottom: none; }
+}
+
+/* ---- experimental flex box stuff to better distribute vertical space ---- */
+// in theory we could use something like
+//@supports (display: flex) or (display: -webkit-flex) or (display: -moz-flex)
+// to enable this, but webkit doesn't support @supports...
+
+/* version with old 'box' version of flexbox spec */
+/* only really seems to work on -webkit */
+@if false {
+  &, .brush_options, .color_options {
+    @include display-box;
+    @include box-orient(vertical);
+    @include box-pack(justify);
+  }
+  .panes {
+    @include display-box;
+    @include box-orient(horizontal);
+  }
+  .page_select, .panes, .opacity_options, .spacer {
+    @include box-flex(3);
+  }
+  .panes {
+    @include box-flex(1);
+  }
+  .brush_options > *, .color_options > * {
+    margin-top: auto;
+    margin-bottom: auto;
+    min-height: auto;
+  }
+}
+
+/* new flexbox spec, not enabled by default on mozilla yet */
+/* use pref("layout.css.flexbox.enabled", true); to enable on mozilla */
+
+// first, hack in some compass/prefix support:
+@mixin display-flex {
+  @include experimental-value(display, flex, -moz, -webkit, not -o, -ms, not -khtml, official);
+}
+@mixin flex-direction($direction) {
+  $direction: unquote($direction);
+  @include experimental(flex-direction, $direction, -moz, -webkit, not -o, -ms, not -khtml, official);
+}
+@mixin flex-grow($amount) {
+  $amount: unquote($amount);
+  @include experimental(flex-grow, $amount, -moz, -webkit, not -o, -ms, not -khtml, official);
+}
+@mixin flex-shrink($amount) {
+  $amount: unquote($amount);
+  @include experimental(flex-shrink, $amount, -moz, -webkit, not -o, -ms, not -khtml, official);
+}
+@mixin flex-align-items($value) {
+  $value: unquote($value);
+  @include experimental(align-items, $value, -moz, -webkit, not -o, -ms, not -khtml, official);
+}
+
+// now here are the CSS rules:
+@if true {
+  &, %vertical-flex {
+    @include display-flex;
+    @include flex-direction(column);
+  }
+  .opacity_options {
+    @include flex-grow(0.4);
+    @include respond-to(short-screen) { @include flex-grow(0.2); }
+
+    /* vertically center slider */
+    @extend %vertical-flex;
+    @include flex-align-items(center);
+    & > div { margin-top: auto; margin-bottom: auto; }
+  }
+  .panes {
+    @include flex-grow(1);
+    @include display-flex;
+    @include flex-direction(row);
+    @include respond-to(short-screen) {
+      &, & .stroke, & .color, & .wheel {
+        min-height: 0; /* allow these elements to shrink further */
+      }
+    }
+  }
+  .brush_options, .color_options {
+    @extend %vertical-flex;
+    & > * {
+      margin-top: auto;
+      margin-bottom: auto;
+    }
+    @media only screen and (max-height: 320px) {
+      & > .stroke { margin-top: -5px; margin-bottom: -5px; }
+    }
+  }
 }
