@@ -12,8 +12,8 @@ x fix touch events on dialog sliders
 x fix touch events on dialog color wheel (and keyboard focus?)
 x fix keyboard focus on brush selector?
 x make focused +/-/up buttons prettier
-resize elements instead of using css transform, since transform screws up
- event location parsing.  shrink to ~320px wide and/or use percentages.
+x resize elements instead of using css transform, since transform screws up
+   event location parsing.  shrink to ~320px wide and/or use percentages.
 x fix slider to allow click and drag off the handle.
 x rewrite color wheel to be faster -- opacity on white/black circles perhaps?
 ----
