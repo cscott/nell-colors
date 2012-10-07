@@ -76,6 +76,7 @@ iframe {
     &.save {
       background-image: image-url('document-save.svg');
       @extend %svg-icon;
+      display: none; /* disable unless body.dev (below) */
     }
   }
 
@@ -110,6 +111,10 @@ iframe {
     &.brown > span { background: brown; }
     &.black > span { background: black; }
   }
+}
+
+body.dev #toolbar .icon.save {
+  display: inline-block;
 }
 
 #loading { text-align:center; font-size: 30px; }
