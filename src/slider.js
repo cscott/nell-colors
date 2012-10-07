@@ -232,7 +232,7 @@ define([], function() {
                     clickJump   = useTween ? false : !!options.clickJump,
                     vertical    = !!options.vertical,
                     callbacks   = options.callbacks,
-                    classNames  = options.classNames,
+                    classNames  = options.classNames || '',
                     noMWheel    = !!options.noMouseWheel,
                     timer       = null,
                     kbEnabled   = true,
