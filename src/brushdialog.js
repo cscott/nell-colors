@@ -213,7 +213,7 @@ define(['domReady!', 'text!./brushdialog.html', './brush', './color', './colorwh
         var size_callbacks = {};
         Slider.createSlider({
             inp: assignID('brush_size'),
-            range: [1,128],
+            range: [1,129],
             inc: "1",
             clickJump: true,
             hideInput: true,
@@ -247,8 +247,9 @@ define(['domReady!', 'text!./brushdialog.html', './brush', './color', './colorwh
             preview_update();
         };
         var brushes = brushpane.querySelector('.shape > .scrollwrapper');
-        var brushscroll = new iScroll(brushes, {
-            vScroll: false, snap: 100,
+        var brushHeight = brushes.querySelector('.allbrushes').offsetHeight;
+        var brushscroll = this.brushscroll = new iScroll(brushes, {
+            vScroll: false, snap: brushHeight,
             onAnimationEnd: updateBrushType
         });
         /* listen to arrow key events on scroller */
@@ -344,6 +345,10 @@ define(['domReady!', 'text!./brushdialog.html', './brush', './color', './colorwh
         this._updateOldColor(hslColor);
         this.wheel.setHSL(hslColor.hue, hslColor.saturation,
                           hslColor.lightness);
+        // bind to window.resize
+        this._resize = this.onResize.bind(this);
+        window.addEventListener('resize', this._resize, false);
+        this.onResize();
         // default to brush type pane
         // then make visible (after brush pane switch has been processed)
         var panes = this.brushpane.querySelector('.panes');
@@ -366,7 +371,18 @@ define(['domReady!', 'text!./brushdialog.html', './brush', './color', './colorwh
             makeVisible();
         }
     };
+    BrushDialog.prototype.onResize = function() {
+        // adjust iScroll paging
+        var brushHeight =
+            this.brushpane.querySelector('.allbrushes').offsetHeight;
+        this.brushscroll.options.snap = brushHeight;
+        this.brushscroll.refresh();
+        this.brushscroll.scrollToPage(Brush.Types[this.preview.type]);
+        // adjust colorwheel thumb
+        this.wheel.onResize();
+    };
     BrushDialog.prototype.close = function() {
+        window.removeEventListener('resize', this._resize, false);
         /* this method does *not* invoke the callback */
         this.brushpane.classList.remove('visible');
     };

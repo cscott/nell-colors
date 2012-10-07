@@ -106,7 +106,7 @@ define(['./color','./coords'], function(Color, Coords) {
         var r_scaled = r*(size/2)/255;
         var x = Math.cos(theta_rad) * r_scaled;
         var y = -Math.sin(theta_rad) * r_scaled;
-        return { x: x + (size/2), y: y + (size/2) };
+        return { x: x, y: y }; /* origin is center of wheel */
     };
     ColorWheel.prototype._updateThumbFromEvent = function(event) {
         if (event.touches) { // synthesize new event w/ first touch
@@ -124,9 +124,10 @@ define(['./color','./coords'], function(Color, Coords) {
         }
         var inner = this.domElement.querySelector('.color');
         var coords = Coords.getRelativeEventPosition(event, inner);
-        var ox = coords.x, oy = coords.y;
-        var x = (ox - (inner.offsetWidth/2)) / (inner.clientHeight/2);
-        var y = (oy - (inner.offsetHeight/2)) / (inner.clientHeight/2);
+        var ox = coords.x - inner.offsetWidth/2;
+        var oy = coords.y - inner.offsetHeight/2;
+        var x = ox / (inner.clientHeight/2);
+        var y = oy / (inner.clientHeight/2);
         var theta = Math.atan2(-y,x)/(2*Math.PI), r = Math.sqrt(x*x + y*y);
         if (theta < 0) { theta += 1; }
         if (r > 1) { ox = oy = null; }
@@ -186,6 +187,9 @@ define(['./color','./coords'], function(Color, Coords) {
             black.style.opacity = 0;
         }
         this._updateThumbColor();
+    };
+    ColorWheel.prototype.onResize = function() {
+        this._updateThumbPosition();
     };
     ColorWheel.prototype.hsCallback = function(hue, saturation) {
         /* override to receive updates */

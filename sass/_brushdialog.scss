@@ -16,6 +16,13 @@
   @include outline(0px none);
 }
 
+$break-small: 484px;
+@mixin respond-to($media) {
+  @if $media == short-screen {
+    @media only screen and (max-height: $break-small) { @content; }
+  }
+}
+
 & {
   position: absolute; top: 0;
   background: #404040; /* "toolbar grey" */
@@ -23,15 +30,9 @@
   left: 0; right: 0; margin-left: auto; margin-right: auto;
 
   /* option 1: use extra space if available */
-  /*
-  max-width: 400px;
+  max-width: 360px;
   height: 100%;
-  min-height: 484px;
-  max-height: 600px; // XXX to see how it looks expanded
-  */
-  /* option 2: as compact as possible */
-  max-width: 320px;
-  height: 484px;
+  max-height: 550px;
 
   overflow: hidden;
 
@@ -102,6 +103,7 @@ a:focus,
     width: 50%;
     min-width: 42px;
     min-height: 42px;
+    @include respond-to(short-screen) { min-height: 24px; }
 
     position: relative; /* use this as position reference for pseudo-elements */
 
@@ -116,6 +118,10 @@ a:focus,
       border: 2px solid transparent;
       content: ""; /* or else :before doesn't show up */
       background-repeat: no-repeat;
+      @include respond-to(short-screen) {
+        width: 24px; height: 24px;
+        margin-left: -12px; margin-right: -12px;
+      }
     }
     &:before {
       @include border-radius(5px);
@@ -133,6 +139,7 @@ a:focus,
     &.brush_select > span {
       background-image: image-url('tool-brush.svg');
       @include background-size(49px);
+      @include respond-to(short-screen) { @include background-size(26px); }
       background-position: center center;
     }
     &.color_select > span {
@@ -141,6 +148,10 @@ a:focus,
       background: currentColor;
       width: 34px; height: 34px; top: 4px;
       margin-left: -17px; margin-right: -17px;
+      @include respond-to(short-screen) {
+        width: 16px; height: 16px;
+        margin-left: -8px; margin-right: -8px;
+      }
       &:before {
         /* checkerboard pattern behind the color swatch */
         display: block;
@@ -178,6 +189,10 @@ a:focus,
     background-size: 32px 20px;
     height: 20px;
     background-position: center center;
+    @include respond-to(short-screen) {
+      height: 10px;
+      background-size: 16px 10px;
+    }
   }
 }
 
@@ -190,6 +205,7 @@ a:focus,
   @include inline-block;
   position: relative;
   width: 302px; height: 30px;
+  @include respond-to(short-screen) { height: 20px; }
   text-align: center;
   border: 0 none;
   cursor:pointer;
@@ -200,6 +216,7 @@ a:focus,
   display: block;
   z-index: 1;
   top: 8px;
+  @include respond-to(short-screen) { top: 3px; }
   height:10px;
   text-align:left;
   background: #333;
@@ -216,6 +233,7 @@ a:focus,
   padding: 0; margin: 0;
   z-index: 3;
   width: 15px; height: 30px;
+  @include respond-to(short-screen) { height: 20px; }
   background: #8c8c8c;
   @include box-sizing(border-box);
   @include no-select;
@@ -244,11 +262,13 @@ input.fd_slider { display: none; } /* hide slider input */
 /* -------------- brush options ------------- */
 .stroke {
   position: relative;
-  height: 130px;
+  height: 129px;
+  @include respond-to(short-screen) {
+    margin-top: -5px; margin-bottom: -5px;
+  }
 }
 .shape {
   display: block;
-  height: 120px;
   border: 2px solid #666;
   background: white;
   margin: 0 2px;
@@ -302,6 +322,19 @@ input.fd_slider { display: none; } /* hide slider input */
         @include background-size(auto 100px);
       }
     }
+    @include respond-to(short-screen) {
+      height: 60px;
+      & > .allbrushes {
+        height: 50px;
+        border-right: 10*50px - 2*25px solid transparent;
+        &:before {
+          top: 3px;
+          margin-left: -25px;
+          width: 10*50px;
+          @include background-size(auto 50px);
+        }
+      }
+    }
   }
 }
 %plusminus {
@@ -311,6 +344,10 @@ input.fd_slider { display: none; } /* hide slider input */
   background-position: center center;
   background-repeat: no-repeat;
   margin-top: -1px; margin-bottom: -1px; /* effectively 30px tall */
+  @include respond-to(short-screen) {
+    height: 22px; margin-top: 0; margin-bottom: -2px;
+    background-size: auto 100%;
+  }
 }
 .minus {
   @extend %plusminus;
@@ -322,6 +359,7 @@ input.fd_slider { display: none; } /* hide slider input */
 }
 .spacing {
   margin-top: 10px;
+  @include respond-to(short-screen) { margin-top: 2px; }
 }
 .size,
 .spacing {
@@ -371,6 +409,7 @@ input.fd_slider { display: none; } /* hide slider input */
     border-left: 4px solid transparent;
     border-right: 4px solid transparent;
     height: 32px;
+    @include respond-to(short-screen) { height: 20px; }
     & > span {
       position: absolute;
       top: 0; bottom: 0; left: 0; right: 0;
@@ -410,6 +449,7 @@ input.fd_slider { display: none; } /* hide slider input */
   text-align: center;
   position: relative;
   margin: 5px auto; /* center */
+  @include respond-to(short-screen) { margin-bottom: 3px; }
   width: 302px;
   @include no-select;
 
@@ -427,6 +467,9 @@ input.fd_slider { display: none; } /* hide slider input */
     //background: image-url('color-wheel.svg');
     background-image: image-url('color-wheel.png');
     @include background-size(100%);
+    @include respond-to(short-screen) {
+      width: 150px; height: 150px;
+    }
 
     & > div {
       position: absolute;
@@ -444,9 +487,10 @@ input.fd_slider { display: none; } /* hide slider input */
     }
   }
   & > .thumb {
-    position: absolute; left: 2px; top: 2px; /* offset past border */
-    width: 22px; height: 22px;
-    margin-left: -11px; margin-top: -11px;
+    position: absolute; left: 50%; top: 50%; /* offset past border */
+    @include box-sizing(border-box);
+    width: 26px; height: 26px;
+    margin-left: -13px; margin-top: -13px;
     border: 2px solid black;
     background: currentColor;
     pointer-events: none;
@@ -508,4 +552,7 @@ input.fd_slider { display: none; } /* hide slider input */
 .page_select, .spacing, .size, .lightness, .opacity_options, .close_pane {
   border-top: 2px solid transparent;
   border-bottom: 2px solid transparent;
+}
+@include respond-to(short-screen) {
+  .page_select { border-top: none; border-bottom: none; }
 }
