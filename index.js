@@ -103,9 +103,6 @@ define(['domReady!', './src/dom', './lib/hammer'], function(document, Dom, Hamme
 
     // child window.
     var appWrapper = document.getElementById('wrapper');
-    var loading = document.getElementById('loading');
-    appWrapper.removeChild(loading);
-    appIframe.appendChild(loading);
     appIframe.id = 'inner';
     appIframe.scrolling = 'no';
     appIframe.src='ncolors.html'+document.location.hash;
