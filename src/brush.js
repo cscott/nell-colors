@@ -16,6 +16,19 @@ define(['img!../brushes/brush-tile-129.png', './color'], function(brushesImg, Co
     BrushTypes.forEach(function(type, idx) {
         BrushTypes[type] = idx;
     });
+    // default brush spacings
+    var BrushSpacing = {
+        hard: 0.22,
+        medium: 0.06,
+        'rough fine': 0.09,
+        'rough coarse': 0.09,
+        soft: 0.11,
+        'dots small': 0.67,
+        'dots large': 1.00,
+        'rect': 0.10,
+        'splotch': 0.88,
+        'splotches coarse': 0.23
+    };
 
     var NUM_BRUSHES = 0;
     if (brushesImg) {
@@ -55,11 +68,17 @@ define(['img!../brushes/brush-tile-129.png', './color'], function(brushesImg, Co
         this.size = size || 32;
         this.opacity = (typeof(opacity)==='number') ? opacity : 1.0;
         this.spacing = spacing || 0.225; // fraction of brush size
+        return this; // fluent api
     };
 
     Brush.prototype.set_from_brush = function(brush) {
-        this.set(brush.color, brush.type, brush.size, brush.opacity,
-                 brush.spacing);
+        return this.set(brush.color, brush.type, brush.size, brush.opacity,
+                        brush.spacing);
+    };
+
+    Brush.prototype.setToDefaultSpacing = function() {
+        this.spacing = BrushSpacing[this.type] || 0.05;
+        return this; // fluent api
     };
 
     Brush.prototype.clone = function() {

@@ -23,7 +23,7 @@ define(['domReady!', './src/brush', './src/brushdialog', './src/color'], functio
     var brushdialog = new BrushDialog(brushpane);
     var open, closed;
     open = function() {
-        brushdialog.open(new Brush(Color.DARK_RED, 'soft', 32, 0.75, 0.225),
+        brushdialog.open(new Brush(Color.DARK_RED, 'soft', 32, 0.75, 0.35),
                          'brush', closed);
     };
     closed = function(brush) {

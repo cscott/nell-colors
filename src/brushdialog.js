@@ -249,7 +249,13 @@ define(['domReady!', 'text!./brushdialog.html', './brush', './color', './colorwh
 
         var updateBrushType = function() {
             var scroll = this;
-            preview.type = Brush.Types[scroll.currPageX];
+            var brush = preview.toBrush();
+            brush.type = Brush.Types[scroll.currPageX];
+            if (brush.type === preview.type) {
+                return; // break cycle
+            }
+            brush.setToDefaultSpacing();
+            preview.setFromBrush(brush);
             preview_update();
         };
         var brushes = brushpane.querySelector('.shape > .scrollwrapper');
