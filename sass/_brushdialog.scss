@@ -340,7 +340,7 @@ input.fd_slider { display: none; } /* hide slider input */
 }
 %plusminus {
   display: block;
-  position: absolute;
+  position: absolute; bottom: 0;
   width: 32px; height: 32px;
   background-position: center center;
   background-repeat: no-repeat;
@@ -378,15 +378,35 @@ input.fd_slider { display: none; } /* hide slider input */
   margin-left: auto; margin-right: auto;
 
   .minus {
-    top: 0; left: -12px - 32px;
+    left: -12px - 32px;
   }
   .plus {
-    top: 0; right: -12px - 32px;
+    right: -12px - 32px;
   }
 
   .fd-slider {
     width: 100%;
   }
+
+  .caption {
+    color: #888;
+    text-align: left;
+    margin-left: -12px - 32px;
+    margin-bottom: 1px;
+    font-size: 10px;
+    @include respond-to(short-screen) { display: none; }
+  }
+}
+.spacing .caption:after  { content: attr(data-amount) "%"; }
+.size .caption:after  { content: attr(data-amount) "px"; }
+
+/* English (default) strings */
+.spacing .caption:before { content: "Spacing: "; }
+.size .caption:before { content: "Size: "; }
+/* demo for localization */
+&:lang(es) {
+  .spacing .caption:before { content: "Espaciado: "; }
+  .size .caption:before { content: "Tama\F1 o: "; }
 }
 
 /* -------------- color options ------------- */

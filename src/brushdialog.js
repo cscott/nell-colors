@@ -210,6 +210,8 @@ define(['domReady!', 'text!./brushdialog.html', './brush', './color', './colorwh
         spacing_callbacks.update = [function() {
             var input = brushpane.querySelector('input.brush_spacing');
             preview.spacing = parseInt(input.value, 10) || 5;
+            brushpane.querySelector('.spacing .caption').
+                setAttribute('data-amount', preview.spacing);
             preview_update();
         }];
         var size_callbacks = {};
@@ -224,6 +226,8 @@ define(['domReady!', 'text!./brushdialog.html', './brush', './color', './colorwh
         size_callbacks.update = [function() {
             var input = brushpane.querySelector('input.brush_size');
             preview.size = parseInt(input.value, 10) || 1;
+            brushpane.querySelector('.size .caption').
+                setAttribute('data-amount', preview.size);
             preview_update();
         }];
         // set up lightness/opacity sliders
@@ -280,11 +284,15 @@ define(['domReady!', 'text!./brushdialog.html', './brush', './color', './colorwh
                 // update iScroll window
                 brushscroll.scrollToPage(Brush.Types[this.type]);
                 // update brush property sliders
-                [['brush_size', this.size], ['brush_spacing', this.spacing]].
+                [['size', this.size], ['spacing', this.spacing]].
                     forEach(function(a) {
-                        var input = brushpane.querySelector('input.'+a[0]);
+                        var input =
+                            brushpane.querySelector('input.brush_'+a[0]);
                         input.value = a[1];
-                        Slider.updateSlider(a[0]+'_'+id);
+                        Slider.updateSlider('brush_'+a[0]+'_'+id);
+                        var caption =
+                            brushpane.querySelector('.'+a[0]+' .caption');
+                        caption.setAttribute('data-amount', a[1]);
                     });
             };
         }.bind(this))(preview.setFromBrush);
