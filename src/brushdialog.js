@@ -61,11 +61,15 @@ define(['domReady!', 'text!./brushdialog.html', './brush', './color', './colorwh
      * have different <input> ids. */
     var cnt=0;
 
-    var BrushDialog = function(brushpane) {
+    var BrushDialog = function(brushpane, hidePaneSwitcher) {
         this.id = (cnt++); /* unique for each BrushDialog */
         this.brushpane = brushpane;
         /* fill in the markup! */
         this.brushpane.innerHTML = innerhtml;
+        /* hide pane switcher if requested */
+        if (hidePaneSwitcher) {
+            brushpane.querySelector('.page_select').style.display='none';
+        }
         /* brush preview */
         var preview = this.preview =
             new BrushPreview(brushpane.querySelector('.stroke'));
@@ -85,14 +89,12 @@ define(['domReady!', 'text!./brushdialog.html', './brush', './color', './colorwh
 
         var PAGES = ['brush', 'color'];
         PAGES.forEach(function(p) {
-            brushpane.classList.remove(p);
             var e = brushpane.querySelector("."+p+"_select");
-            e.addEventListener('click', noDefault(function(event) {
-                PAGES.forEach(function(pp) { brushpane.classList.remove(pp); });
-                brushpane.classList.add(p);
-            }), false);
-        });
-        brushpane.classList.add(PAGES[0]); /* start on first pane */
+            e.addEventListener('click',
+                               noDefault(this.switchPane.bind(this, p)),
+                               false);
+        }.bind(this));
+        this.switchPane(PAGES[0]); /* start on first pane */
 
         /* set up close button event handler */
         brushpane.querySelector(".closer")
@@ -331,7 +333,7 @@ define(['domReady!', 'text!./brushdialog.html', './brush', './color', './colorwh
             e.style.color = rgbSatString;
         }.bind(this));
     };
-    BrushDialog.prototype.open = function(brush, callback) {
+    BrushDialog.prototype.open = function(brush, firstPane, callback) {
         this.callback = callback;
         // set up brush (and adjust sliders)
         this.preview.setFromBrush(brush);
@@ -349,7 +351,7 @@ define(['domReady!', 'text!./brushdialog.html', './brush', './color', './colorwh
         this._resize = this.onResize.bind(this);
         window.addEventListener('resize', this._resize, false);
         this.onResize();
-        // default to brush type pane
+        // switch panes (if necessary)
         // then make visible (after brush pane switch has been processed)
         var panes = this.brushpane.querySelector('.panes');
         var makeVisible = function() {
@@ -359,17 +361,31 @@ define(['domReady!', 'text!./brushdialog.html', './brush', './color', './colorwh
                     panes.removeEventListener(evname, makeVisible, true);
                 });
         }.bind(this);
-        if (!this.brushpane.classList.contains('brush')) {
+        if (this.switchPane(firstPane)) {
             // wait for pane transition to end before making visible
             ['transitionend','oTransitionEnd','webkitTransitionEnd'].
                 forEach(function(evname) {
                     panes.addEventListener(evname, makeVisible, true);
                 });
-            this.brushpane.classList.remove('color');
-            this.brushpane.classList.add('brush');
         } else {
             makeVisible();
         }
+    };
+    BrushDialog.prototype.switchPane = function(whichPane) {
+        // normalize arg; 'brush' is default pane.
+        whichPane = (whichPane==='color') ? whichPane : 'brush';
+        if (this.brushpane.classList.contains(whichPane)) {
+            return false; // no change made
+        }
+        var classList = this.brushpane.classList;
+        ['color', 'brush'].forEach(function(pane) {
+            if (pane===whichPane) {
+                classList.add(pane);
+            } else {
+                classList.remove(pane);
+            }
+        });
+        return true; // change made
     };
     BrushDialog.prototype.onResize = function() {
         // adjust iScroll paging
@@ -384,6 +400,7 @@ define(['domReady!', 'text!./brushdialog.html', './brush', './color', './colorwh
     BrushDialog.prototype.close = function() {
         window.removeEventListener('resize', this._resize, false);
         /* this method does *not* invoke the callback */
+        /* ie, it's more akin to 'cancel' */
         this.brushpane.classList.remove('visible');
     };
     BrushDialog.prototype._invokeCallback = function() {
