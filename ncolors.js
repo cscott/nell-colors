@@ -36,6 +36,12 @@ define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/
         TOUCH_EVENT_INTERVAL_MS = 0;
     }
 
+    // transfer 'dev' tag from parent to this context
+    if (window.parent.document.body.classList.contains('dev')) {
+        document.body.classList.add('dev');
+    } else {
+        SHOW_FRAME_RATE = false;
+    }
     // get 2d context for canvas.
     Dom.insertMeta(document);
     var drawingElem = document.getElementById('drawing');
