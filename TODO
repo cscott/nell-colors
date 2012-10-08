@@ -3,8 +3,21 @@ brush selection
 image thumbnails on gallery page
 delete picture option on gallery page
 paintbrush dialog (replace range sliders)
-select background (camera api)
-include a decent # of samples: cat / bat / mat / cab at least!
+layers menu
+ - select background (camera api)
+include a decent # of samples: cat / bat / mat / cab / lion at least!
+new toolbar order: undo/redo/movie     color/brush/swatches    layers/save
+replace 'play' icon with movie camera
+four states, "can't play", "can play", "playing", "stopping"
+
+eyedropper tool.
+lasso tool
+
+x brush rotation:
+ x constant increment
+ - path following
+x reset spacing to default brush spacing when brush is changed
+
 x convert audio to webm
 x rename manifests
 x add .nojekyll
