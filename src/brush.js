@@ -21,12 +21,12 @@ define(['img!../brushes/brush-tile-129.png', './color'], function(brushesImg, Co
         hard: 0.22,
         medium: 0.06,
         'rough fine': 0.09,
-        'rough coarse': 0.09,
+        'rough coarse': 0.20,
         soft: 0.11,
         'dots small': 0.67,
         'dots large': 1.00,
-        'rect': 0.10,
-        'splotch': 0.88,
+        rect: 0.10,
+        splotch: 0.25,
         'splotches coarse': 0.23
     };
     // per-stamp brush rotation, in radians
