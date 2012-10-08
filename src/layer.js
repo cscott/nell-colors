@@ -55,9 +55,21 @@ define(['./drawcommand', './brush', './point'], function(DrawCommand, Brush, Poi
             this.spentDist = 0;
             var stamp = this._getBrushStamp(brush);
             var center = stamp.width / 2;
-            var x = this.lastPoint.x - center, y = this.lastPoint.y - center;
-            //x = Math.round(x); y = Math.round(y);
-            this.progressContext.drawImage(stamp, x, y);
+            // possibly rotate brush
+            var r = brush.rotationIncrement();
+            if (r===0) {
+                // easy case
+                var x = this.lastPoint.x - center;
+                var y = this.lastPoint.y - center;
+                this.progressContext.drawImage(stamp, x, y);
+            } else {
+                this.progressContext.save();
+                this.progressContext.translate(this.lastPoint.x,
+                                               this.lastPoint.y);
+                this.progressContext.rotate(r * this.brushPoints);
+                this.progressContext.drawImage(stamp, -center, -center);
+                this.progressContext.restore();
+            }
         },
         execDraw: function(x, y, brush) {
             var from=this._draw_from, to=this._draw_to, tmp=this._draw_tmp;
@@ -67,8 +79,9 @@ define(['./drawcommand', './brush', './point'], function(DrawCommand, Brush, Poi
 
             var drawn = false;
             if (!this.isDrawingPath) {
-                this._drawStamp(to, brush);
+                this.brushPoints = 0;
                 this.isDrawingPath = true;
+                this._drawStamp(to, brush);
                 drawn = true;
             } else {
                 // interpolate along path
@@ -76,6 +89,7 @@ define(['./drawcommand', './brush', './point'], function(DrawCommand, Brush, Poi
                 // step should never be less than 1 px.
                 var step = Math.max(1, brush.size * brush.spacing);
                 for (d = (step-this.spentDist); d < dist; d+= step) {
+                    this.brushPoints++; // for brush rotation
                     this._drawStamp(Point.interp(from, to, d/dist, tmp),
                                     brush);
                     drawn = true;

@@ -29,6 +29,14 @@ define(['img!../brushes/brush-tile-129.png', './color'], function(brushesImg, Co
         'splotch': 0.88,
         'splotches coarse': 0.23
     };
+    // per-stamp brush rotation, in radians
+    // using rationals for rotation amount means period is infinite.
+    var BrushRotation = {
+        'rough fine': 0.5,
+        'rough coarse': 0.5,
+        splotch: 0.6,
+        'splotches coarse': 1.2
+    };
 
     var NUM_BRUSHES = 0;
     if (brushesImg) {
@@ -79,6 +87,10 @@ define(['img!../brushes/brush-tile-129.png', './color'], function(brushesImg, Co
     Brush.prototype.setToDefaultSpacing = function() {
         this.spacing = BrushSpacing[this.type] || 0.05;
         return this; // fluent api
+    };
+
+    Brush.prototype.rotationIncrement = function() {
+        return BrushRotation[this.type] || 0;
     };
 
     Brush.prototype.clone = function() {
