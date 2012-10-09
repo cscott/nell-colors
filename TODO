@@ -1,21 +1,22 @@
 add explicit metrics for Delius font so that letters match up optimally.
-brush selection
+x brush selection
 image thumbnails on gallery page
 delete picture option on gallery page
-paintbrush dialog (replace range sliders)
+x paintbrush dialog (replace range sliders)
 layers menu
  - select background (camera api)
 include a decent # of samples: cat / bat / mat / cab / lion at least!
-new toolbar order: undo/redo/movie     color/brush/swatches    layers/save
+x new toolbar order: undo/redo/movie     color/brush/swatches    layers/save
 replace 'play' icon with movie camera
 four states, "can't play", "can play", "playing", "stopping"
+swap brush and color pane in dialog
 
 eyedropper tool.
 lasso tool
 
 x brush rotation:
  x constant increment
- - path following
+ x path following
 x reset spacing to default brush spacing when brush is changed
 
 x convert audio to webm
