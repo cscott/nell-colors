@@ -36,7 +36,8 @@ define(['./brush','./color','./drawcommand','./layer','./prandom!'], function(Br
         this.ctime = Date.now(); // creation time
         // hack in a brush change and color change
         // XXX we should have a different way to synchronize brush after load
-        this.brush = new Brush(Color.BLACK, 'soft', 20, 0.7, 0.2);
+        this.brush = new Brush(Color.from_string('brown'), 'rect',
+                               /*size*/20, /*opacity*/0.88, /*spacing*/0.12);
         this.addCmd(DrawCommand.create_color_change(this.brush.color));
         this.addCmd(DrawCommand.create_brush_change({
             brush_type: this.brush.type,
