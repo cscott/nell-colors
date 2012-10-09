@@ -11,7 +11,7 @@ define(['img!../brushes/brush-tile-129.png', './color'], function(brushesImg, Co
     // names/indexes of brushes in brushesImg
     var BrushTypes = ['hard', 'medium', 'rough fine', 'rough coarse',
                       'soft', 'dots small', 'dots large', 'rect',
-                      'splotch', 'splotches coarse'];
+                      'sticks', 'splotch', 'splotches coarse'];
     // map name to index and vice versa
     BrushTypes.forEach(function(type, idx) {
         BrushTypes[type] = idx;
@@ -26,6 +26,7 @@ define(['img!../brushes/brush-tile-129.png', './color'], function(brushesImg, Co
         'dots small': 0.67,
         'dots large': 1.00,
         rect: 0.12,
+        sticks: 0.19,
         splotch: 0.25,
         'splotches coarse': 0.23
     };
@@ -34,6 +35,7 @@ define(['img!../brushes/brush-tile-129.png', './color'], function(brushesImg, Co
     var BrushRotation = {
         'rough fine': 0.5,
         'rough coarse': 0.5,
+        sticks: 0.66,
         splotch: 0.6,
         'splotches coarse': 1.2
     };
