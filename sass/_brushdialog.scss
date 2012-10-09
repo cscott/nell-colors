@@ -451,10 +451,13 @@ input.fd_slider { display: none; } /* hide slider input */
       & > span:before {
         position: absolute; left: 0; right: 0; top: 0; bottom: 0;
         background: image-url('checkerboard.svg');
-        background-position: center;
+        background-position: right center;
         z-index: -1;
         content: "";
       }
+    }
+    &.new > span:before {
+      background-position: left center;
     }
 
     &.white > span {
