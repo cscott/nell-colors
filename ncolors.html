@@ -4,9 +4,24 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta name="apple-mobile-web-app-status-bar-style" content="black" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-<title>Colors for Nell</title>
+<title>Nell's Colors (canvas)</title>
 <link rel="stylesheet" type="text/css" href="style/normalize.css" />
 <link rel="stylesheet" type="text/css" href="style/ncolors.css" />
+<script type="text/javascript">/* configure require.js */
+var require = {
+    waitSeconds: 30, // be kind to android
+    paths: {
+        domReady: "../plugins/domReady",
+        font: "../plugins/font",
+        drw: "../plugins/drw",
+        img: "../plugins/img",
+        webfont: "../plugins/webfont",
+        propertyParser: "../plugins/propertyParser",
+        json: "../plugins/json",
+        text: "../plugins/text"
+    }
+};
+</script>
 <script src="require.js" data-main="ncolors"
         type="text/javascript"></script>
 </head>

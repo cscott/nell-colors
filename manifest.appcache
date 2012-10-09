@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# 563046e424db5b0c90bc8b8d6fbbdddd  -
+# 0493a84d4d4d8a55fe86cc62ff5a4b73  -
 
 CACHE:
 ./audio/A.webm
@@ -28,8 +28,6 @@ CACHE:
 ./audio/X.webm
 ./audio/Y.webm
 ./audio/Z.webm
-./brushdemo.html
-./brushdemo.js
 ./brushes/brush-tile-129.png
 ./fonts/style.css
 ./icons/checkerboard.svg
@@ -51,8 +49,10 @@ CACHE:
 ./icons/document-save.svg
 ./icons/edit-redo.svg
 ./icons/edit-undo.svg
+./icons/list-add.svg
 ./icons/media-playback-start.svg
-./icons/media-seek-forward.svg
+./icons/media-playback-stop.svg
+./icons/media-seek-forward-insensitive.svg
 ./icons/tool-brush.svg
 ./icons/up-arrow.svg
 ./icons/view-list.svg
@@ -69,7 +69,6 @@ CACHE:
 ./src/appcacheui.js
 ./src/recogworker.js
 ./src/worker.js
-./style/brushdemo.css
 ./style/index.css
 ./style/ncolors.css
 ./style/normalize.css
