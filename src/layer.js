@@ -32,6 +32,7 @@ define(['./drawcommand', './brush', './point'], function(DrawCommand, Brush, Poi
         // line state
         this.isDrawingPath = false;
         this.lastPoint = new Point();
+        this.firstPoint = new Point();
         this.spentDist = 0;
         // temporaries, to avoid reallocating points every time we invoke
         // execDraw()
@@ -51,25 +52,64 @@ define(['./drawcommand', './brush', './point'], function(DrawCommand, Brush, Poi
             return this.brush_stamp;
         },
         _drawStamp: function(pos, brush) {
-            this.lastPoint.set_from_point(pos);
             this.spentDist = 0;
             var stamp = this._getBrushStamp(brush);
             var center = stamp.width / 2;
             // possibly rotate brush
             var r = brush.rotationIncrement();
-            if (r===0) {
-                // easy case
-                var x = this.lastPoint.x - center;
-                var y = this.lastPoint.y - center;
-                this.progressContext.drawImage(stamp, x, y);
+            var f = brush.followsTangent();
+            if (f && this.brushPoints===0 && this.tangent === null) {
+                /* draw nothing for first point, we need at least two
+                 * points to compute a tangent to follow */
+                this.firstPoint.set_from_point(pos);
+            } else if (r===0 && !f) {
+                // easy case, no rotation
+                this.progressContext.drawImage(stamp,
+                                               pos.x - center,
+                                               pos.y - center);
             } else {
+                // progressive rotation:
+                r *= this.brushPoints;
+                // compute tangent to follow:
+                if (f) {
+                    var SMOOTH_FACTOR = 0.8; // adjust based on brush.spacing?
+                    // t is in [-pi, pi]
+                    var t = Math.atan2(pos.y - this.lastPoint.y,
+                                       pos.x - this.lastPoint.x);
+                    if (this.brushPoints===0) {
+                        // redrawing point #0 after we've seen point #1
+                        t = this.tangent;
+                    } else if (this.brushPoints > 1) {
+                        // lightly smooth tangent (for small step sizes)
+                        var lt = this.tangent;
+                        // step 1, ensure that t > lt
+                        if (lt >= t) { lt -= 2*Math.PI; }
+                        // step 2, compare (t-lt) to (2*pi+lt-t), use closest
+                        if ((t-lt) > (2*Math.PI+lt-t)) { lt += 2*Math.PI; }
+                        // step 3, average, then restore to [-pi,pi] interval
+                        t = (SMOOTH_FACTOR*t) + ((1-SMOOTH_FACTOR)*lt);
+                        if (t > Math.PI) { t -= 2*Math.PI; }
+                        if (t < -Math.PI) { t += 2*Math.PI; }
+                    }
+                    this.tangent = t;
+                    r += t;
+                    if (this.brushPoints === 1) {
+                        // go back and draw point #0
+                        // note that this.firstPoint !== this.lastPoint,
+                        // because lastPoint may be the last path endpoint,
+                        // not necessarily the last stamp location
+                        this.brushPoints--;
+                        this._drawStamp(this.firstPoint, brush);
+                        this.brushPoints++;
+                    }
+                }
                 this.progressContext.save();
-                this.progressContext.translate(this.lastPoint.x,
-                                               this.lastPoint.y);
-                this.progressContext.rotate(r * this.brushPoints);
+                this.progressContext.translate(pos.x, pos.y);
+                this.progressContext.rotate(r);
                 this.progressContext.drawImage(stamp, -center, -center);
                 this.progressContext.restore();
             }
+            this.lastPoint.set_from_point(pos);
         },
         execDraw: function(x, y, brush) {
             var from=this._draw_from, to=this._draw_to, tmp=this._draw_tmp;
@@ -80,6 +120,7 @@ define(['./drawcommand', './brush', './point'], function(DrawCommand, Brush, Poi
             var drawn = false;
             if (!this.isDrawingPath) {
                 this.brushPoints = 0;
+                this.tangent = null;
                 this.isDrawingPath = true;
                 this._drawStamp(to, brush);
                 drawn = true;

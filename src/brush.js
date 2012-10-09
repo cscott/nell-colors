@@ -25,7 +25,7 @@ define(['img!../brushes/brush-tile-129.png', './color'], function(brushesImg, Co
         soft: 0.11,
         'dots small': 0.67,
         'dots large': 1.00,
-        rect: 0.10,
+        rect: 0.12,
         splotch: 0.25,
         'splotches coarse': 0.23
     };
@@ -36,6 +36,10 @@ define(['img!../brushes/brush-tile-129.png', './color'], function(brushesImg, Co
         'rough coarse': 0.5,
         splotch: 0.6,
         'splotches coarse': 1.2
+    };
+    // brush rotation following path tangent
+    var BrushFollowTangent = {
+        rect: true
     };
 
     var NUM_BRUSHES = 0;
@@ -91,6 +95,10 @@ define(['img!../brushes/brush-tile-129.png', './color'], function(brushesImg, Co
 
     Brush.prototype.rotationIncrement = function() {
         return BrushRotation[this.type] || 0;
+    };
+
+    Brush.prototype.followsTangent = function() {
+        return !!(BrushFollowTangent[this.type]);
     };
 
     Brush.prototype.clone = function() {
