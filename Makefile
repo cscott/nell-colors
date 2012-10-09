@@ -25,7 +25,16 @@ css: $(STYLES)
 $(STYLES): sass/*.scss
 	$(COMPASS) compile -e production --force $(abspath .)
 
-build-all: build/index.js build/ncolors.js build/brushdemo.js build/src/recogworker.js brushes/brush-tile-129.png $(STYLES)
+build-brushdemo: build/brushdemo.js style/brushdemo.css
+	mkdir -p build/icons build/brushes build/fonts build/style
+	cp brushdemo.html build/
+	cp style/normalize.css style/brushdemo.css build/style
+	cp fonts/style.css build/fonts
+	cp brushes/brush-tile-129.png build/brushes
+	cp icons/*.png icons/*.ico icons/*.svg build/icons/
+	cp require.min.js build/require.js
+
+build-all: build/index.js build/ncolors.js build/src/recogworker.js brushes/brush-tile-129.png $(STYLES)
 	mkdir -p build/icons build/audio build/brushes build/samples \
 		build/fonts build/style
 	for f in index.html ncolors.html ; do \
@@ -38,10 +47,8 @@ build-all: build/index.js build/ncolors.js build/brushdemo.js build/src/recogwor
 	cp audio/*.webm build/audio/
 	cp brushes/brush-tile-129.png build/brushes
 	cp fonts/*.css build/fonts
-	cp style/*.css build/style
+	cp style/normalize.css style/index.css style/ncolors.css build/style/
 	cp samples/*.json build/samples
-	# 'brush' dialog demo
-	cp brushdemo.html build/
 	# offline manifest (everything!)
 	( echo "CACHE MANIFEST" ; \
 	  echo -n '# ' ; find build -type f | fgrep -v manifest | \
