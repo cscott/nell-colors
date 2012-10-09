@@ -440,13 +440,15 @@ define(['domReady!', 'text!./brushdialog.html', './brush', './color', './colorwh
             this._invokeCallback();
         }
     };
-    BrushDialog.prototype._invokeCallback = function() {
+    BrushDialog.prototype.currentBrush = function() {
         var hslColor = this._colorFromInputs();
         // convert the color to rgb and make opaque (by adding to opaque black)
         var rgbColor = hslColor.rgbaColor().add(Color.BLACK);
-        var brush = this.preview.toBrush(rgbColor);
+        return this.preview.toBrush(rgbColor);
+    };
+    BrushDialog.prototype._invokeCallback = function() {
         if (this.callback) {
-            this.callback.call(null, brush);
+            this.callback.call(null, this.currentBrush());
         }
     };
     return BrushDialog;

@@ -510,14 +510,23 @@ define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/
             break;
         case 'swatchButton':
             var color = Color.from_string(msg.color);
-            if (caughtUp &&
+            if (caughtUp && (!brushdialog.isOpen()) &&
                 Color.equal(drawing.brush.color, color) &&
                 drawing.brush.opacity===1) {
                 break;
             }
             drawing.addCmd(DrawCommand.create_color_change(color));
-            /* force color to be opaque, too */
-            drawing.addCmd(DrawCommand.create_brush_change({opacity:1}));
+            /* force color to be opaque, and respect current brush if
+             * brush dialog is open. */
+            var opts = {};
+            if (brushdialog.isOpen()) {
+                var brush = brushdialog.currentBrush();
+                ['type','size','opacity','spacing'].forEach(function(f) {
+                    opts[(f==='type') ? 'brush_type' : f] = brush[f];
+                });
+            }
+            opts.opacity = 1; // force opaque
+            drawing.addCmd(DrawCommand.create_brush_change(opts));
             if (caughtUp) {
                 drawing.setCmdPos(Drawing.END); // update drawing.brush immed.
                 updateToolbarBrush();
