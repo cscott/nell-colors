@@ -10,16 +10,17 @@ x new toolbar order: undo/redo/movie     color/brush/swatches    layers/save
 replace 'play' icon with movie camera
 four states, "can't play", "can play", "playing", "stopping"
 x swap brush and color pane in dialog
+set undo/redo buttons active appropriately
 'pressed' highlight for touch
 more margin spacing between buttons if toolbar is wide
 update firefox? slowness, crashes =(
 don't try to recognize letters if aspect ratio is way off or stroke is too long
 still not reliably snapshotting tail end of command list; first 'undo' should
  always be fast
-hook up funf
+x hook up funf
+- funf startup
 - funf letters recognized (and prob)
 - funf thumbnails at close
-
 
 eyedropper tool.
 lasso tool
