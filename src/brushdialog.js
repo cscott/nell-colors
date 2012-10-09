@@ -407,7 +407,8 @@ define(['domReady!', 'text!./brushdialog.html', './brush', './color', './colorwh
             this.brushpane.querySelector('.allbrushes').offsetHeight;
         this.brushscroll.options.snap = brushHeight;
         this.brushscroll.refresh();
-        this.brushscroll.scrollToPage(Brush.Types[this.preview.type]);
+        this.brushscroll.scrollToPage(Brush.Types[this.preview.type],
+                                      this.brushscroll.currPageY, 0);
         // adjust colorwheel thumb
         this.wheel.onResize();
     };
