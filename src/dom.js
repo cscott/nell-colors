@@ -77,13 +77,13 @@ define([], function() {
     // Create initial stage.
     var init = function(window) {
         insertMeta(window.document);
-        setTitle(window, "Colors for Nell");
+        setTitle(window, "Nell's Colors");
         return insertCanvas(window);
     };
     var new_window = function(parent_window) {
         var nw = parent_window.open("", "_blank");
         insertMeta(nw);
-        setTitle(nw, "Colors for Nell");
+        setTitle(nw, "Nell's Colors");
         return insertCanvas(nw);
     };
 
