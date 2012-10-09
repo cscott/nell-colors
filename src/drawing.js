@@ -4,6 +4,7 @@
  */
 /*global define:false, console:false, document:false */
 define(['./brush','./color','./drawcommand','./layer','./prandom!'], function(Brush, Color, DrawCommand, Layer, prandom) {
+    var DEBUG = false; // emit checkpoint logic debugging info to console
 
     // A Drawing is a sequence of DrawCommands and a set of layer.
     // It maintains the playback and undo/redo logic
@@ -232,6 +233,10 @@ define(['./brush','./color','./drawcommand','./layer','./prandom!'], function(Br
         return ncanvas;
     };
     Drawing.prototype._saveCheckpoint = function() {
+        if (DEBUG) {
+            console.log('creating checkpoint ' +
+                        this.commands.last + '/' + this.commands.length);
+        }
         return new Drawing.Checkpoint({
             pos: this.commands.last,
             brush: this.brush.clone(),

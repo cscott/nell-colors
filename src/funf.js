@@ -1,5 +1,6 @@
 // encapsulate Funf functionality
 define([], function() {
+    var DEBUG = false; // dump funf output to console
 
     var FUNF_ACTION_RECORD = 'edu.mit.media.funf.RECORD';
     var FUNF_ACTION_ARCHIVE = 'edu.mit.media.funf.ARCHIVE';
@@ -16,7 +17,7 @@ define([], function() {
             // protect complex values from funf flattening
             value = JSON.stringify(value);
         }
-        console.log('CSA FUNF '+name+' / '+value);
+        if (DEBUG) { console.log('FUNF '+name+' / '+value); }
         try {
             // send custom event; there's a Firefox add-on which will
             // turn this into an Android Intent:
