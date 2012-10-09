@@ -83,7 +83,7 @@ a:focus,
   visibility: visible;
   @include transition-delay(0s);
 }
-&.color .panes {
+&.brush .panes {
   @include translate3d(-50%,0,0);
 }
 &.color .brush_options *,
@@ -134,10 +134,10 @@ a:focus,
       border: 2px dotted #555;
     }
     &.brush_select:before, &.brush_select > span {
-      right: 33%;
+      left: 33%;
     }
     &.color_select:before, &.color_select > span {
-      left: 33%;
+      right: 33%;
     }
     &.brush_select > span {
       background-image: image-url('tool-brush.svg');

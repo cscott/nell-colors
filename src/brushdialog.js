@@ -88,7 +88,7 @@ define(['domReady!', 'text!./brushdialog.html', './brush', './color', './colorwh
             }.bind(this));
         }.bind(this));
 
-        var PAGES = ['brush', 'color'];
+        var PAGES = ['color', 'brush'];
         PAGES.forEach(function(p) {
             var e = brushpane.querySelector("."+p+"_select");
             e.addEventListener('click',

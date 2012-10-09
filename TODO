@@ -9,7 +9,7 @@ include a decent # of samples: cat / bat / mat / cab / lion at least!
 x new toolbar order: undo/redo/movie     color/brush/swatches    layers/save
 replace 'play' icon with movie camera
 four states, "can't play", "can play", "playing", "stopping"
-swap brush and color pane in dialog
+x swap brush and color pane in dialog
 
 eyedropper tool.
 lasso tool
