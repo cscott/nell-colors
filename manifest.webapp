@@ -1,5 +1,5 @@
 {
-  "version": "@VERSION@",
+  "version": "@VERSION@.0",
   "name": "Nell's Colors",
   "description": "Draw pictures and practice letters",
   "icons": {
@@ -11,7 +11,7 @@
     "url": "http://wiki.laptop.org/go/User:CScott"
   },
   "installs_allowed_from": ["*"],
-  "appcache_path": "manifest.appcache",
+  "appcache_path": "/manifest.appcache",
   "orientation": "landscape",
   "fullscreen": "true",
   "default_locale": "en"
