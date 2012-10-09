@@ -25,6 +25,8 @@ css: $(STYLES)
 $(STYLES): sass/*.scss
 	$(COMPASS) compile -e production --force $(abspath .)
 
+build-all: build-brushdemo build-colors
+
 build-brushdemo: build/brushdemo.js style/brushdemo.css
 	mkdir -p build/icons build/brushes build/fonts build/style
 	cp brushdemo.html build/
@@ -34,7 +36,7 @@ build-brushdemo: build/brushdemo.js style/brushdemo.css
 	cp icons/*.png icons/*.ico icons/*.svg build/icons/
 	cp require.min.js build/require.js
 
-build-all: build/index.js build/ncolors.js build/src/recogworker.js brushes/brush-tile-129.png $(STYLES)
+build-colors: build/index.js build/ncolors.js build/src/recogworker.js brushes/brush-tile-129.png $(STYLES)
 	mkdir -p build/icons build/audio build/brushes build/samples \
 		build/fonts build/style
 	for f in index.html ncolors.html ; do \
@@ -52,10 +54,10 @@ build-all: build/index.js build/ncolors.js build/src/recogworker.js brushes/brus
 	# offline manifest (everything!)
 	( echo "CACHE MANIFEST" ; \
 	  echo -n '# ' ; find build -type f | fgrep -v manifest | \
-	    fgrep -v install.html | xargs md5sum -b | md5sum; echo ; \
+	    fgrep -v install.html | sort | xargs md5sum -b | md5sum; echo ; \
 	  echo "CACHE:" ; \
 	  cd build ; find . -type f -print | fgrep -v manifest | \
-	    fgrep -v install.html ) > build/manifest.appcache
+	    fgrep -v install.html | sort ) > build/manifest.appcache
 	# domain name for github pages
 	echo nell-colors.github.cscott.net > build/CNAME
 	# turn off jekyll for github pages
