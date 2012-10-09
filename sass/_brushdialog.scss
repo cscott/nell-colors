@@ -3,6 +3,8 @@
  *  #brushdialog { @import "brushdialog"; }
  */
 
+$numbrushes: 10;
+
 @mixin no-select {
   // disable text selection in this element
   -webkit-user-select: none;
@@ -303,20 +305,20 @@ input.fd_slider { display: none; } /* hide slider input */
     overflow: hidden;
 
     & > .allbrushes {
-      /* 10 100px brushes, plus borders on each side */
+      /* $numbrushes 100px brushes, plus borders on each side */
       height: 100px;
-      /* we want 1000px + (100% - 2*50px) wide.  use *non* borderbox sizing
+      /* we want n*100px + (100% - 2*50px) wide.  use *non* borderbox sizing
        * to accomplish this. */
       @include box-sizing(content-box);
       width: 100%;
-      border-right: 1000px - 2*50px solid transparent;
+      border-right: ($numbrushes * 100px) - (2*50px) solid transparent;
 
       &:before {
         content: "";
         position: absolute; top: 8px;
         /* left hand edge should be at 50% - 50px */
         left: 50%; margin-left: -50px;
-        width: 1000px;
+        width: $numbrushes * 100px;
         height: 100px;
         background-image: url('../brushes/brush-tile-129.png');
         background-repeat: no-repeat;
@@ -327,11 +329,11 @@ input.fd_slider { display: none; } /* hide slider input */
       height: 60px;
       & > .allbrushes {
         height: 50px;
-        border-right: 10*50px - 2*25px solid transparent;
+        border-right: ($numbrushes*50px) - (2*25px) solid transparent;
         &:before {
           top: 3px;
           margin-left: -25px;
-          width: 10*50px;
+          width: $numbrushes * 50px;
           @include background-size(auto 50px);
         }
       }
