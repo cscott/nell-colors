@@ -11,6 +11,10 @@ require.config({
 define(['domReady!', './src/dom', './lib/hammer'], function(document, Dom, Hammer) {
     'use strict';
     Dom.insertMeta(document);
+    if (document.body.classList.contains('dev')) {
+        // show appcache debugging information.
+        document.body.classList.add('appcache-allinfo');
+    }
     var toolbar = document.getElementById('toolbar');
     var toolbarMode = 'no-mode';
     var updateSwatchOpacity, updateBrushColor;
