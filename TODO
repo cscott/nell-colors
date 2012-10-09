@@ -1,6 +1,6 @@
 add explicit metrics for Delius font so that letters match up optimally.
 x brush selection
-image thumbnails on gallery page
+x image thumbnails on gallery page
 delete picture option on gallery page
 x paintbrush dialog (replace range sliders)
 layers menu
@@ -20,7 +20,7 @@ still not reliably snapshotting tail end of command list; first 'undo' should
 x hook up funf
 x funf startup
 x funf letters recognized (and prob)
-- funf thumbnails at close
+x funf thumbnails at close
 - funf pause/resume events
 
 eyedropper tool.

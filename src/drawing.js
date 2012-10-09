@@ -210,6 +210,27 @@ define(['./brush','./color','./drawcommand','./layer','./prandom!'], function(Br
             break;
         }
     };
+    Drawing.prototype.makeThumbnail = function(width, height) {
+        var ncanvas = document.createElement('canvas');
+        ncanvas.width = width;
+        ncanvas.height = height;
+        var context = ncanvas.getContext('2d');
+        // scale to cover, ie no unused space in thumbnail
+        var w = Math.max.apply(Math, this.layers.map(function(layer) {
+            return layer.completedCanvas.width;
+        }));
+        var h = Math.max.apply(Math, this.layers.map(function(layer) {
+            return layer.completedCanvas.height;
+        }));
+        var scale = Math.max(width/w, height/h);
+        context.translate(width/2, height/2);
+        context.scale(scale, scale);
+        context.translate(-w/2, -h/2);
+        this.layers.forEach(function(layer) {
+            context.drawImage(layer.completedCanvas, 0, 0);
+        });
+        return ncanvas;
+    };
     Drawing.prototype._saveCheckpoint = function() {
         return new Drawing.Checkpoint({
             pos: this.commands.last,
@@ -505,6 +526,7 @@ define(['./brush','./color','./drawcommand','./layer','./prandom!'], function(Br
     Drawing.fromChunks = function(top, chunks, callback) {
         return fromChunksOrJSON(top, chunks, callback);
     };
+    Drawing.Layer = Layer;
 
     return Drawing;
 });

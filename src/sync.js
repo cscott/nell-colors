@@ -6,6 +6,10 @@
 define(['./drawing', './lzw', './lawnchair/lawnchair'], function(Drawing, LZW, Lawnchair) {
     var DEBUG = false;
     var TOP = 'top';
+    // keep these constants in sync with .gallery rule in ncolors.css
+    // (proportions should match, but we might want to account for some
+    //  CSS-pixel-to-device-pixel scaling here)
+    var THUMB_WIDTH = 160, THUMB_HEIGHT = 120;
 
     // Sync drawing to local storage.
     var Sync = {};
@@ -23,8 +27,10 @@ define(['./drawing', './lzw', './lawnchair/lawnchair'], function(Drawing, LZW, L
     var addToIndex = function(drawing, callback) {
         Lawnchair({name:'drawing_index'}, function() {
             var lawnchair = this;
+            var thumb = drawing.makeThumbnail(THUMB_WIDTH, THUMB_HEIGHT);
             lawnchair.save({
                 key: drawing.uuid,
+                thumb: JSON.stringify(new Drawing.Layer.Checkpoint(thumb)),
                 ctime: drawing.ctime,
                 mtime: Date.now()
             }, function() {
@@ -48,7 +54,19 @@ define(['./drawing', './lzw', './lawnchair/lawnchair'], function(Drawing, LZW, L
                     return a.ctime - b.ctime;
                 });
                 // return list of uuids (don't expose 'key' field)
-                callback(results.map(function(r) { return r.key; }));
+                // second arg is a list of promises for the thumbnails
+                //  ie, a function which you can call with a callback which
+                //      will then get invoked with a decoded <canvas>
+                callback(results.map(function(r) { return r.key; }),
+                         results.map(function(r) {
+                             if (!r.thumb) { return null; /* no thumbnail */}
+                             return function(callback) {
+                                 var cb = function(layerCheckpoint) {
+                                     callback(layerCheckpoint.canvas);
+                                 };
+                                 Drawing.Layer.Checkpoint.fromJSON(r.thumb,cb);
+                             };
+                         }));
             });
         });
     };
