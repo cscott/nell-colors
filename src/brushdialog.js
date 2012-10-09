@@ -64,6 +64,7 @@ define(['domReady!', 'text!./brushdialog.html', './brush', './color', './colorwh
     var BrushDialog = function(brushpane, hidePaneSwitcher) {
         this.id = (cnt++); /* unique for each BrushDialog */
         this.brushpane = brushpane;
+        this._initializing = true;
         /* fill in the markup! */
         this.brushpane.innerHTML = innerhtml;
         /* hide pane switcher if requested */
@@ -99,8 +100,7 @@ define(['domReady!', 'text!./brushdialog.html', './brush', './color', './colorwh
         /* set up close button event handler */
         brushpane.querySelector(".closer")
             .addEventListener("click", noDefault(function(event) {
-                this.close();
-                this._invokeCallback();
+                this.close(true /*invoke callback */);
             }.bind(this)), false);
 
         /* set up plus/minus button handlers */
@@ -198,40 +198,45 @@ define(['domReady!', 'text!./brushdialog.html', './brush', './color', './colorwh
         });
 
         // set up brush size/spacing sliders
-        var spacing_callbacks = {};
+        var spacing_callback = function() {
+            var input = brushpane.querySelector('input.brush_spacing');
+            preview.spacing = parseInt(input.value, 10) || 5;
+            brushpane.querySelector('.spacing .caption').
+                setAttribute('data-amount', preview.spacing);
+            if (this._initializing) { return; }
+            preview_update();
+        }.bind(this);
         Slider.createSlider({
             inp: assignID('brush_spacing'),
             range: [5,200],
             inc: "1",
             clickJump: true,
             hideInput: true,
-            callbacks: spacing_callbacks
+            callbacks: { update: [spacing_callback] }
         });
-        spacing_callbacks.update = [function() {
-            var input = brushpane.querySelector('input.brush_spacing');
-            preview.spacing = parseInt(input.value, 10) || 5;
-            brushpane.querySelector('.spacing .caption').
-                setAttribute('data-amount', preview.spacing);
+        var size_callback = function() {
+            var input = brushpane.querySelector('input.brush_size');
+            preview.size = parseInt(input.value, 10) || 1;
+            brushpane.querySelector('.size .caption').
+                setAttribute('data-amount', preview.size);
+            if (this._initializing) { return; }
             preview_update();
-        }];
-        var size_callbacks = {};
+        }.bind(this);
         Slider.createSlider({
             inp: assignID('brush_size'),
             range: [1,129],
             inc: "1",
             clickJump: true,
             hideInput: true,
-            callbacks: size_callbacks
+            callbacks: { update: [size_callback] }
         });
-        size_callbacks.update = [function() {
-            var input = brushpane.querySelector('input.brush_size');
-            preview.size = parseInt(input.value, 10) || 1;
-            brushpane.querySelector('.size .caption').
-                setAttribute('data-amount', preview.size);
-            preview_update();
-        }];
         // set up lightness/opacity sliders
-        var color_slider_callbacks = {};
+        var color_slider_callback = function() {
+            if (this._initializing) { return; }
+            // hook up update callback only after slider has been inited.
+            // (otherwise we get a rogue update on the first animation frame)
+            updateColorFromInputs();
+        }.bind(this);
         ['lightness', 'opacity'].forEach(function(id) {
             var elem = brushpane.querySelector('input.color_'+id);
             Slider.createSlider({
@@ -240,12 +245,9 @@ define(['domReady!', 'text!./brushdialog.html', './brush', './color', './colorwh
                 inc: "1",
                 clickJump: true,
                 hideInput: true,
-                callbacks: color_slider_callbacks
+                callbacks: { update: [color_slider_callback] }
             });
-        }.bind(this));
-        // hook up update callback only after slider has been inited.
-        // (otherwise we get a rogue update on the first animation frame)
-        color_slider_callbacks.update = [updateColorFromInputs];
+        });
 
         var updateBrushType = function() {
             var scroll = this;
@@ -322,7 +324,7 @@ define(['domReady!', 'text!./brushdialog.html', './brush', './color', './colorwh
         }.bind(this));
     };
     BrushDialog.prototype._updateOldColor = function(hslColor) {
-        var colorString = hslColor.rgbString();
+        var colorString = hslColor.rgbaString();
         ['.swatches > .old > span'].forEach(function(sel) {
             var e = this.brushpane.querySelector(sel);
             e.style.color = colorString;
@@ -346,25 +348,17 @@ define(['domReady!', 'text!./brushdialog.html', './brush', './color', './colorwh
             var e = this.brushpane.querySelector(sel);
             e.style.color = rgbSatString;
         }.bind(this));
+        // user-defined callback
+        if (this.colorCallback) {
+            this.colorCallback(hslColor);
+        }
     };
     BrushDialog.prototype.open = function(brush, firstPane, callback) {
         this.callback = callback;
-        // set up brush (and adjust sliders)
-        this.preview.setFromBrush(brush);
-        this.preview.update();
-        // set up color and oldcolor
-        var hslColor = HSLColor.from_color(brush.color);
-        hslColor.opacity = this.preview.opacity; /* brush.color is opaque */
-        this._setInputs(hslColor);
-        this._setInputs(hslColor, 'old_color_');
-        this._updateColor(hslColor);
-        this._updateOldColor(hslColor);
-        this.wheel.setHSL(hslColor.hue, hslColor.saturation,
-                          hslColor.lightness);
         // bind to window.resize
         this._resize = this.onResize.bind(this);
         window.addEventListener('resize', this._resize, false);
-        this.onResize();
+        this.updateBrush(brush);
         // switch panes (if necessary)
         // then make visible (after brush pane switch has been processed)
         var panes = this.brushpane.querySelector('.panes');
@@ -384,6 +378,30 @@ define(['domReady!', 'text!./brushdialog.html', './brush', './color', './colorwh
         } else {
             makeVisible();
         }
+    };
+    BrushDialog.prototype.updateBrush = function(brush, preserveOldColor) {
+        // set up brush (and adjust sliders)
+        this._initializing = true;
+        this.preview.setFromBrush(brush);
+        this.preview.update();
+        // set up color and oldcolor
+        var hslColor = HSLColor.from_color(brush.color);
+        hslColor.opacity = this.preview.opacity; /* brush.color is opaque */
+        this._setInputs(hslColor);
+        this._updateColor(hslColor);
+        if (preserveOldColor) {
+            this._updateOldColor(this._colorFromInputs('old_color_'));
+        } else {
+            this._setInputs(hslColor, 'old_color_');
+            this._updateOldColor(hslColor);
+        }
+        this.wheel.setHSL(hslColor.hue, hslColor.saturation,
+                          hslColor.lightness);
+        this.onResize();
+        this._initializing = false;
+    };
+    BrushDialog.prototype.currentPane = function() {
+        return this.brushpane.classList.contains('color') ? 'color' : 'brush';
     };
     BrushDialog.prototype.switchPane = function(whichPane) {
         // normalize arg; 'brush' is default pane.
@@ -412,11 +430,15 @@ define(['domReady!', 'text!./brushdialog.html', './brush', './color', './colorwh
         // adjust colorwheel thumb
         this.wheel.onResize();
     };
-    BrushDialog.prototype.close = function() {
+    BrushDialog.prototype.isOpen = function() {
+        return this.brushpane.classList.contains('visible');
+    };
+    BrushDialog.prototype.close = function(invokeCallback) {
         window.removeEventListener('resize', this._resize, false);
-        /* this method does *not* invoke the callback */
-        /* ie, it's more akin to 'cancel' */
         this.brushpane.classList.remove('visible');
+        if (invokeCallback) { // false to 'cancel'
+            this._invokeCallback();
+        }
     };
     BrushDialog.prototype._invokeCallback = function() {
         var hslColor = this._colorFromInputs();
