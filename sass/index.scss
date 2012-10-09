@@ -65,7 +65,10 @@ iframe {
       background-image: image-url('media-playback-start.svg');
       @extend %svg-icon;
       &.playing {
-        background-image: image-url('media-seek-forward.svg');
+        background-image: image-url('media-playback-stop.svg');
+      }
+      &.stopping {
+        background-image: image-url('media-seek-forward-insensitive.svg');
       }
     }
     &.undo {

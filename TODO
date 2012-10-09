@@ -3,12 +3,9 @@ x brush selection
 x image thumbnails on gallery page
 delete picture option on gallery page
 x paintbrush dialog (replace range sliders)
-layers menu
- - select background (camera api)
 include a decent # of samples: cat / bat / mat / cab / lion at least!
 x new toolbar order: undo/redo/movie     color/brush/swatches    layers/save
-replace 'play' icon with movie camera
-four states, "can't play", "can play", "playing", "stopping"
+x four states, "can't play", "can play", "playing", "stopping"
 x swap brush and color pane in dialog
 set undo/redo buttons active appropriately
 'pressed' highlight for touch
@@ -23,6 +20,9 @@ x funf letters recognized (and prob)
 x funf thumbnails at close
 - funf pause/resume events
 
+replace 'play' icon with movie camera
+layers menu
+ - select background (camera api)
 eyedropper tool.
 lasso tool
 

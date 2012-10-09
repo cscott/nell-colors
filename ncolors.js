@@ -109,6 +109,7 @@ define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/
     var maybeHaltPlayback = function() {
         if (!playbackInfo.isPlaying) { return; }
         playbackInfo.speed = INSTANTANEOUS;
+        toolbarPort.postMessage(JSON.stringify({type:'stopping'}));
         recog_reset();
     };
     var startPlayback = function() {
@@ -147,7 +148,11 @@ define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/
         if (isMore) {
             if (!playbackInfo.isPlaying) {
                 playbackInfo.isPlaying = true;
-                toolbarPort.postMessage(JSON.stringify({type:'playing'}));
+                if (playbackInfo.speed === INSTANTANEOUS) {
+                    toolbarPort.postMessage(JSON.stringify({type:'stopping'}));
+                } else {
+                    toolbarPort.postMessage(JSON.stringify({type:'playing'}));
+                }
                 // infrequent checkpoints during playback
                 drawing.checkpointOften = false;
             }
@@ -537,7 +542,13 @@ define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/
         case 'playButton':
             if (playbackInfo.isPlaying &&
                 playbackInfo.speed !== INSTANTANEOUS) {
-                playbackInfo.speed *= 4;
+                if (false) {
+                    // old behavior: speed up playback
+                    playbackInfo.speed *= 4;
+                } else {
+                    // new behavior: skip to end (if possible)
+                    maybeHaltPlayback();
+                }
             } else {
                 startPlayback();
             }

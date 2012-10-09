@@ -23,7 +23,7 @@ define(['domReady!', './src/dom', './lib/hammer'], function(document, Dom, Hamme
 
     // set up toolbar channel and message handler.
     // (do this before loading the child, to ensure childReady isn't lost)
-    var size, opacity;
+    var size, opacity, setPlayClass;
     var handleToolbarResponse = function(evt) {
         var msg = evt.data;
         if (typeof(msg)==='string') { msg = JSON.parse(msg); }
@@ -46,14 +46,27 @@ define(['domReady!', './src/dom', './lib/hammer'], function(document, Dom, Hamme
             /* ignore for now, no buttons reflect brush state */
             break;
         case 'playing':
-            toolbar.querySelector('.play').classList.add('playing');
+            setPlayClass('playing');
+            break;
+        case 'stopping':
+            setPlayClass('stopping');
             break;
         case 'stopped':
-            toolbar.querySelector('.play').classList.remove('playing');
+            setPlayClass('stopped');
             break;
         default:
             console.warn("Unexpected parent toolbar message", evt);
         }
+    };
+    setPlayClass = function(className) {
+        var play = toolbar.querySelector('.play');
+        ['playing','stopping','stopped'].forEach(function(cn) {
+            if (className===cn) {
+                play.classList.add(cn);
+            } else {
+                play.classList.remove(cn);
+            }
+        });
     };
 
     var handleMessage = function(evt) {
