@@ -42,7 +42,9 @@ build-colors: build/index.js build/ncolors.js build/src/recogworker.js brushes/b
 	for f in index.html ncolors.html ; do \
 	  sed -e 's/<html/<html manifest="manifest.appcache" /' < $$f > build/$$f; \
 	done
-	cp install.html *.webapp build/
+	for f in install.html manifest.webapp ; do \
+	  sed -e 's/@VERSION@/'`bin/print-version.js`'/g' < $$f > build/$$f ; \
+	done
 	cp require.min.js build/require.js
 	cp src/worker.js src/appcacheui.js build/src/
 	cp icons/*.png icons/*.ico icons/*.svg build/icons/
