@@ -17,6 +17,9 @@ don't try to recognize letters if aspect ratio is way off or stroke is too long
 still not reliably snapshotting tail end of command list; first 'undo' should
  always be fast
 hook up funf
+- funf letters recognized (and prob)
+- funf thumbnails at close
+
 
 eyedropper tool.
 lasso tool

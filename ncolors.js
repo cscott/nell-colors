@@ -4,7 +4,7 @@
  */
 /*global define:false, console:false, MessageChannel:false, window:false,
          setTimeout:false, clearTimeout:false, navigator:false */
-define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/brushdialog', './src/color', './src/compat', './src/dom', './src/drawcommand', './src/drawing', './src/layer', './src/gallery', './lib/hammer', './src/postmessage', './src/prandom!', './src/recog', './src/sound', './src/sync', './lib/BlobBuilder', './lib/FileSaver', 'font!custom,families:[Delius,DejaVu LGC Sans Book],urls:[fonts/style.css]'], function(require, document, /*audioMap,*/ Brush, BrushDialog, Color, Compat, Dom, DrawCommand, Drawing, Layer, Gallery, Hammer, postMessage, prandom, Recog, Sound, Sync, BlobBuilder, saveAs) {
+define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/brushdialog', './src/color', './src/compat', './src/dom', './src/drawcommand', './src/drawing', './src/funf', './src/gallery', './lib/hammer', './src/layer', './src/postmessage', './src/prandom!', './src/recog', './src/sound', './src/sync', './src/version', './lib/BlobBuilder', './lib/FileSaver', 'font!custom,families:[Delius,DejaVu LGC Sans Book],urls:[fonts/style.css]'], function(require, document, /*audioMap,*/ Brush, BrushDialog, Color, Compat, Dom, DrawCommand, Drawing, Funf, Gallery, Hammer, Layer, postMessage, prandom, Recog, Sound, Sync, version, BlobBuilder, saveAs) {
     'use strict';
     // Android browser doesn't support MessageChannel
     // -- however, it also has a losing canvas. so don't worry too much.
@@ -23,6 +23,9 @@ define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/
     if (/(iPhone|iPad).*Safari/.test(navigator.userAgent)) {
         TOUCH_EVENT_INTERVAL_MS = 0;
     }
+
+    // start up Funf logger
+    var funf = new Funf('NellColors'+version);
 
     // transfer 'dev' tag from parent to this context
     if (window.parent.document.body.classList.contains('dev')) {
