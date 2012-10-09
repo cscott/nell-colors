@@ -39,7 +39,7 @@ $break-small: 484px;
   overflow: hidden;
 
   @include border-bottom-radius(15px);
-  @include transition(transform 1s);
+  @include transition(transform 0.5s);
   @include translate3d(0,-590px,0); // 3d for safari; matches max-height above
   @include transform-origin(center, top);
   @include no-select;
