@@ -36,3 +36,22 @@ body.dev #framerate {
     vertical-align: middle;
   }
 }
+#brushdialog {
+  @import "brushdialog";
+}
+#mask {
+  position: absolute;
+  top: 0; bottom: 0; left: 0; right: 0;
+  background: rgba(0,0,0,0.5);
+}
+/* animation properties for #mask (fade in/out) */
+#mask {
+  visibility: hidden;
+  opacity: 0;
+  @include transition(visibility 0s linear 0.5s, opacity 0.5s);
+}
+body.mask > #mask {
+  visibility: visible;
+  opacity: 1;
+  @include transition-delay(0s);
+}

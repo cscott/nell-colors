@@ -16,7 +16,7 @@ require.config({
         text: "../plugins/text"
     }
 });
-define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/color', './src/compat', './src/dom', './src/drawcommand', './src/drawing', './src/layer', './src/gallery', './lib/hammer', './src/postmessage', './src/prandom!', './src/recog', './src/sound', './src/sync', './lib/BlobBuilder', './lib/FileSaver', 'font!custom,families:[Delius,DejaVu LGC Sans Book],urls:[fonts/style.css]'], function(require, document, /*audioMap,*/ Brush, Color, Compat, Dom, DrawCommand, Drawing, Layer, Gallery, Hammer, postMessage, prandom, Recog, Sound, Sync, BlobBuilder, saveAs) {
+define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/brushdialog', './src/color', './src/compat', './src/dom', './src/drawcommand', './src/drawing', './src/layer', './src/gallery', './lib/hammer', './src/postmessage', './src/prandom!', './src/recog', './src/sound', './src/sync', './lib/BlobBuilder', './lib/FileSaver', 'font!custom,families:[Delius,DejaVu LGC Sans Book],urls:[fonts/style.css]'], function(require, document, /*audioMap,*/ Brush, BrushDialog, Color, Compat, Dom, DrawCommand, Drawing, Layer, Gallery, Hammer, postMessage, prandom, Recog, Sound, Sync, BlobBuilder, saveAs) {
     'use strict';
     // Android browser doesn't support MessageChannel
     // -- however, it also has a losing canvas. so don't worry too much.
@@ -52,6 +52,9 @@ define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/
         prevent_default: true,
         drag_min_distance: 2
     });
+    // brush dialog
+    var brushdialog = new BrushDialog(document.getElementById('brushdialog'),
+                                      true /* hide pane selector */);
 
     var maybeRequestAnim, removeRecogCanvas;
     var updateToolbarBrush, replaceDrawing, maybeSyncDrawing;
@@ -311,6 +314,16 @@ define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/
     };
     Recog.registerCallback(handleRecog);
 
+    var updateColor = function(rgbColor, opacity) {
+        var msg = {
+            type: 'color',
+            red: rgbColor.red,
+            green: rgbColor.green,
+            blue: rgbColor.blue,
+            opacity: opacity
+        };
+        toolbarPort.postMessage(JSON.stringify(msg));
+    };
     updateToolbarBrush = (function() {
         // don't post redundant updates (ie, while drawing!)
         var lastBrush = new Brush(), first = true;
@@ -320,18 +333,76 @@ define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/
             }
             lastBrush.set_from_brush(drawing.brush);
             first = false;
+            updateColor(drawing.brush.color, drawing.brush.opacity);
             var msg = {
                 type: 'brush',
-                color: drawing.brush.color.to_string(),
                 brush_type:  drawing.brush.type,
                 size:  drawing.brush.size,
                 opacity: drawing.brush.opacity,
                 spacing: drawing.brush.spacing
             };
             toolbarPort.postMessage(JSON.stringify(msg));
+            if (brushdialog.isOpen()) {
+                brushdialog.updateBrush(drawing.brush,
+                                        true/*preserve old color*/);
+            }
             // XXX update undo/redo active as well.
         };
     }());
+    brushdialog.colorCallback = function(hslColor) {
+        updateColor(hslColor.rgbaColor(), hslColor.opacity/255);
+    };
+
+    var handleMaskClick = null;
+    document.querySelector('#mask').addEventListener('click', function(event) {
+        event.preventDefault(); // suppress navigation.
+        if (handleMaskClick) { handleMaskClick(); }
+    });
+    var handleBrushDialog = function(brush) {
+        var caughtUp = (drawing.commands.last === drawing.commands.end);
+        document.body.classList.remove('mask');
+        handleMaskClick = null;
+        toolbarPort.postMessage(JSON.stringify({
+            type: 'toolbar-mode-switch',
+            mode: 'drawing'
+        }));
+
+        if (caughtUp && brush.equals(drawing.brush)) { return; }
+
+        var opts = {}, brush_change = false;
+        ['type','size','opacity','spacing'].forEach(function(f) {
+            if (brush[f] === drawing.brush[f]) { return; }
+            opts[(f==='type') ? 'brush_type' : f] = brush[f];
+            brush_change = true;
+        });
+        if (brush_change) {
+            drawing.addCmd(DrawCommand.create_brush_change(opts));
+        }
+        if (!Color.equal(drawing.brush.color, brush.color)) {
+            drawing.addCmd(DrawCommand.create_color_change(brush.color));
+        }
+        if (caughtUp) {
+            drawing.setCmdPos(Drawing.END); // update drawing.brush
+            updateToolbarBrush();
+        }
+    };
+    var openOrSwitchBrushDialog = function(pane) {
+        if (brushdialog.isOpen()) {
+            if (brushdialog.currentPane() !== pane) {
+                brushdialog.switchPane(pane);
+            } else {
+                brushdialog.close(true);
+            }
+        } else {
+            brushdialog.open(drawing.brush, pane, handleBrushDialog);
+            document.body.classList.add('mask');
+            handleMaskClick = function() { brushdialog.close(true); };
+            toolbarPort.postMessage(JSON.stringify({
+                type: 'toolbar-mode-switch',
+                mode: 'brushdialog'
+            }));
+        }
+    };
 
     var doUndo = function() {
         console.assert(!isDragging);
@@ -439,58 +510,27 @@ define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/
             break;
         case 'swatchButton':
             var color = Color.from_string(msg.color);
-            if (caughtUp && Color.equal(drawing.brush.color, color)) {
+            if (caughtUp &&
+                Color.equal(drawing.brush.color, color) &&
+                drawing.brush.opacity===1) {
                 break;
             }
             drawing.addCmd(DrawCommand.create_color_change(color));
+            /* force color to be opaque, too */
+            drawing.addCmd(DrawCommand.create_brush_change({opacity:1}));
             if (caughtUp) {
                 drawing.setCmdPos(Drawing.END); // update drawing.brush immed.
+                updateToolbarBrush();
             }
             break;
-        case 'hardButton':
-            if (caughtUp && drawing.brush.type === 'hard') {
-                break;
-            }
-            drawing.addCmd(DrawCommand.create_brush_change({
-                brush_type: 'hard'
-            }));
-            if (caughtUp) {
-                drawing.setCmdPos(Drawing.END); // update drawing.brush
-            }
+
+        case 'colorButton':
+            openOrSwitchBrushDialog('color');
             break;
-        case 'softButton':
-            if (caughtUp && drawing.brush.type === 'soft') {
-                break;
-            }
-            drawing.addCmd(DrawCommand.create_brush_change({
-                brush_type: 'soft'
-            }));
-            if (caughtUp) {
-                drawing.setCmdPos(Drawing.END); // update drawing.brush
-            }
+        case 'brushButton':
+            openOrSwitchBrushDialog('brush');
             break;
-        case 'opacitySlider':
-            if (caughtUp && drawing.brush.opacity === +msg.value) {
-                break;
-            }
-            drawing.addCmd(DrawCommand.create_brush_change({
-                opacity: +msg.value
-            }));
-            if (caughtUp) {
-                drawing.setCmdPos(Drawing.END); // update drawing.brush
-            }
-            break;
-        case 'sizeSlider':
-            if (caughtUp && drawing.brush.size === +msg.value) {
-                break;
-            }
-            drawing.addCmd(DrawCommand.create_brush_change({
-                size: +msg.value
-            }));
-            if (caughtUp) {
-                drawing.setCmdPos(Drawing.END); // update drawing.brush
-            }
-            break;
+
         case 'playButton':
             if (playbackInfo.isPlaying &&
                 playbackInfo.speed !== INSTANTANEOUS) {
@@ -575,6 +615,10 @@ define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/
         updateToolbarBrush();
         onWindowResize();
         document.getElementById("loading").style.display="none";
+        toolbarPort.postMessage(JSON.stringify({
+            type: 'toolbar-mode-switch',
+            mode: 'drawing'
+        }));
         // newly loaded sample drawings need to be saved w/ their new UUID
         if (optForceSave) {
             maybeSyncDrawing();
@@ -583,6 +627,11 @@ define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/
 
     var loadDrawing = function(uuid, callback) {
         var nd, gallery;
+        document.getElementById("loading").style.display="block";
+        toolbarPort.postMessage(JSON.stringify({
+            type: 'toolbar-mode-switch',
+            mode: 'loading'
+        }));
         switch(uuid) {
         case 'castle':
         case 'intro':
@@ -608,6 +657,10 @@ define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/
                 loadDrawing(uuid, callback);
             });
             document.body.appendChild(gallery.domElement);
+            toolbarPort.postMessage(JSON.stringify({
+                type: 'toolbar-mode-switch',
+                mode: 'gallery'
+            }));
             // discard old drawing (replace with blank placeholder)
             drawing.removeFromContainer(drawingElem);
             removeRecogCanvas();
@@ -641,7 +694,6 @@ define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/
         // Load new document.
         notifyParentHash(document.location.hash, true, uuid);
         Gallery.abort();
-        document.getElementById("loading").style.display="block";
         loadDrawing(uuid, replaceDrawing);
     };
     window.addEventListener('hashchange', onHashChange, false);

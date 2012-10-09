@@ -2,11 +2,16 @@
 @import "base";
 @import "appcacheui";
 
+%maxed {
+  display: block;
+  position: absolute;
+  top: 0; bottom: 0; right: 0; left: 0;
+  content: "";
+}
+
 html,body { width:100%; height:100%; margin:0px; border:none;}
 iframe {
-  position: absolute;
-  left: 0px; right: 0px;
-  top: 0px; bottom: 0px;
+  @extend %maxed;
   border: none;
   margin: 0;
   width: 100%; height: 100%;
@@ -21,20 +26,26 @@ iframe {
   height: 44px;
   width: 100%;
   top: 0px; left: 0px;
-  /* from http://wiki.sugarlabs.org/go/Human_Interface_Guidelines */
-  background: #404040; /* "toolbar grey" */
   overflow: hidden;
+  &:before {
+    @extend %maxed;
+    /* from http://wiki.sugarlabs.org/go/Human_Interface_Guidelines */
+    background: #404040; /* "toolbar grey" */
+    z-index: -2; /* play nice with background of color swatch */
+  }
 
   .buttons {
     position: relative;
-    margin-left: 10px;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
     margin-top: 7px;
     white-space: nowrap;
   }
   %toolbar-item {
-    display: inline-block;//@include inline-block;
+    display: none;
     margin-left: 5px;
     padding: 0;
+    position: relative;
   }
 
   %svg-icon {
@@ -67,21 +78,34 @@ iframe {
       @extend %svg-icon;
       @include background-size(190%);
     }
-    &.hard {
-      background: url('../icons/hard.png');
+    &.color {
+      @include box-sizing(border-box);
+      border: 2px solid #ddd;
+      @include border-radius(50%);
+      background: currentColor;
+      opacity: 1; /* work around a webkit bug */
+      &:hover { border-color: #fff; }
+      &:before {
+        @extend %maxed;
+        @include border-radius(50%);
+        background: image-url('checkerboard.svg');
+        background-position: center;
+        z-index: -1; /* put this behind the color swatch */
+      }
     }
-    &.soft {
-      background: url('../icons/soft.png');
+    &.brush {
+      background-image: image-url('tool-brush.svg');
+      @extend %svg-icon;
+      @include background-size(120%);
+    }
+    &.layer {
+      background-image: image-url('view-list.svg');
+      @extend %svg-icon;
     }
     &.save {
       background-image: image-url('document-save.svg');
       @extend %svg-icon;
-      display: none; /* disable unless body.dev (below) */
     }
-  }
-
-  .hard, .play, .red, input, .save {
-    margin-left: 10px;
   }
 
   .swatch {
@@ -93,43 +117,74 @@ iframe {
     background-size: 65%;
     background-position-x: 1px;
     background-position-y: 1px;
+    margin-left: 0;
+    border-left: none; border-right: none;
+    &.red { border-left: 2px solid #a6a6a6; }
+    &.black { border-right: 2px solid #a6a6a6; }
 
     &:hover {
       border-color: #ddd;
     }
-    & > span {
-      display: block;
-      width: 26px; height: 26px;
+    &:after {
+      @extend %maxed;
     }
-    &.red > span { background: red; }
-    &.orange > span { background: orange; }
-    &.yellow > span { background: yellow; }
-    &.green > span { background: green; }
-    &.blue > span { background: blue; }
-    &.indigo > span { background: indigo; }
-    &.violet > span { background: violet; }
-    &.white > span { background: white; }
-    &.brown > span { background: brown; }
-    &.black > span { background: black; }
+
+    &.red:after { background: red; }
+    &.orange:after { background: orange; }
+    &.yellow:after { background: yellow; }
+    &.green:after { background: #0f0; }
+    &.blue:after { background: blue; }
+    &.indigo:after { background: indigo; }
+    &.violet:after { background: violet; }
+    &.white:after { background: white; }
+    &.brown:after { background: brown; }
+    &.black:after { background: black; }
+  }
+
+  .play, .red {
+    margin-left: 15px;
+  }
+
+  /* flexbox-like layout, using tables */
+  .buttons {
+    display: table;
+    @include box-sizing(border-box);
+    width: 100%;
+
+    .group {
+      display: table-cell;
+      /* make left and right groups equal width */
+      &.left { text-align: left; width: 25%; }
+      &.center { text-align: center; }
+      &.right { text-align: right; width: 25%; }
+    }
   }
 }
 
-body.dev #toolbar .icon.save {
+@mixin selected-icons {
+  #toolbar.drawing %toolbar-item.mode-drawing,
+  #toolbar.brushdialog %toolbar-item.mode-brushdialog,
+  #toolbar.gallery %toolbar-item.mode-gallery,
+  #toolbar.loading %toolbar-item.mode-loading {
+    @content;
+  }
+}
+@include selected-icons {
   display: inline-block;
+  &.dev-only { display: none; }
+}
+body.dev {
+  @include selected-icons {
+    &.dev-only { display: inline-block; }
+  }
 }
 
-%maxed {
-  display: block;
-  position: absolute;
-  top: 0; bottom: 0; right: 0; left: 0;
-  content: "";
-  background-repeat: no-repeat;
-}
 #splash {
   @extend %maxed;
   background-color: #8594FF; // original splash screen background was #85fdff
   background-image: image-url('colors_splash_clouds_landscape.svg');
   background-position: center center;
+  background-repeat: no-repeat;
   @include background-size(cover);
   /* different cloud arrangement if we're in portrait */
   @media (orientation:portrait) {
@@ -139,12 +194,14 @@ body.dev #toolbar .icon.save {
     @extend %maxed;
     background-image: image-url('colors_splash_center.svg');
     background-position: center center;
+    background-repeat: no-repeat;
     @include background-size(contain);
   }
   &:after { /* princess at bottom */
     @extend %maxed;
     background-image: image-url('colors_splash_bottom.svg');
     background-position: right bottom;
+    background-repeat: no-repeat;
     @include background-size(cover);
   }
 }

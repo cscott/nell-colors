@@ -11,6 +11,9 @@ require.config({
 define(['domReady!', './src/dom', './lib/hammer'], function(document, Dom, Hammer) {
     'use strict';
     Dom.insertMeta(document);
+    var toolbar = document.getElementById('toolbar');
+    var toolbarMode = 'no-mode';
+    var updateSwatchOpacity, updateBrushColor;
 
     var appIframe = document.createElement('iframe');
     var toolbarPort = null;
@@ -27,20 +30,27 @@ define(['domReady!', './src/dom', './lib/hammer'], function(document, Dom, Hamme
         if (typeof(msg)==='string') { msg = JSON.parse(msg); }
 
         switch (msg.type) {
+        case 'toolbar-mode-switch':
+            // gallery toolbar, drawing toolbar, etc.
+            toolbar.classList.remove(toolbarMode);
+            toolbarMode = msg.mode;
+            toolbar.classList.add(toolbarMode);
+            break;
+        case 'color':
+            // update color of swatch in toolbar
+            var opacity = Math.max(0.3, msg.opacity); // always show some color
+            updateSwatchOpacity(opacity);
+            updateBrushColor('rgba('+msg.red+','+msg.green+','+
+                             msg.blue+','+opacity+')');
+            break;
         case 'brush':
-            //console.log("Brush update", msg);
-            if (opacity.value !== msg.opacity) {
-                opacity.value = msg.opacity;
-            }
-            if (size.value !== msg.size) {
-                size.value = msg.size;
-            }
+            /* ignore for now, no buttons reflect brush state */
             break;
         case 'playing':
-            document.querySelector('#toolbar .play').classList.add('playing');
+            toolbar.querySelector('.play').classList.add('playing');
             break;
         case 'stopped':
-            document.querySelector('#toolbar .play').classList.remove('playing');
+            toolbar.querySelector('.play').classList.remove('playing');
             break;
         default:
             console.warn("Unexpected parent toolbar message", evt);
@@ -111,10 +121,25 @@ define(['domReady!', './src/dom', './lib/hammer'], function(document, Dom, Hamme
     // add toolbar buttons.
     var toolbarButtons = document.getElementById('toolbarButtons');
 
-    var addButton = function(className) {
+    var addButton = function(className, group, mode) {
+        var parent;
         var span = document.createElement('span');
-        span.className = 'icon '+className;
-        toolbarButtons.appendChild(span);
+        span.classList.add('icon');
+        span.classList.add(className);
+        if (typeof(mode)==='string') { mode = [ mode ]; }
+        mode.forEach(function(m) { span.classList.add('mode-'+m); });
+        if (group) {
+            parent = toolbarButtons.querySelector('.group.'+group);
+            if (!parent) {
+                parent = document.createElement('span');
+                parent.classList.add('group');
+                parent.classList.add(group);
+                toolbarButtons.appendChild(parent);
+            }
+        } else {
+            parent = toolbarButtons;
+        }
+        parent.appendChild(span);
         // use Hammer instead of 'click' handler for good response time
         // (see http://code.google.com/mobile/articles/fast_buttons.html )
         var h = new Hammer(span, { prevent_default: true,
@@ -124,18 +149,20 @@ define(['domReady!', './src/dom', './lib/hammer'], function(document, Dom, Hamme
         };
         return span;
     };
-    var undo = addButton('undo');
-    var redo = addButton('redo');
-    var play = addButton('play');
-    var hard = addButton('hard');
-    var soft = addButton('soft');
+    var undo = addButton('undo', 'left', 'drawing');
+    var redo = addButton('redo', 'left', 'drawing');
+    var play = addButton('play', 'left', 'drawing');
+
+    var color = addButton('color', 'center', ['drawing','brushdialog']);
+    var brush = addButton('brush', 'center', ['drawing','brushdialog']);
 
     var addSwatch = function(colorName) {
         var span = document.createElement('span');
-        span.className = 'swatch '+colorName;
-        var innerSpan = document.createElement('span');
-        span.appendChild(innerSpan);
-        toolbarButtons.appendChild(span);
+        span.classList.add('swatch');
+        span.classList.add(colorName);
+        span.classList.add('mode-drawing');
+        span.classList.add('mode-brushdialog');
+        toolbarButtons.querySelector('.group.center').appendChild(span);
         return span;
     };
     var colors = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo',
@@ -150,39 +177,26 @@ define(['domReady!', './src/dom', './lib/hammer'], function(document, Dom, Hamme
         };
     });
 
-    var addRange = function(id, min, max, value, step) {
-        var input = document.createElement('input');
-        input.type = 'range';
-        input.id = id;
-        input.min = min;
-        input.max = max;
-        input.step = step;
-        input.value = value;
-        toolbarButtons.appendChild(input);
-
-        input.addEventListener('change', function() {
-            sendToolbarEvent({ type: id+'Slider', value: input.value });
-        }, false);
-
-        return input;
-    };
-    size = addRange('size', 1, 40, 20, 1);
-    opacity = addRange('opacity', 0, 1, 0.7, 'any');
-    var updateSwatchOpacity = function() {
+    updateSwatchOpacity = function(opacityValue) {
+        // XXX this doesn't do anything at the moment, because we
+        //     made the swatches opaque and removed the inner span.
         var swatches = document.querySelectorAll('.swatch > span');
         // swatches is a NodeList, not an Array, so we can't use forEach
         // directly (sigh)
         Array.prototype.forEach.call(swatches, function(s) {
-            s.style.opacity = opacity.value;
+            s.style.opacity = opacityValue;
         });
     };
-    opacity.addEventListener('change', updateSwatchOpacity, false);
-    updateSwatchOpacity();
+    updateBrushColor = function(colorValue) {
+        toolbarButtons.querySelector('.icon.color').style.color = colorValue;
+    };
 
-    var save = addButton('save');
+    var layer = addButton('layer', 'right', 'drawing');
+    var save = addButton('save', 'right', 'drawing');
+    layer.classList.add('dev-only');
+    save.classList.add('dev-only');
 
     // allow dragging the toolbar left and right
-    var toolbar = document.getElementById('toolbar');
     if (false) { // temporarily disable
     var hammer = new Hammer(toolbar, {
         prevent_default: false,
