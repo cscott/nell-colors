@@ -26,6 +26,7 @@ define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/
 
     // start up Funf logger
     var funf = new Funf('NellColors'+version);
+    funf.record('startVersion', version);
 
     // transfer 'dev' tag from parent to this context
     if (window.parent.document.body.classList.contains('dev')) {
@@ -207,6 +208,7 @@ define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/
         drawing.addCmd(DrawCommand.create_draw_end());
         maybeRequestAnim();
         if (ev) {
+            funf.record('stroke', {});
             //console.log("Attempt recog from", commands.recog,
             //            "to", commands.length);
             Recog.attemptRecognition(drawing.commands,
@@ -251,7 +253,7 @@ define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/
     var handleRecog = function(model, prob, bbox) {
         if (prob < 400) { removeRecogCanvas(); return; }
         var letter = model.charAt(0);
-        //console.log(model);
+        funf.record('recog', { model: model, prob: prob, bbox: bbox });
 
         // draw recognized letter on "recognition canvas"
         var r = window.devicePixelRatio || 1;
@@ -488,6 +490,7 @@ define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/
     var handleToolbarMessage = function(evt) {
         if (isDragging) { hammer.ondragend(); }
         var msg = JSON.parse(evt.data);
+        funf.record('toolbar', msg);
         if (msg.type !== 'playButton') { maybeHaltPlayback(); }
         var caughtUp = (drawing.commands.last === drawing.commands.end);
         switch(msg.type) {
@@ -619,6 +622,11 @@ define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/
             type: 'toolbar-mode-switch',
             mode: 'drawing'
         }));
+        funf.record('mode', {
+            name: 'drawing',
+            uuid: drawing.uuid,
+            length: drawing.commands.length // identify new/existing drawings
+        });
         // newly loaded sample drawings need to be saved w/ their new UUID
         if (optForceSave) {
             maybeSyncDrawing();
@@ -650,7 +658,7 @@ define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/
             break;
         case '':
         case 'gallery':
-            gallery = new Gallery();
+            gallery = new Gallery(funf);
             gallery.wait(function(uuid) {
                 // hide the gallery and load the new drawing
                 document.body.removeChild(gallery.domElement);
@@ -661,6 +669,7 @@ define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/
                 type: 'toolbar-mode-switch',
                 mode: 'gallery'
             }));
+            funf.record('mode', { name: 'gallery' });
             // discard old drawing (replace with blank placeholder)
             drawing.removeFromContainer(drawingElem);
             removeRecogCanvas();

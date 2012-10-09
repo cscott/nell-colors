@@ -4,14 +4,16 @@
  */
 /*global define:false, console:false, document:false, window:false */
 define(['domReady!','./compat','./sync'], function(document, Compat, Sync) {
-    var Gallery = function() {
+    var Gallery = function(funf) {
         this.domElement = document.createElement('div');
         this.domElement.classList.add('gallery');
+        this.funf = funf;
         // start populating with thumbnails
         Sync.list(this._populate.bind(this));
     };
     Gallery.prototype = {};
     Gallery.prototype._populate = function(uuids) {
+        var numThumbnails = 0;
         var addUUID = function(uuid) {
             var a = document.createElement('a');
             a.href='#'; // for iOS
@@ -21,8 +23,11 @@ define(['domReady!','./compat','./sync'], function(document, Compat, Sync) {
                 this._callback(uuid);
             }.bind(this));
             this.domElement.appendChild(a);
+            numThumbnails++;
         }.bind(this);
         uuids.forEach(addUUID);
+        // record number of thumbnails via funf
+        this.funf.record('gallery', { thumbnails: numThumbnails });
         // make "new document" element
         addUUID('new');
     };
