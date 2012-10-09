@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# 58bd945adba01cdd23a6cc6d05f83813  -
+# ec34553bc74a7d2ad0e6513444ce4263  -
 
 CACHE:
 ./brushdemo.js
@@ -15,14 +15,6 @@ CACHE:
 ./icons/colors_splash-640x920.png
 ./icons/colors_splash-748x1024.png
 ./icons/colors_splash-768x1004.png
-./icons/forward.png
-./icons/hard.png
-./icons/play.png
-./icons/redo.png
-./icons/save.png
-./icons/soft.png
-./icons/trans.png
-./icons/undo.png
 ./icons/colors_icon-16x16.ico
 ./icons/checkerboard.svg
 ./icons/circle-minus.svg
@@ -32,8 +24,14 @@ CACHE:
 ./icons/colors_splash_center.svg
 ./icons/colors_splash_clouds_landscape.svg
 ./icons/colors_splash_clouds_portrait.svg
+./icons/document-save.svg
+./icons/edit-redo.svg
+./icons/edit-undo.svg
+./icons/media-playback-start.svg
+./icons/media-seek-forward.svg
 ./icons/tool-brush.svg
 ./icons/up-arrow.svg
+./icons/view-list.svg
 ./audio/A.webm
 ./audio/B.webm
 ./audio/C.webm
