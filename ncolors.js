@@ -268,7 +268,7 @@ define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/
             c = document.createElement('canvas');
             c.className = 'recogCanvas';
             c.style.position='absolute';
-            c.style.opacity = 0.3;
+            c.style.opacity = 0.75;
             if (document.body.classList.contains('dev')) {
                 c.style.border="1px dashed #ccc";
             }
@@ -288,11 +288,21 @@ define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/
         ctxt.font = FontMetrics.font;
         ctxt.textAlign = FontMetrics.textAlign;
         ctxt.textBaseline = FontMetrics.textBaseline;
-        ctxt.fillStyle = drawing.brush.color.to_string().replace(/..$/,'');
         ctxt.translate(c.width/2, c.height/2);
         ctxt.scale(scale, scale);
         ctxt.translate(-metrics.cx, -metrics.cy);
-        ctxt.fillText(model.charAt(0), 0, 0);
+
+        ctxt.strokeStyle='white';
+        ctxt.lineWidth=FontMetrics.outerOutline;
+        ctxt.strokeText(letter, 0, 0);
+
+        ctxt.strokeStyle='black';
+        ctxt.lineWidth=FontMetrics.innerOutline;
+        ctxt.strokeText(letter, 0, 0);
+
+        ctxt.fillStyle = drawing.brush.color.to_string().replace(/..$/,'');
+        ctxt.fillText(letter, 0, 0);
+
         // position the canvas: align center w/ center of bbox
         var bbcx = (bbox.tl.x + bbox.br.x)/2;
         var bbcy = (bbox.tl.y + bbox.br.y)/2;

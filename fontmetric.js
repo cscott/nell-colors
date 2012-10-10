@@ -10,20 +10,30 @@ define(['domReady!', './lib/BlobBuilder', './lib/FileSaver', 'font!custom,famili
     // fit the users bounding box
     var FONT_SIZE="100px";
     var BBOX_SIZE=150;
+    // outline widths
+    var OUTER_OUTLINE = 6;
+    var INNER_OUTLINE = 3;
     // empirically determined average stroke width for Delius
-    var HALF_STROKE_WIDTH=3;
+    var HALF_STROKE_WIDTH=3 + (OUTER_OUTLINE/2);
 
     var make_letter = function(letter) {
         var canvas = document.createElement('canvas');
         canvas.width = canvas.height = BBOX_SIZE;
         canvas.style.width = canvas.style.height = BBOX_SIZE+'px';
+        canvas.style.background='#ccc';
         var ctxt = canvas.getContext('2d');
         ctxt.font = FONT_SIZE+' Delius';
         ctxt.textAlign="center";
         ctxt.textBaseline="middle";
-        ctxt.fillStyle = 'black';
         ctxt.save();
         ctxt.translate(canvas.width/2, canvas.height/2);
+        ctxt.strokeStyle='white';
+        ctxt.lineWidth=OUTER_OUTLINE;
+        ctxt.strokeText(letter.charAt(0), 0, 0);
+        ctxt.strokeStyle='black';
+        ctxt.lineWidth=INNER_OUTLINE;
+        ctxt.strokeText(letter.charAt(0), 0, 0);
+        ctxt.fillStyle = 'red';
         ctxt.fillText(letter.charAt(0), 0, 0);
         ctxt.restore();
         // now look at canvas pixel by pixel to figure out
@@ -74,7 +84,9 @@ define(['domReady!', './lib/BlobBuilder', './lib/FileSaver', 'font!custom,famili
     var json = {
         font: FONT_SIZE+' Delius',
         textAlign: 'center',
-        textBaseline: 'middle'
+        textBaseline: 'middle',
+        outerOutline: OUTER_OUTLINE,
+        innerOutline: INNER_OUTLINE
     };
     for (i=0; i<ALPHABET.length; i++) {
         var letter = ALPHABET.charAt(i);
