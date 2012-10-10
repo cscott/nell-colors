@@ -20,6 +20,20 @@ x funf letters recognized (and prob)
 x funf thumbnails at close
 - funf pause/resume events
 
+use zynga scroller to pan/scroll main canvas
+canvas size is fixed at creation time to resolution of host display
+check whether canvas size is in CSS pixels or device pixels
+rip out devicePixelRatio code if the answer is CSS pixels
+audit uses of drawImage, esp brush images.  use w,h args.
+layers gain 'background' property which is image or fill color
+ - "fill" operation replaced by "create new layer... with this color"
+ - drawing commands blit background image on composedCanvas first
+implement "delete picture" by dragging to a trashcan which appears
+  once drag starts
+replace scroller in gallery with zynga scroller on touch devices
+ - careful about drag interaction
+replace scroller in brush dialog with zynga scroller
+
 replace 'play' icon with movie camera
 layers menu
  - select background (camera api)
