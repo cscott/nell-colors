@@ -4,7 +4,7 @@
  */
 /*global define:false, console:false, MessageChannel:false, window:false,
          setTimeout:false, clearTimeout:false, navigator:false */
-define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/brushdialog', './src/color', './src/compat', './src/dom', './src/drawcommand', './src/drawing', './src/funf', './src/gallery', './lib/hammer', './src/layer', './src/postmessage', './src/prandom!', './src/recog', './src/sound', './src/sync', './src/version', './lib/BlobBuilder', './lib/FileSaver', 'font!custom,families:[Delius,DejaVu LGC Sans Book],urls:[fonts/style.css]'], function(require, document, /*audioMap,*/ Brush, BrushDialog, Color, Compat, Dom, DrawCommand, Drawing, Funf, Gallery, Hammer, Layer, postMessage, prandom, Recog, Sound, Sync, version, BlobBuilder, saveAs) {
+define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/brushdialog', './src/color', './src/compat', './src/dom', './src/drawcommand', './src/drawing', 'json!./src/fontmetrics.json', './src/funf', './src/gallery', './lib/hammer', './src/layer', './src/postmessage', './src/prandom!', './src/recog', './src/sound', './src/sync', './src/version', './lib/BlobBuilder', './lib/FileSaver', 'font!custom,families:[Delius,DejaVu LGC Sans Book],urls:[fonts/style.css]'], function(require, document, /*audioMap,*/ Brush, BrushDialog, Color, Compat, Dom, DrawCommand, Drawing, FontMetrics, Funf, Gallery, Hammer, Layer, postMessage, prandom, Recog, Sound, Sync, version, BlobBuilder, saveAs) {
     'use strict';
     // Android browser doesn't support MessageChannel
     // -- however, it also has a losing canvas. so don't worry too much.
@@ -248,11 +248,10 @@ define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/
         audio_snippets[id] = audio;
         });
 
-    var lastRecogCanvas = null;
     removeRecogCanvas = function() {
+        var lastRecogCanvas = drawingElem.querySelector('canvas.recogCanvas');
         if (lastRecogCanvas) {
-            drawingElem.removeChild(lastRecogCanvas);
-            lastRecogCanvas = null;
+            lastRecogCanvas.style.display = 'none';
         }
     };
     var handleRecog = function(model, prob, bbox) {
@@ -261,38 +260,44 @@ define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/
         funf.record('recog', { model: model, prob: prob, bbox: bbox });
 
         // draw recognized letter on "recognition canvas"
-        var r = window.devicePixelRatio || 1;
         var w = bbox.br.x - bbox.tl.x, h = bbox.br.y - bbox.tl.y;
-        // offset by current brush width (this is a bit hackity)
-        w += drawing.brush.size; h += drawing.brush.size;
-        var c = document.createElement('canvas');
-        c.style.border="1px dashed #ccc";
-        c.style.position='absolute';
-        c.style.top = (bbox.tl.y-(drawing.brush.size/2))+'px';
-        c.style.left = (bbox.tl.x-(drawing.brush.size/2))+'px';
-        c.style.width = w+'px';
-        c.style.height = h+'px';
-        c.style.opacity = 0.3;
-        c.width = w*r;
-        c.height = h*r;
+        var metrics = FontMetrics[letter];
+        var c = drawingElem.querySelector('canvas.recogCanvas');
+        if (!c) {
+            // create & append canvas if not already present.
+            c = document.createElement('canvas');
+            c.className = 'recogCanvas';
+            c.style.position='absolute';
+            c.style.opacity = 0.3;
+            if (document.body.classList.contains('dev')) {
+                c.style.border="1px dashed #ccc";
+            }
+            drawingElem.appendChild(c);
+        }
+        c.style.display = 'block';
+        // compute 'cover' scale
+        var scale = Math.min(w/metrics.w, h/metrics.h);
+        // make canvas the right size.
+        c.width = Math.ceil(scale * metrics.fw);
+        c.height = Math.ceil(scale * metrics.fh);
+        c.style.width = c.width + 'px';
+        c.style.height = c.height + 'px';
         var ctxt = c.getContext('2d');
-        // Patrick+Hand is a good alternative to Delius
-        // 1.2 factor in font size is fudge factor to make letter fit
-        // bounding box more tightly
-        ctxt.font = (c.height*1.2)+"px Delius, sans-serif";
-        ctxt.textAlign = "center";
-        ctxt.textBaseline = "middle";
+        ctxt.clearRect(0,0,c.width,c.height);
+        // draw the letter inside this box
+        ctxt.font = FontMetrics.font;
+        ctxt.textAlign = FontMetrics.textAlign;
+        ctxt.textBaseline = FontMetrics.textBaseline;
         ctxt.fillStyle = drawing.brush.color.to_string().replace(/..$/,'');
         ctxt.translate(c.width/2, c.height/2);
-        // measure the expected width
-        var metrics = ctxt.measureText(letter);
-        if (metrics.width < c.width) {
-            ctxt.scale(c.width/metrics.width, 1); // scale up to fit
-        }
-        ctxt.fillText(model.charAt(0), 0, 0, c.width);
-        removeRecogCanvas();
-        lastRecogCanvas = c;
-        drawingElem.appendChild(lastRecogCanvas);
+        ctxt.scale(scale, scale);
+        ctxt.translate(-metrics.cx, -metrics.cy);
+        ctxt.fillText(model.charAt(0), 0, 0);
+        // position the canvas: align center w/ center of bbox
+        var bbcx = (bbox.tl.x + bbox.br.x)/2;
+        var bbcy = (bbox.tl.y + bbox.br.y)/2;
+        c.style.left = Math.round(bbcx - (c.width/2)) + 'px';
+        c.style.top  = Math.round(bbcy - (c.height/2)) + 'px';
 
         // say the letter name
         var audio = audio_snippets[letter.toUpperCase()];
