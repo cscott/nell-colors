@@ -1,7 +1,7 @@
 // reworked version of colors brush code -- try to generate a brush image
 // from first principles.  (Then we'll use the GPU to scale up/down the
 // canonical brush image.)
-define(['domReady!','./BlobBuilder', './canvas-toBlob', './FileSaver'], function(document, BlobBuilder, _, saveAs) {
+define(['domReady!','./lib/BlobBuilder', './lib/canvas-toBlob', './lib/FileSaver'], function(document, BlobBuilder, _, saveAs) {
     // brush is actually 2*HALF_BRUSH_SIZE + 1 pixels square.
     // use odd number of pixels so that center is squarely on a pixel.
     var HALF_BRUSH_SIZE = 64;
