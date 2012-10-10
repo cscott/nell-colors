@@ -216,6 +216,9 @@ define(['./brush','./color','./drawcommand','./layer','./prandom!'], function(Br
         ncanvas.width = width;
         ncanvas.height = height;
         var context = ncanvas.getContext('2d');
+        // thumbnails should be opaque, so we can store as JPEG
+        context.fillStyle='white';
+        context.fillRect(0,0,width,height);
         // scale to cover, ie no unused space in thumbnail
         var w = Math.max.apply(Math, this.layers.map(function(layer) {
             return layer.completedCanvas.width;

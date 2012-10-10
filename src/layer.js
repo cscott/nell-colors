@@ -214,14 +214,30 @@ define(['./drawcommand', './brush', './point'], function(DrawCommand, Brush, Poi
             this.completedContext.drawImage(checkpoint.canvas, 0, 0);
         }
     };
-    Layer.Checkpoint = function(canvas) {
+    Layer.Checkpoint = function(canvas, isThumbnail) {
         this.canvas = canvas;
+        this.isThumbnail = !!isThumbnail;
     };
     Layer.Checkpoint.prototype = {};
     Layer.Checkpoint.prototype.toJSON = function() {
-        return {
-            canvas: this.canvas.toDataURL('image/png')
+        // store at native canvas resolution, if that's not the same as
+        // # of canvas CSS pixels
+        var toDataURLHD = (this.canvas.toDataURLHD || this.canvas.toDataURL).
+            bind(this.canvas);
+        // dataURL might end up as image/png regardness of isThumbnail, but
+        // that's ok.  lossy compression is only permissible for thumbnails.
+        var dataURL = toDataURLHD(this.isThumbnail ? "image/jpeg" :
+                                  "image/png");
+        var result = {
+            canvas: dataURL,
+            // we need to store canvas width/height because it may not
+            // match image width/height (when we use toDataURLHD)
+            w: this.canvas.width,
+            h: this.canvas.height
         };
+        // don't waste space on isThumbnail field unless it's set.
+        if (this.isThumbnail) { result.isThumbnail = true; }
+        return result;
     };
     Layer.Checkpoint.fromJSON = function(str, callback) {
         var json = (typeof(str)==='string') ? JSON.parse(str) : str;
@@ -229,10 +245,11 @@ define(['./drawcommand', './brush', './point'], function(DrawCommand, Brush, Poi
         // xxx can't load image from data: url synchronously
         image.onload = function() {
             var canvas = document.createElement('canvas');
-            canvas.width = image.width;
-            canvas.height = image.height;
-            canvas.getContext('2d').drawImage(image, 0, 0);
-            callback(new Layer.Checkpoint(canvas));
+            canvas.width = ('w' in json) ? json.w : image.width;
+            canvas.height = ('h' in json) ? json.h : image.height;
+            canvas.getContext('2d').drawImage(image, 0, 0,
+                                              canvas.width, canvas.height);
+            callback(new Layer.Checkpoint(canvas, json.isThumbnail));
         };
         image.src = json.canvas;
     };

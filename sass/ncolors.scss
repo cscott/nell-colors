@@ -49,9 +49,12 @@ body.dev #framerate {
     & > canvas {
       @extend %maxed;
       background: white; /* hide UUID text */
+    }
+    &:after {
+      @extend %maxed;
       // a bit of a 3d button effect
-      @include box-shadow(inset  5px  5px 20px rgba(255,255,255,0.65),
-                          inset -5px -5px 20px rgba(  0,  0,  0,0.10));
+      @include box-shadow(inset  5px  5px 30px rgba(255,255,255,0.25),
+                          inset -5px -5px 20px rgba(  0,  0,  0,0.15));
     }
     &.new:after {
       @extend %maxed;
@@ -60,6 +63,7 @@ body.dev #framerate {
       background-position: center center;
       background-repeat: no-repeat;
       background-color: #404040; /* "toolbar grey" */
+      @include box-shadow(none);
     }
   }
 }

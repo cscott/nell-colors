@@ -4,10 +4,14 @@
  */
 /*global define:false, console:false, document:false, window:false */
 define(['domReady!','./compat','./sync'], function(document, Compat, Sync) {
+    var firstGallery = true;
+
     var Gallery = function(funf) {
         this.domElement = document.createElement('div');
         this.domElement.classList.add('gallery');
         this.funf = funf;
+        this.first = firstGallery;
+        firstGallery = false;
         // start populating with thumbnails
         Sync.list(this._populate.bind(this));
     };
@@ -29,12 +33,16 @@ define(['domReady!','./compat','./sync'], function(document, Compat, Sync) {
             if (thumbnails[idx]) {
                 thumbnails[idx](function(canvas) {
                     a.appendChild(canvas);
-                    // log thumbnail to funf
-                    // XXX maybe should only log when new? each thumbnail is 16k
-                    var dataUrl = (canvas.toDataURLHD ? canvas.toDataURLHD() :
-                                   canvas.toDataURL ? canvas.toDataURL() :
-                                   null);
-                    this.funf.record('thumb', { uuid: uuid, data: dataUrl });
+                    // log thumbnail to funf when we first start
+                    if (this.first) {
+                        // each thumbnail is 16k when a PNG; half that as a JPEG
+                        // to save space we don't use toDataURLHD here
+                        var dataUrl = (canvas.toDataURL ?
+                                       canvas.toDataURL('image/jpeg') :
+                                       null);
+                        this.funf.record('thumb', { uuid: uuid,
+                                                    data: dataUrl });
+                    }
                 }.bind(this));
             }
         }.bind(this);

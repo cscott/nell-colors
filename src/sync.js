@@ -30,7 +30,7 @@ define(['./drawing', './lzw', './lawnchair/lawnchair'], function(Drawing, LZW, L
             var thumb = drawing.makeThumbnail(THUMB_WIDTH, THUMB_HEIGHT);
             lawnchair.save({
                 key: drawing.uuid,
-                thumb: JSON.stringify(new Drawing.Layer.Checkpoint(thumb)),
+                thumb: JSON.stringify(new Drawing.Layer.Checkpoint(thumb,true)),
                 ctime: drawing.ctime,
                 mtime: Date.now()
             }, function() {
