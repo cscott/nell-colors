@@ -183,6 +183,7 @@ define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/
     hammer.ondrag = function(ev) {
         maybeHaltPlayback();
         if (!isDragging) {
+            removeRecogCanvas();
             // XXX fill in current layer here
             drawing.addCmd(DrawCommand.create_draw_start(drawing.layers.current));
             lastpos.x = lastpos.y = null; // force emit next point
