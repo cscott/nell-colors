@@ -4,7 +4,7 @@
  */
 /*global define:false, console:false, MessageChannel:false, window:false,
          setTimeout:false, clearTimeout:false, navigator:false */
-define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/brushdialog', './src/color', './src/compat', './src/dom', './src/drawcommand', './src/drawing', 'json!./src/fontmetrics.json', './src/funf', './src/gallery', './lib/hammer', './src/layer', './src/postmessage', './src/prandom!', './src/recog', './src/sound', './src/sync', './src/version', './lib/BlobBuilder', './lib/FileSaver', 'font!custom,families:[Delius,DejaVu LGC Sans Book],urls:[fonts/style.css]'], function(require, document, /*audioMap,*/ Brush, BrushDialog, Color, Compat, Dom, DrawCommand, Drawing, FontMetrics, Funf, Gallery, Hammer, Layer, postMessage, prandom, Recog, Sound, Sync, version, BlobBuilder, saveAs) {
+define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/brushdialog', './src/color', './src/compat', './src/dom', './src/drawcommand', './src/drawing', 'json!./src/fontmetrics.json', './src/funf', './src/gallery', './lib/hammer', './src/layer', './src/lzw', './src/postmessage', './src/prandom!', './src/recog', './src/sound', './src/sync', './src/version', './lib/BlobBuilder', './lib/canvas-toBlob', './lib/FileSaver', 'font!custom,families:[Delius,DejaVu LGC Sans Book],urls:[fonts/style.css]'], function(require, document, /*audioMap,*/ Brush, BrushDialog, Color, Compat, Dom, DrawCommand, Drawing, FontMetrics, Funf, Gallery, Hammer, Layer, LZW, postMessage, prandom, Recog, Sound, Sync, version, BlobBuilder, canvasToBlob, saveAs) {
     'use strict';
     // Android browser doesn't support MessageChannel
     // -- however, it also has a losing canvas. so don't worry too much.
@@ -444,17 +444,54 @@ define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/
         recog_reset();
         maybeSyncDrawing();
     };
-    var doSave = function() {
+    var doSave = function(asPlainText) {
         var json = JSON.stringify(drawing, null, 1);
+        var mimetype, filename;
         var blob, blobUrl;
-        try {
-            blob = new window.Blob([json], {type:"text/plain;charset=ascii"});
-        } catch (e) {
-            var bb = new BlobBuilder();
-            bb.append(json);
-            blob = bb.getBlob("text/plain;charset=ascii");
+        if (asPlainText) {
+            mimetype = "text/plain;charset=ascii";
+            filename = 'drawing.json';
+            try {
+                blob = new window.Blob([json], {type: mimetype});
+            } catch (e) {
+                var bb = new BlobBuilder();
+                bb.append(json);
+                blob = bb.getBlob(mimetype);
+            }
+            saveAs(blob, 'drawing.json');
+        } else {
+            // hack: encode json as a PNG so that we can export it from
+            // android (!)
+            mimetype = 'image/png';
+            filename = 'drawing-json.png';
+            var bytes = LZW.encode(json, true/* to utf8 */);
+            // stick in an extra byte to indicate exact length
+            bytes = String.fromCharCode((bytes.length+1) % 3) + bytes;
+            var size = Math.ceil(Math.sqrt(bytes.length/3));
+            var c = document.createElement('canvas');
+            var ctxt = c.getContext('2d');
+            var createImageData= ctxt.createImageDataHD || ctxt.createImageData;
+            // some shenanigans to ensure that HD image has enough pixels.
+            var idata = createImageData.call(ctxt, 100, 1);
+            var scale = idata.width/100;
+            c.width = Math.ceil(size/scale);
+            c.height = Math.ceil(bytes.length/(3*scale*size));
+            idata = createImageData.call(ctxt, c.width, c.height);
+            console.assert(idata.width*idata.height*3 >= bytes.length);
+            var i;
+            for (i=0; i < bytes.length/3; i++) {
+                idata.data[i*4+0] = bytes.charCodeAt(i*3+0) || 0;
+                idata.data[i*4+1] = bytes.charCodeAt(i*3+1) || 0;
+                idata.data[i*4+2] = bytes.charCodeAt(i*3+2) || 0;
+                idata.data[i*4+3] = 255; // avoid problems w/ premult alpha
+            }
+            var putImageData = ctxt.putImageDataHD || ctxt.putImageData;
+            putImageData.call(ctxt, idata, 0, 0);
+            var toBlobHD = c.toBlob || c.toBlobHD;
+            blob = toBlobHD.call(c, function(blob) {
+                saveAs(blob, filename);
+            }, mimetype);
         }
-        saveAs(blob, 'drawing.json');
     };
     var doSave1 = function() {
         console.log('saving', drawing.uuid);
