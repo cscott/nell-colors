@@ -58,7 +58,7 @@ iframe {
     height: 30px;
     border: none;
     opacity: 0.9;
-    &:hover {
+    &:hover, &.hover {
       opacity: 1.0;
     }
     &.play {
@@ -87,7 +87,7 @@ iframe {
       @include border-radius(50%);
       background: currentColor;
       opacity: 1; /* work around a webkit bug */
-      &:hover { border-color: #fff; }
+      &:hover, &.hover { border-color: #fff; }
       &:before {
         @extend %maxed;
         @include border-radius(50%);
@@ -109,6 +109,11 @@ iframe {
       background-image: image-url('document-save.svg');
       @extend %svg-icon;
     }
+    &.trash {
+      @extend %svg-icon;
+      background-image: image-url('trash.svg');
+      @include background-size(150%);
+    }
   }
 
   .swatch {
@@ -125,7 +130,7 @@ iframe {
     &.red { border-left: 2px solid #a6a6a6; }
     &.black { border-right: 2px solid #a6a6a6; }
 
-    &:hover {
+    &:hover, &.hover {
       border-color: #ddd;
     }
     &:after {

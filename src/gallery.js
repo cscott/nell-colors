@@ -3,7 +3,7 @@
   trailing:true, es5:true
  */
 /*global define:false, console:false, document:false, window:false */
-define(['domReady!','./compat','./sync'], function(document, Compat, Sync) {
+define(['domReady!','./compat','../lib/hammer', './sync'], function(document, Compat, Hammer, Sync) {
     var firstGallery = true;
 
     var Gallery = function(funf) {
@@ -24,11 +24,38 @@ define(['domReady!','./compat','./sync'], function(document, Compat, Sync) {
             a.href='#'; // for iOS
             a.className = uuid;
             a.textContent = uuid; // hidden by thumbnail (if present)
-            a.addEventListener('click', function(event) {
-                event.preventDefault();
-                this._callback(uuid);
-            }.bind(this));
             this.domElement.appendChild(a);
+            var hammer = new Hammer(a, {
+                prevent_default: true,
+                transform: false,
+                tap_double: false,
+                apply_hover: true
+            });
+            hammer.ontap = function(event) {
+                this._callback(uuid);
+            }.bind(this);
+
+            if (uuid === 'new') { return; }
+
+            hammer.ondragstart = function(event) {
+                // ensure this thumb stays on top
+                a.style.zIndex = 99;
+            };
+            hammer.ondrag = function(event) {
+                var t = Math.round(event.distanceX)+'px,'+
+                    Math.round(event.distanceY)+'px';
+                a.style.WebkitTransform = 'translate3d('+t+',0)';
+                a.style.MozTransform = a.style.transform = 'translate('+t+')';
+            };
+            hammer.ondragend = function(event) {
+                a.style.WebkitTransform =
+                    a.style.MozTransform =
+                    a.style.transform = null;
+                a.style.zIndex = null;
+            };
+            hammer.onhold = function(event) {
+                console.log('hold');
+            };
             // decode thumbnail
             if (thumbnails[idx]) {
                 thumbnails[idx](function(canvas) {

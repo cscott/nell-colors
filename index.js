@@ -213,4 +213,6 @@ define(['domReady!', './src/dom', './src/nodefault'], function(document, Dom, no
     layer.classList.add('dev-only');
     save.classList.add('dev-only');
 
+    // add gallery icons
+    var trash = addButton('trash', 'right', 'gallery');
 });

@@ -36,7 +36,8 @@ body.dev #framerate {
   display: block;
 }
 .gallery {
-  overflow-y: scroll;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   & > a {
     @include inline-block;
     /* This width/height should match THUMB_WIDTH/THUMB_HEIGHT in drawing.js */
@@ -45,7 +46,12 @@ body.dev #framerate {
     margin: 10px;
     vertical-align: middle;
     @include box-shadow(3px 3px 10px rgba(0,0,0,0.5));
+    &:hover, &.hover {
+      @include box-shadow(2px 2px 5px rgba(0,0,0,0.5));
+      left: 1px; top: 1px;
+    }
     position: relative; /* position reference for nested canvas */
+    -webkit-transform: translate3d(0,0,0); /*workaround for safari scroll bug*/
     & > canvas {
       @extend %maxed;
       background: white; /* hide UUID text */
