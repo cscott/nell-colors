@@ -3,7 +3,7 @@
   trailing:true, es5:true
  */
 /*global define:false, console:false, window:false */
-define(['domReady!', './src/dom', './lib/hammer'], function(document, Dom, Hammer) {
+define(['domReady!', './src/dom', './src/nodefault'], function(document, Dom, noDefault) {
     'use strict';
     Dom.insertMeta(document);
     if (document.body.classList.contains('dev')) {
@@ -135,11 +135,12 @@ define(['domReady!', './src/dom', './lib/hammer'], function(document, Dom, Hamme
 
     var addButton = function(className, group, mode) {
         var parent;
-        var span = document.createElement('span');
-        span.classList.add('icon');
-        span.classList.add(className);
+        var a = document.createElement('a');
+        a.href='#';
+        a.classList.add('icon');
+        a.classList.add(className);
         if (typeof(mode)==='string') { mode = [ mode ]; }
-        mode.forEach(function(m) { span.classList.add('mode-'+m); });
+        mode.forEach(function(m) { a.classList.add('mode-'+m); });
         if (group) {
             parent = toolbarButtons.querySelector('.group.'+group);
             if (!parent) {
@@ -151,15 +152,18 @@ define(['domReady!', './src/dom', './lib/hammer'], function(document, Dom, Hamme
         } else {
             parent = toolbarButtons;
         }
-        parent.appendChild(span);
-        // use Hammer instead of 'click' handler for good response time
-        // (see http://code.google.com/mobile/articles/fast_buttons.html )
-        var h = new Hammer(span, { prevent_default: true,
-                                   drag: false, transform: false });
-        h.ontap = function() {
+        parent.appendChild(a);
+        // use standard 'click' event to get nice feedback on android
+        // even if button response is fractionally slower.
+        // use noDefault() so that we don't navigate to the href!
+        a.addEventListener('click', noDefault(function(event) {
             sendToolbarEvent({ type: className+'Button' });
-        };
-        return span;
+        }), false);
+        // disable the context menu and other default handlers for href anchors
+        ['dblclick','contextmenu'].forEach(function(evname) {
+            a.addEventListener(evname, noDefault(), false);
+        });
+        return a;
     };
     var undo = addButton('undo', 'left', 'drawing');
     var redo = addButton('redo', 'left', 'drawing');
@@ -169,24 +173,25 @@ define(['domReady!', './src/dom', './lib/hammer'], function(document, Dom, Hamme
     var brush = addButton('brush', 'center', ['drawing','brushdialog']);
 
     var addSwatch = function(colorName) {
-        var span = document.createElement('span');
-        span.classList.add('swatch');
-        span.classList.add(colorName);
-        span.classList.add('mode-drawing');
-        span.classList.add('mode-brushdialog');
-        toolbarButtons.querySelector('.group.center').appendChild(span);
-        return span;
+        var a = document.createElement('a');
+        a.href='#';
+        a.classList.add('swatch');
+        a.classList.add(colorName);
+        a.classList.add('mode-drawing');
+        a.classList.add('mode-brushdialog');
+        toolbarButtons.querySelector('.group.center').appendChild(a);
+        return a;
     };
     var colors = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo',
                   'violet', 'white', 'brown', 'black'];
     var color_buttons = colors.map(function(c) { return addSwatch(c); });
     color_buttons.forEach(function(cb, i) {
         var colorName = colors[i];
-        var h = new Hammer(cb, { prevent_default: true,
-                                 drag: false, transform: false });
-        h.ontap = function() {
+        cb.addEventListener('click', noDefault(function(event) {
             sendToolbarEvent({ type:'swatchButton', color: colorName });
-        };
+        }), false);
+        cb.addEventListener('contextmenu', noDefault(), false);
+        cb.addEventListener('dblclick', noDefault(), false);
     });
 
     updateSwatchOpacity = function(opacityValue) {
@@ -208,20 +213,4 @@ define(['domReady!', './src/dom', './lib/hammer'], function(document, Dom, Hamme
     layer.classList.add('dev-only');
     save.classList.add('dev-only');
 
-    // allow dragging the toolbar left and right
-    if (false) { // temporarily disable
-    var hammer = new Hammer(toolbar, {
-        prevent_default: false,
-        drag_vertical: false,
-        transform: false
-    });
-    var toolbarOffset = 0, toolbarOffsetStart = 0;
-    hammer.ondragstart = function(ev) {
-        toolbarOffsetStart = toolbarOffset;
-    };
-    hammer.ondrag = function(ev) {
-        toolbarOffset = Math.min(0, toolbarOffsetStart + ev.distanceX);
-        toolbarButtons.style.left = toolbarOffset+"px";
-    };
-    }
 });
