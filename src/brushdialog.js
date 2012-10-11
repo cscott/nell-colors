@@ -3,14 +3,11 @@
   trailing:true, es5:true, globalstrict:true
  */
 /*global define:false, console:false, document:false, window:false */
-define(['domReady!', 'text!./brushdialog.html', './brush', './color', './colorwheel', './coords', './compat', './drawcommand', './hslcolor', './iscroll', './layer', './slider'], function(document, innerhtml, Brush, Color, ColorWheel, Coords, Compat, DrawCommand, HSLColor, iScroll, Layer, Slider) {
-    var noDefault = function(f) {
-        return function(event) {
-            event.preventDefault(); /* don't change history on click */
-            f(event);
-        };
-    };
+define(['domReady!', 'text!./brushdialog.html', './brush', './color', './colorwheel', './coords', './compat', './drawcommand', './hslcolor', './iscroll', './layer', './nodefault', './slider'], function(document, innerhtml, Brush, Color, ColorWheel, Coords, Compat, DrawCommand, HSLColor, iScroll, Layer, noDefault, Slider) {
 
+    /* Implement a brush and color options pane. */
+
+    // brush preview widget
     var BrushPreview = function(domElement) {
         this.domElement = domElement;
         this.width = this.domElement.clientWidth;
@@ -61,6 +58,7 @@ define(['domReady!', 'text!./brushdialog.html', './brush', './color', './colorwh
      * have different <input> ids. */
     var cnt=0;
 
+    // brush and color options dialog
     var BrushDialog = function(brushpane, hidePaneSwitcher) {
         this.id = (cnt++); /* unique for each BrushDialog */
         this.brushpane = brushpane;
