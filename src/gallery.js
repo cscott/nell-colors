@@ -149,6 +149,12 @@ define(['domReady!','./compat','./coords','../lib/hammer', './sync'], function(d
         // make "new document" element
         addUUID('new', -1);
     };
+    Gallery.prototype.trash = function(uuid) {
+        Sync['delete'].call(Sync, uuid, function() {
+            var a = this.domElement.querySelector('a.'+uuid);
+            this.domElement.removeChild(a);
+        }.bind(this));
+    };
     Gallery.prototype.wait = function(callback) {
         // register callback
         this._callback = callback;

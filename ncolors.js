@@ -50,6 +50,7 @@ define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/
 
     var maybeRequestAnim, removeRecogCanvas;
     var updateToolbarBrush, replaceDrawing, maybeSyncDrawing;
+    var doTrash = null;
 
     var recog_timer_id = null;
     // cancel any running recog timer (ie, if stroke in progress)
@@ -614,6 +615,9 @@ define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/
         case 'saveButton':
             doSave();
             break;
+        case 'trashDrop':
+            if (doTrash) { doTrash(msg.uuid); }
+            break;
         default:
             console.warn("Unexpected child toolbar message", evt);
             break;
@@ -731,8 +735,12 @@ define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/
             gallery.wait(function(uuid) {
                 // hide the gallery and load the new drawing
                 document.body.removeChild(gallery.domElement);
+                doTrash = null;
                 loadDrawing(uuid, callback);
             });
+            doTrash = function(uuid) {
+                gallery.trash(uuid);
+            };
             document.body.appendChild(gallery.domElement);
             toolbarPort.postMessage(JSON.stringify({
                 type: 'toolbar-mode-switch',
@@ -771,7 +779,7 @@ define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/
         if (uuid === drawing.uuid) { return; /* already loaded */ }
         // Load new document.
         notifyParentHash(document.location.hash, true, uuid);
-        Gallery.abort();
+        Gallery.abort(); doTrash = null;
         loadDrawing(uuid, replaceDrawing);
     };
     window.addEventListener('hashchange', onHashChange, false);
