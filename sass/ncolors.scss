@@ -50,8 +50,11 @@ body.dev #framerate {
       @include box-shadow(2px 2px 5px rgba(0,0,0,0.5));
       left: 1px; top: 1px;
     }
+    &.dragging {
+      opacity: 0.3;
+    }
     position: relative; /* position reference for nested canvas */
-    -webkit-transform: translate3d(0,0,0); /*workaround for safari scroll bug*/
+    @include translate3d(0,0,0); /*workaround for safari scroll bug*/
     & > canvas {
       @extend %maxed;
       background: white; /* hide UUID text */

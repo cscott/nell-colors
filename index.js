@@ -3,7 +3,7 @@
   trailing:true, es5:true
  */
 /*global define:false, console:false, window:false */
-define(['domReady!', './src/dom', './src/nodefault'], function(document, Dom, noDefault) {
+define(['domReady!', './src/coords', './src/dom', './lib/hammer', './src/nodefault'], function(document, Coords, Dom, Hammer, noDefault) {
     'use strict';
     Dom.insertMeta(document);
     if (document.body.classList.contains('dev')) {
@@ -12,11 +12,93 @@ define(['domReady!', './src/dom', './src/nodefault'], function(document, Dom, no
     }
     var toolbar = document.getElementById('toolbar');
     var toolbarMode = 'no-mode';
-    var updateSwatchOpacity, updateBrushColor;
+    var updateSwatchOpacity, updateBrushColor, sendToolbarEvent;
+    var _makeSetter = function(param, func) {
+        return function(newValue) {
+            if (this[param] === newValue) { return; }
+            this[param] = newValue;
+            func.call(this, newValue);
+        };
+    };
+    var _classSet = function(elem, className, isPresent) {
+        if (isPresent) {
+            elem.classList.add(className);
+        } else {
+            elem.classList.remove(className);
+        }
+    };
+    var dragShadow = {
+        shown: false,
+        dragging: false,
+        captureEvents: true,
+        targetDropping: false,
+        x: 0,
+        y: 0,
+        elem: document.createElement('div'),
+        hammer: null,
+        uuid: null,
+        setVisible: _makeSetter('shown', function(isVisible) {
+            _classSet(this.elem, 'visible', isVisible);
+        }),
+        setCapture: _makeSetter('captureEvents', function(captureEvents) {
+            this.elem.style.pointerEvents = captureEvents ? null : 'none';
+        }),
+        setDragging: _makeSetter('isDragging', function(isDragging) {
+            _classSet(this.elem, 'dragging', isDragging);
+        }),
+        setThumb: _makeSetter('thumb', function(newThumb) {
+            this.elem.style.backgroundImage = newThumb ?
+                ("url('"+newThumb+"')") : null;
+        }),
+        setTargetDropping: _makeSetter('targetDropping', function(isDropping) {
+            _classSet(this.target.elem, 'dropping', isDropping);
+        }),
+        updateTarget: function() {
+            var target = document.querySelector('.icon.trash');
+            var tl = Coords.getAbsolutePosition(target);
+            this.target = {
+                elem: target,
+                x: tl.x, y: tl.y,
+                width: target.offsetWidth,
+                height: target.offsetHeight
+            };
+
+            var wrapper = document.getElementById('wrapper');
+            var offset = Coords.getAbsolutePosition(wrapper);
+            this.source = {
+                x: offset.x, y: offset.y,
+                width: this.elem.offsetWidth,
+                height: this.elem.offsetHeight
+            };
+        },
+        move: function(x, y) {
+            var t = Math.round(x)+'px,'+Math.round(y)+'px';
+            this.elem.style.WebkitTransform = 'translate3d('+t+',0)';
+            this.elem.style.MozTransform = this.elem.style.transform =
+                'translate('+t+')';
+            // figure out if the dragShadow overlaps trash can
+            // (this.min.x < other.max.x && this.max.x > other.min.x) etc
+            var overlaps =
+                ((this.source.x+x < this.target.x+this.target.width) &&
+                 (this.source.y+y < this.target.y+this.target.height) &&
+                 (this.source.x+x+this.source.width > this.target.x) &&
+                 (this.source.y+y+this.source.height > this.target.y));
+            this.setTargetDropping(overlaps);
+        },
+        drop: function() {
+            var onTarget = this.targetDropping;
+            this.setVisible(false);
+            this.setTargetDropping(false);
+            this.setDragging(false);
+            if (onTarget) {
+                sendToolbarEvent({ type:'trashDrop', uuid: this.uuid });
+            }
+        }
+    };
 
     var appIframe = document.createElement('iframe');
     var toolbarPort = null;
-    var sendToolbarEvent = function(msg) {
+    sendToolbarEvent = function(msg) {
         if (!toolbarPort) { return; /* not loaded yet */ }
         toolbarPort.postMessage(JSON.stringify(msg));
     };
@@ -34,6 +116,26 @@ define(['domReady!', './src/dom', './src/nodefault'], function(document, Dom, no
             toolbar.classList.remove(toolbarMode);
             toolbarMode = msg.mode;
             toolbar.classList.add(toolbarMode);
+            break;
+        case 'drag-shadow':
+            if (dragShadow.isDragging && !msg.show) {
+                // active drag moved off underlying element; ignore
+                break;
+            }
+            dragShadow.updateTarget();
+            dragShadow.uuid = msg.uuid;
+            dragShadow.x = msg.x; dragShadow.y = msg.y;
+            dragShadow.move(dragShadow.x, dragShadow.y);
+            dragShadow.setDragging(!!msg.dragging);
+            dragShadow.setCapture(!!msg.captureEvents);
+            dragShadow.setThumb(msg.thumb || null);
+            dragShadow.setVisible(!!msg.show);
+            break;
+        case 'drag-shadow-move':
+            dragShadow.move(dragShadow.x + msg.x, dragShadow.y + msg.y);
+            break;
+        case 'drag-shadow-drop':
+            dragShadow.drop();
             break;
         case 'color':
             // update color of swatch in toolbar
@@ -130,6 +232,25 @@ define(['domReady!', './src/dom', './src/nodefault'], function(document, Dom, no
     appIframe.src='ncolors.html'+document.location.hash;
     appWrapper.appendChild(appIframe);
 
+    // add drag shadow
+    appWrapper.appendChild(dragShadow.elem);
+    dragShadow.elem.id = 'dragshadow';
+    dragShadow.hammer = new Hammer(dragShadow.elem, {
+        prevent_default: true,
+        transform: false,
+        tap_double: false
+    });
+    dragShadow.hammer.ondragstart = function(event) {
+        dragShadow.setDragging(true);
+    };
+    dragShadow.hammer.ondrag = function(event) {
+        dragShadow.move(dragShadow.x + event.distanceX,
+                        dragShadow.y + event.distanceY);
+    };
+    dragShadow.hammer.ondragend = function(event) {
+        dragShadow.drop();
+    };
+
     // add toolbar buttons.
     var toolbarButtons = document.getElementById('toolbarButtons');
 
@@ -215,4 +336,36 @@ define(['domReady!', './src/dom', './src/nodefault'], function(document, Dom, no
 
     // add gallery icons
     var trash = addButton('trash', 'right', 'gallery');
+    trash.setAttribute('dropzone', 'move string:text/x-nell-colors');
+    trash.addEventListener('dragenter', function(event) {
+        var i; // look through the various items available to drop.
+        for (i=0; i<event.dataTransfer.items.length; i++) {
+            var item = event.dataTransfer.items[i];
+            if (item.type === 'text/x-nell-colors') {
+                event.preventDefault(); // allow this drop
+                trash.classList.add('dropping');
+                return;
+            }
+        }
+    }, false);
+    trash.addEventListener('dragover', noDefault(function(event) {
+        event.dataTransfer.dropEffect = 'move';
+    }), false);
+    trash.addEventListener('dragleave', noDefault(function(event) {
+        trash.classList.remove('dropping');
+    }), false);
+    trash.addEventListener('drop', function(event) {
+        var i;
+        trash.classList.remove('dropping');
+        for (i=0; i<event.dataTransfer.items.length; i++) {
+            var item = event.dataTransfer.items[i];
+            if (item.type === 'text/x-nell-colors') {
+                item.getAsString(function(uuid) {
+                    sendToolbarEvent({ type:'trashDrop', uuid: uuid });
+                });
+                return;
+            }
+        }
+    }, false);
+
 });

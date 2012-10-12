@@ -3,13 +3,21 @@
   trailing:true, es5:true
  */
 /*global define:false, console:false, document:false, window:false */
-define(['domReady!','./compat','../lib/hammer', './sync'], function(document, Compat, Hammer, Sync) {
+define(['domReady!','./compat','./coords','../lib/hammer', './sync'], function(document, Compat, Coords, Hammer, Sync) {
     var firstGallery = true;
 
-    var Gallery = function(funf) {
+    var useNativeDnD = ('ondragstart' in document.createElement('a'));
+    // might have to use browser sniffing (sigh) to identify browsers
+    // on which we can't rely on the native DnD support, since
+    // Firefox/Android (at least) implements ondragstart, it just
+    // never invokes it.  But at the moment the touch support on
+    // Firefox/Android works fine even if we register ondragstart.
+
+    var Gallery = function(funf, toolbarPort) {
         this.domElement = document.createElement('div');
         this.domElement.classList.add('gallery');
         this.funf = funf;
+        this.toolbarPort = toolbarPort;
         this.first = firstGallery;
         firstGallery = false;
         // start populating with thumbnails
@@ -19,57 +27,121 @@ define(['domReady!','./compat','../lib/hammer', './sync'], function(document, Co
     Gallery.prototype._populate = function(uuids, thumbnails) {
         // record number of thumbnails via funf
         this.funf.record('gallery', { drawings: uuids.length });
+        var toolbarPort = this.toolbarPort;
         var addUUID = function(uuid, idx) {
             var a = document.createElement('a');
-            a.href='#'; // for iOS
+            a.href='./#' + uuid; // for iOS
             a.className = uuid;
             a.textContent = uuid; // hidden by thumbnail (if present)
             this.domElement.appendChild(a);
-            var hammer = new Hammer(a, {
-                prevent_default: true,
-                transform: false,
-                tap_double: false,
-                apply_hover: true
-            });
-            hammer.ontap = function(event) {
+            a.addEventListener('click', function(event) {
+                event.preventDefault();
                 this._callback(uuid);
-            }.bind(this);
+            }.bind(this), false);
+            a.addEventListener('contextmenu', function(event) {
+                event.preventDefault();
+            }, false);
+
+            // make bookmarkable URL for this document
+            var url = document.URL.
+                // strip document hash and 'ncolors.html'
+                replace(/#[^#]*$/, '').replace(/[\/][^\/]*$/, '') +
+                // add uuid for this document.
+                '/#' + uuid;
+            a.addEventListener('dragstart', function(event) {
+                if (uuid==='new') { event.preventDefault(); return; }
+                event.dataTransfer.items.add(uuid, 'text/x-nell-colors');
+                event.dataTransfer.items.add(url, 'text/uri-list');
+                event.dataTransfer.items.add(url, 'text/plain');
+                a.classList.add('dragging');
+            }, false);
+            a.addEventListener('dragend', function(event) {
+                a.classList.remove('dragging');
+            }, false);
 
             if (uuid === 'new') { return; }
 
+            a.draggable = true;
+
+            var thumbUrl;
+            var raiseDragShadow = function(isTouch) {
+                var bbInner = Coords.getAbsolutePosition(a);
+                toolbarPort.postMessage(JSON.stringify({
+                    type: 'drag-shadow',
+                    uuid: uuid,
+                    show: true,
+                    dragging: isTouch,
+                    x: bbInner.x,
+                    y: bbInner.y,
+                    thumb: thumbUrl,
+                    captureEvents: !isTouch
+                }));
+            };
+            if (!useNativeDnD) {
+                var that = this;
+                a.addEventListener('mouseover', function(event) {
+                    raiseDragShadow(false);
+                }, false);
+                a.addEventListener('mouseout', function(event) {
+                    var related = event.relatedTarget, target = this;
+                    // For mousenter/leave call the handler if related is
+                    // outside the target.
+                    // NB: No relatedTarget if the mouse left/entered the
+                    // browser window
+                    if (!related ||
+                        (related !== target && !target.contains(related))) {
+                        // emualate mouseleave event
+                        toolbarPort.postMessage(JSON.stringify({
+                            type: 'drag-shadow',
+                            uuid: uuid,
+                            show: false,
+                        }));
+                    }
+                }, false);
+            }
+            var hammer = new Hammer(a, {
+                only_touch: true,
+                apply_hover: true,
+                prevent_default: true,
+                css_hacks: false,
+                drag_min_distance: 5,
+                transform: false,
+                tap: false,
+                tap_double: false,
+                hold: false
+            });
             hammer.ondragstart = function(event) {
-                // ensure this thumb stays on top
-                a.style.zIndex = 99;
+                raiseDragShadow(true/*is touch*/);
             };
             hammer.ondrag = function(event) {
-                var t = Math.round(event.distanceX)+'px,'+
-                    Math.round(event.distanceY)+'px';
-                a.style.WebkitTransform = 'translate3d('+t+',0)';
-                a.style.MozTransform = a.style.transform = 'translate('+t+')';
+                toolbarPort.postMessage(JSON.stringify({
+                    type: 'drag-shadow-move',
+                    x: event.distanceX,
+                    y: event.distanceY
+                }));
             };
             hammer.ondragend = function(event) {
-                a.style.WebkitTransform =
-                    a.style.MozTransform =
-                    a.style.transform = null;
-                a.style.zIndex = null;
+                toolbarPort.postMessage(JSON.stringify({
+                    type: 'drag-shadow-drop'
+                }));
             };
-            hammer.onhold = function(event) {
-                console.log('hold');
-            };
+
             // decode thumbnail
             if (thumbnails[idx]) {
                 thumbnails[idx](function(canvas) {
                     a.appendChild(canvas);
-                    // log thumbnail to funf when we first start
-                    if (this.first) {
+                    window.setTimeout(function() {
+                        // convert to jpeg in timeout so we don't delay the
+                        // initial appearance of the gallery thumbs
+                        thumbUrl = canvas.toDataURL('image/jpeg');
+                        // log thumbnail to funf when we first start
                         // each thumbnail is 16k when a PNG; half that as a JPEG
                         // to save space we don't use toDataURLHD here
-                        var dataUrl = (canvas.toDataURL ?
-                                       canvas.toDataURL('image/jpeg') :
-                                       null);
-                        this.funf.record('thumb', { uuid: uuid,
-                                                    data: dataUrl });
-                    }
+                        if (this.first) {
+                            this.funf.record('thumb', { uuid: uuid,
+                                                        data: thumbUrl });
+                        }
+                    }.bind(this), 100);
                 }.bind(this));
             }
         }.bind(this);

@@ -9,7 +9,8 @@
   content: "";
 }
 
-html,body { width:100%; height:100%; margin:0px; border:none;}
+html,body { width:100%; height:100%; margin:0px; border:none; }
+body { overflow: hidden; }
 iframe {
   @extend %maxed;
   border: none;
@@ -113,6 +114,14 @@ iframe {
       @extend %svg-icon;
       background-image: image-url('trash.svg');
       @include background-size(150%);
+      //background-image: image-url('trash-man.svg');
+      //@include background-size(115%);
+      &.dropping {
+        opacity:1;
+        background-color: #888;
+        @include border-radius(5px);
+        @include box-shadow(0 0 30px white);
+      }
     }
   }
 
@@ -187,6 +196,25 @@ body.dev {
   }
 }
 
+#dragshadow {
+  position: absolute; top: 0; left: 0;
+  width: 160px; height: 120px;
+  border: 2px solid #ccc;
+  @include translate3d(0,0,0);
+  &.visible.dragging {
+    background: white;
+    opacity: 0.3;
+  }
+  /* animation: fade out, pop in */
+  visibility: hidden;
+  opacity: 0;
+  @include transition(visibility 0s linear 0.5s, opacity 0.5s);
+  &.visible {
+    visibility: visible;
+    @include transition-duration(0s);
+    @include transition-delay(0s);
+  }
+}
 #splash {
   @extend %maxed;
   background-color: #8594FF; // original splash screen background was #85fdff

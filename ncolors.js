@@ -727,7 +727,7 @@ define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/
             break;
         case '':
         case 'gallery':
-            gallery = new Gallery(funf);
+            gallery = new Gallery(funf, toolbarPort);
             gallery.wait(function(uuid) {
                 // hide the gallery and load the new drawing
                 document.body.removeChild(gallery.domElement);
