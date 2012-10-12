@@ -9,7 +9,8 @@ define(['domReady!', './lib/BlobBuilder', './lib/FileSaver', 'font!custom,famili
     // measure a fixed size of font, which we'll scale when we blit to
     // fit the users bounding box
     var FONT_SIZE="100px";
-    var BBOX_SIZE=150;
+    var BBOX_SIZE=175;
+    var TEXT_BASELINE='alphabetic';
     // outline widths
     var OUTER_OUTLINE = 6;
     var INNER_OUTLINE = 3;
@@ -24,7 +25,7 @@ define(['domReady!', './lib/BlobBuilder', './lib/FileSaver', 'font!custom,famili
         var ctxt = canvas.getContext('2d');
         ctxt.font = FONT_SIZE+' Delius';
         ctxt.textAlign="center";
-        ctxt.textBaseline="middle";
+        ctxt.textBaseline=TEXT_BASELINE;
         ctxt.save();
         ctxt.translate(canvas.width/2, canvas.height/2);
         ctxt.strokeStyle='white';
@@ -84,7 +85,7 @@ define(['domReady!', './lib/BlobBuilder', './lib/FileSaver', 'font!custom,famili
     var json = {
         font: FONT_SIZE+' Delius',
         textAlign: 'center',
-        textBaseline: 'middle',
+        textBaseline: TEXT_BASELINE,
         outerOutline: OUTER_OUTLINE,
         innerOutline: INNER_OUTLINE
     };
