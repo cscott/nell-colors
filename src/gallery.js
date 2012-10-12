@@ -31,7 +31,7 @@ define(['domReady!','./compat','./coords','../lib/hammer', './sync'], function(d
         var addUUID = function(uuid, idx) {
             var a = document.createElement('a');
             a.href='./#' + uuid; // for iOS
-            a.className = uuid;
+            a.className = 'UUID-' + uuid; // class must start with [_a-zA-Z]
             a.textContent = uuid; // hidden by thumbnail (if present)
             this.domElement.appendChild(a);
             a.addEventListener('click', function(event) {
@@ -106,10 +106,15 @@ define(['domReady!','./compat','./coords','../lib/hammer', './sync'], function(d
                 css_hacks: false,
                 drag_min_distance: 5,
                 transform: false,
-                tap: false,
                 tap_double: false,
                 hold: false
             });
+            hammer.ontap = function(event) {
+                // needed on touch platforms, since prevent default prevents
+                // both scrolling during drag (which we need) and the click
+                // event (which we'd like to have, oh well)
+                this._callback(uuid);
+            }.bind(this);
             hammer.ondragstart = function(event) {
                 raiseDragShadow(true/*is touch*/);
             };
@@ -151,7 +156,7 @@ define(['domReady!','./compat','./coords','../lib/hammer', './sync'], function(d
     };
     Gallery.prototype.trash = function(uuid) {
         Sync['delete'].call(Sync, uuid, function() {
-            var a = this.domElement.querySelector('a.'+uuid);
+            var a = this.domElement.querySelector('a.UUID-'+uuid);
             this.domElement.removeChild(a);
         }.bind(this));
     };

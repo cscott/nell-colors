@@ -116,6 +116,7 @@ iframe {
       @include background-size(150%);
       //background-image: image-url('trash-man.svg');
       //@include background-size(115%);
+      opacity: 0.4; // darker than usual
       &.dropping {
         opacity:1;
         background-color: #888;

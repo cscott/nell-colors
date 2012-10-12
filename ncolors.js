@@ -615,6 +615,9 @@ define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/
         case 'saveButton':
             doSave();
             break;
+        case 'trashButton':
+            /* ignore; this button is meant to be dropped not clicked */
+            break;
         case 'trashDrop':
             if (doTrash) { doTrash(msg.uuid); }
             break;

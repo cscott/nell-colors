@@ -65,7 +65,7 @@ body.dev #framerate {
       @include box-shadow(inset  5px  5px 30px rgba(255,255,255,0.25),
                           inset -5px -5px 20px rgba(  0,  0,  0,0.15));
     }
-    &.new:after {
+    &.UUID-new:after {
       @extend %maxed;
       background-image: image-url('list-add.svg');
       @include background-size(50%);
