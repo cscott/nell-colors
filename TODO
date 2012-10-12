@@ -1,25 +1,27 @@
 x add explicit metrics for Delius font so that letters match up optimally.
 x brush selection
 x image thumbnails on gallery page
-delete picture option on gallery page
+x delete picture option on gallery page
 x paintbrush dialog (replace range sliders)
 include a decent # of samples: cat / bat / mat / cab / lion at least!
 x new toolbar order: undo/redo/movie     color/brush/swatches    layers/save
 x four states, "can't play", "can play", "playing", "stopping"
 x swap brush and color pane in dialog
 set undo/redo buttons active appropriately
-'pressed' highlight for touch
+x 'pressed' highlight for touch
 more margin spacing between buttons if toolbar is wide
 update firefox? slowness, crashes =(
 don't try to recognize letters if aspect ratio is way off or stroke is too long
 still not reliably snapshotting tail end of command list; first 'undo' should
  always be fast
+Rotate letters before recognition
+Join overlapping strokes before recognition 
 x hook up funf
 x funf startup
 x funf letters recognized (and prob)
 x funf thumbnails at close
 - funf pause/resume events
-
+- funf Gallery delete Events
 use zynga scroller to pan/scroll main canvas
 canvas size is fixed at creation time to resolution of host display
 check whether canvas size is in CSS pixels or device pixels
@@ -34,7 +36,7 @@ replace scroller in gallery with zynga scroller on touch devices
  - careful about drag interaction
 replace scroller in brush dialog with zynga scroller
 enable contextmenu events if dev class is present on body
-
+Debug Android issue with brush size not reaching 128px
 restore upper case letters?
 merge intersecting strokes
 train network: especially match delius k
