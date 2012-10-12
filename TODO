@@ -1,27 +1,40 @@
-x add explicit metrics for Delius font so that letters match up optimally.
-x brush selection
-x image thumbnails on gallery page
-x delete picture option on gallery page
-x paintbrush dialog (replace range sliders)
-include a decent # of samples: cat / bat / mat / cab / lion at least!
-x new toolbar order: undo/redo/movie     color/brush/swatches    layers/save
-x four states, "can't play", "can play", "playing", "stopping"
-x swap brush and color pane in dialog
-set undo/redo buttons active appropriately
-x 'pressed' highlight for touch
-more margin spacing between buttons if toolbar is wide
-update firefox? slowness, crashes =(
-don't try to recognize letters if aspect ratio is way off or stroke is too long
+Highest priority:
+ - include a decent # of samples: cat / bat / mat / cab / lion at least!
+   pictures of nell?
+    Blockers:
+    - appengine journal support to get drawings off android
+    - enable contextmenu events if dev class is present on body
+    - toggle dev mode persistently if you write 'devel' on canvas
+    - primitive layer support (samples are layer background image?)
+    - some mechanism to prefill gallery with samples (versioned, so we can add
+      new samples over time) keep a persistent 'last version' token and at
+      start up prestuff samples from 'last version' to 'current version' into
+      the datastore before updating last version.  Then maybe lazily
+      instantiate these into the datastore, cloning only on first open.
+      So distinguish "unopened samples" from user art (maybe even visually)
+      Alternatively: two tab journal? Second tab is samples?
+ - update firefox? slowness, crashes =(
+ - funf pause/resume events
+ - funf Gallery delete Events
+ - funf # of strokes in letter (so we can match up undo)
+   maybe just record "stroke #" at various points
+Polish:
+ - set undo/redo buttons active appropriately
+ - more margin spacing between buttons if toolbar is wide
+Recognition:
+ - don't try to recognize letters if aspect ratio is way off or stroke is too long
+ - rotate letters before recognition
+ - join overlapping strokes before recognition
+ - restore upper case letters?
+ - train network: especially match delius k
+
+Other troubling bugs:
 still not reliably snapshotting tail end of command list; first 'undo' should
  always be fast
-Rotate letters before recognition
-Join overlapping strokes before recognition 
-x hook up funf
-x funf startup
-x funf letters recognized (and prob)
-x funf thumbnails at close
-- funf pause/resume events
-- funf Gallery delete Events
+Debug Android issue with brush size not reaching 128px
+firefox back to indexeddb?
+
+Features:
 use zynga scroller to pan/scroll main canvas
 canvas size is fixed at creation time to resolution of host display
 check whether canvas size is in CSS pixels or device pixels
@@ -30,22 +43,31 @@ audit uses of drawImage, esp brush images.  use w,h args.
 layers gain 'background' property which is image or fill color
  - "fill" operation replaced by "create new layer... with this color"
  - drawing commands blit background image on composedCanvas first
-implement "delete picture" by dragging to a trashcan which appears
-  once drag starts
-replace scroller in gallery with zynga scroller on touch devices
- - careful about drag interaction
 replace scroller in brush dialog with zynga scroller
-enable contextmenu events if dev class is present on body
-Debug Android issue with brush size not reaching 128px
-restore upper case letters?
-merge intersecting strokes
-train network: especially match delius k
-
 replace 'play' icon with movie camera
 layers menu
  - select background (camera api)
 eyedropper tool.
 lasso tool
+
+x add explicit metrics for Delius font so that letters match up optimally.
+x brush selection
+x image thumbnails on gallery page
+x delete picture option on gallery page
+x paintbrush dialog (replace range sliders)
+x new toolbar order: undo/redo/movie     color/brush/swatches    layers/save
+x four states, "can't play", "can play", "playing", "stopping"
+x swap brush and color pane in dialog
+x 'pressed' highlight for touch
+x hook up funf
+x funf startup
+x funf letters recognized (and prob)
+x funf thumbnails at close
+x implement "delete picture" by dragging to a trashcan which appears
+  once drag starts
+x replace scroller in gallery with zynga scroller on touch devices
+ - careful about drag interaction
+
 
 x brush rotation:
  x constant increment
@@ -84,7 +106,8 @@ x recognize letters:
 x dump drawings to local storage
   - sync w/ google app engine
 select backgrounds: letter/primer pictures (camera)
-implement gallery (preload with letter images)
+x implement gallery
+- preload with letter images
 lasso strokes and then drag them around -- simple animation
   plays well with layers -- draw background, then draw foreground and drag it
   around
@@ -93,33 +116,36 @@ two pane ui -- text interaction on right?
 
 --
 x implement arbitrary brush images (128x128)
-implement color wheel chooser
-implement image rotation along path
-implement variable brush spacing, brush size
+x implement color wheel chooser
+x implement image rotation along path
+x implement variable brush spacing, brush size
 implement layers (then draggable layers?)
-implement audio snippets
+x implement audio snippets
 zoom canvas, two finger scroll to drag zoomed version
 implement color picker (eyedropper)
 
 --
-audit layers code, ensure that we are snapping drawImage to integer pixel
-locations and that we quantize appropriately when determining spacing (ie,
-don't draw multiple times in the same location quantized location).
+o audit layers code, ensure that we are snapping drawImage to integer pixel
+  locations and that we quantize appropriately when determining spacing (ie,
+  don't draw multiple times in the same location quantized location).
+  [edit: no longer a good idea, device pixels may be > CSS pixels]
 
-Scaling: keep layers code pixel accurate (for above), scale points in higher
-layers. 
+o Scaling: keep layers code pixel accurate (for above), scale points in higher
+  layers. [edit: see new plan above]
 
-Min/max of drawing (aspect ratio) is always fixed to that of original device
-when it was created.  Resolution, too? (If variable resolution, then we should probably keep brush size constant even when zooming in/out.)
+o Min/max of drawing (aspect ratio) is always fixed to that of original device
+  when it was created.  Resolution, too? (If variable resolution, then we
+  should probably keep brush size constant even when zooming in/out.)
+  [edit: see new plan above]
 
-Thumbnails (based on original size?) 120x160 (doubled on iphone?)
+x Thumbnails (based on original size?) 120x160 (doubled on iphone?)
 
-Label size/opacity sliders.
+x Label size/opacity sliders.
 
-Offline web font
-Appcache
+x Offline web font
+x Appcache
 -----
-fix new performance regression on ios w/ lowercase =(
+o fix new performance regression on ios w/ lowercase =(
 
 use "overlapping bounding boxes" as the metric for grouping segments, not time
 
