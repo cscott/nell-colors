@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# 0ab8b1b5937e536aedcfc237060271df  -
+# fb46f483ab7954e21557d2bd153344c3  -
 
 CACHE:
 ./audio/A.webm
@@ -54,6 +54,7 @@ CACHE:
 ./icons/media-playback-stop.svg
 ./icons/media-seek-forward-insensitive.svg
 ./icons/tool-brush.svg
+./icons/trash.svg
 ./icons/up-arrow.svg
 ./icons/view-list.svg
 ./index.html
