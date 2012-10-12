@@ -33,6 +33,11 @@ implement "delete picture" by dragging to a trashcan which appears
 replace scroller in gallery with zynga scroller on touch devices
  - careful about drag interaction
 replace scroller in brush dialog with zynga scroller
+enable contextmenu events if dev class is present on body
+
+restore upper case letters?
+merge intersecting strokes
+train network: especially match delius k
 
 replace 'play' icon with movie camera
 layers menu
