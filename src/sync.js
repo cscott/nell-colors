@@ -148,6 +148,14 @@ define(['./drawing', './lzw', './lawnchair/lawnchair'], function(Drawing, LZW, L
                     wrapUp();
                 } else {
                     getDefault(lawnchair, ''+chunk, null, function(c) {
+                        if (chunk >= drawing.chunks.length) {
+                            // whoops, we're stale!
+                            // XXX clean up written chunks
+                            // bail
+                            callback.call(drawing);
+                        }
+                        // XXX we should check to be sure this chunk's UUID
+                        // still matches what we expect it to be.
                         if (c && c.uuid === drawing.chunks[chunk].uuid) {
                             // all the rest of the chunks are up to date
                             wrapUp();
