@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# 4c42d4814820507c13875eb8a0071dbd  -
+# 704f32a4ad4048e86e7e2b383b3bc011  -
 
 CACHE:
 ./audio/A.webm
@@ -28,8 +28,6 @@ CACHE:
 ./audio/X.webm
 ./audio/Y.webm
 ./audio/Z.webm
-./brushdemo.html
-./brushdemo.js
 ./brushes/brush-tile-129.png
 ./fonts/style.css
 ./icons/checkerboard.svg
@@ -64,15 +62,20 @@ CACHE:
 ./ncolors.html
 ./ncolors.js
 ./require.js
+./samples/balloon.json
 ./samples/castle.json
 ./samples/intro.json
 ./samples/lounge.json
 ./samples/r.json
 ./samples/roger.json
+./samples/stick.json
+./samples/tree.json
 ./src/appcacheui.js
 ./src/recogworker.js
 ./src/worker.js
-./style/brushdemo.css
 ./style/index.css
 ./style/ncolors.css
 ./style/normalize.css
+
+NETWORK:
+*
