@@ -1,13 +1,20 @@
 // window.name code courtesy Remy Sharp: http://24ways.org/2009/breaking-out-the-edges-of-the-browser
 define([], function() { return function(Lawnchair) {
 
-Lawnchair.adapter('window-name', (function(index, store) {
+Lawnchair.adapter('window-name', (function() {
     if (typeof window==='undefined') {
         window = { top: { } }; // node/optimizer compatibility
     }
 
-    var data = window.top.name ? JSON.parse(window.top.name) : {}
-
+    // edited from the original here by elsigh
+    // Some sites store JSON data in window.top.name, but some folks (twitter on iPad)
+    // put simple strings in there - we should make sure not to cause a SyntaxError.
+    var data = {}
+    try {
+        data = JSON.parse(window.top.name)    
+    } catch (e) {}
+    
+    
     return {
 
         valid: function () {
@@ -16,13 +23,14 @@ Lawnchair.adapter('window-name', (function(index, store) {
 
         init: function (options, callback) {
             data[this.name] = data[this.name] || {index:[],store:{}}
-            index = data[this.name].index
-            store = data[this.name].store
+            this.index = data[this.name].index
+            this.store = data[this.name].store
             this.fn(this.name, callback).call(this, this)
+            return this
         },
 
         keys: function (callback) {
-            this.fn('keys', callback).call(this, index)
+            this.fn('keys', callback).call(this, this.index)
             return this
         },
 
@@ -33,9 +41,9 @@ Lawnchair.adapter('window-name', (function(index, store) {
             this.exists(key, function(exists) {
                 if (!exists) {
                     if (obj.key) delete obj.key
-                    index.push(key)
+                    this.index.push(key)
                 }
-                store[key] = obj
+                this.store[key] = obj
                 window.top.name = JSON.stringify(data) // TODO wow, this is the only diff from the memory adapter
                 if (cb) {
                     obj.key = key
@@ -61,10 +69,10 @@ Lawnchair.adapter('window-name', (function(index, store) {
             if (this.isArray(keyOrArray)) {
                 r = []
                 for (var i = 0, l = keyOrArray.length; i < l; i++) {
-                    r.push(store[keyOrArray[i]]) 
+                    r.push(this.store[keyOrArray[i]])
                 }
             } else {
-                r = store[keyOrArray]
+                r = this.store[keyOrArray]
                 if (r) r.key = keyOrArray
             }
             if (cb) this.lambda(cb).call(this, r)
@@ -72,15 +80,15 @@ Lawnchair.adapter('window-name', (function(index, store) {
         },
         
         exists: function (key, cb) {
-            this.lambda(cb).call(this, !!(store[key]))
+            this.lambda(cb).call(this, !!(this.store[key]))
             return this
         },
 
         all: function (cb) {
             var r = []
-            for (var i = 0, l = index.length; i < l; i++) {
-                var obj = store[index[i]]
-                obj.key = index[i]
+            for (var i = 0, l = this.index.length; i < l; i++) {
+                var obj = this.store[this.index[i]]
+                obj.key = this.index[i]
                 r.push(obj)
             }
             this.fn(this.name, cb).call(this, r)
@@ -90,8 +98,11 @@ Lawnchair.adapter('window-name', (function(index, store) {
         remove: function (keyOrArray, cb) {
             var del = this.isArray(keyOrArray) ? keyOrArray : [keyOrArray]
             for (var i = 0, l = del.length; i < l; i++) {
-                delete store[del[i]]
-                index.splice(this.indexOf(index, del[i]), 1)
+                var key = del[i].key ? del[i].key : del[i]
+                var where = this.indexOf(this.index, key)
+                if (where < 0) continue /* key not present */
+                delete this.store[key]
+                this.index.splice(where, 1)
             }
             window.top.name = JSON.stringify(data)
             if (cb) this.lambda(cb).call(this)
@@ -99,11 +110,11 @@ Lawnchair.adapter('window-name', (function(index, store) {
         },
 
         nuke: function (cb) {
-            store = {}
-            index = []
+            this.store = data[this.name].store = {}
+            this.index = data[this.name].index = []
             window.top.name = JSON.stringify(data)
             if (cb) this.lambda(cb).call(this)
-            return this 
+            return this
         }
     }
 /////

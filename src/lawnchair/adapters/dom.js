@@ -58,7 +58,19 @@ Lawnchair.adapter('dom', (function() {
     
         // ensure we are in an env with localStorage 
         valid: function () {
-            return !!storage 
+            return !!storage && function() {
+              // in mobile safari if safe browsing is enabled, window.storage
+              // is defined but setItem calls throw exceptions.
+              var success = true
+              var value = Math.random()
+              try {
+                storage.setItem(value, value)
+              } catch (e) {
+                success = false
+              }
+              storage.removeItem(value)
+              return success
+            }()
         },
 
         init: function (options, callback) {
@@ -94,9 +106,18 @@ Lawnchair.adapter('dom', (function() {
        
         // accepts [options], callback
         keys: function(callback) {
-            if (callback) { 
+            if (callback) {
                 var name = this.name
-                ,   keys = this.indexer.all().map(function(r){ return r.replace(name + '.', '') })
+                var indices = this.indexer.all();
+                var keys = [];
+                //Checking for the support of map.
+                if(Array.prototype.map) {
+                    keys = indices.map(function(r){ return r.replace(name + '.', '') })
+                } else {
+                    for (var key in indices) {
+                        keys.push(key.replace(name + '.', ''));
+                    }
+                }
                 this.fn('keys', callback).call(this, keys)
             }
             return this // TODO options for limit/offset, return promise
@@ -111,8 +132,8 @@ Lawnchair.adapter('dom', (function() {
                     if (obj) {
 						obj = JSON.parse(obj)
                         obj.key = key[i]
-                        r.push(obj)
                     } 
+                    r.push(obj)
                 }
                 if (callback) this.lambda(callback).call(this, r)
             } else {
@@ -149,8 +170,25 @@ Lawnchair.adapter('dom', (function() {
             return this
         },
         
-        remove: function (keyOrObj, callback) {
-            var key = this.name + '.' + ((keyOrObj.key) ? keyOrObj.key : keyOrObj)
+        remove: function (keyOrArray, callback) {
+            var self = this;
+            if (this.isArray(keyOrArray)) {
+                // batch remove
+                var i, done = keyOrArray.length;
+                var removeOne = function(i) {
+                    self.remove(keyOrArray[i], function() {
+                        if ((--done) > 0) { return; }
+                        if (callback) {
+                            self.lambda(callback).call(self);
+                        }
+                    });
+                };
+                for (i=0; i < keyOrArray.length; i++)
+                    removeOne(i);
+                return this;
+            }
+            var key = this.name + '.' +
+                ((keyOrArray.key) ? keyOrArray.key : keyOrArray)
             this.indexer.del(key)
             storage.removeItem(key)
             if (callback) this.lambda(callback).call(this)
