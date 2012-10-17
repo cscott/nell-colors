@@ -5,6 +5,9 @@
 define([], function() { return function(Lawnchair) {
 
 Lawnchair.adapter('nell-colors-journal', (function() {
+    if (typeof window==='undefined') {
+        window = { }; // node/optimizer compatibility
+    }
     // use dom storage to store a persistent UUID
     var domStorage = window.localStorage;
     // key name used to store UUID

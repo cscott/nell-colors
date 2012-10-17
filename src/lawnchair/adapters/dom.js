@@ -12,6 +12,9 @@
 define([], function() { return function(Lawnchair) {
 
 Lawnchair.adapter('dom', (function() {
+    if (typeof window==='undefined') {
+        window = { }; // node/optimizer compatibility
+    }
     var storage = window.localStorage
     // the indexer is an encapsulation of the helpers needed to keep an ordered index of the keys
     var indexer = function(name) {
