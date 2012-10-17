@@ -24,8 +24,8 @@ define(['./drawing', './lzw', './lawnchair/lawnchair'], function(Drawing, LZW, L
         });
     };
 
-    var addToIndex = function(drawing, callback) {
-        Lawnchair({name:'drawing_index'}, function() {
+    var addToIndex = function(drawing, adapter, callback) {
+        Lawnchair({name:'drawing_index', adapter:adapter}, function() {
             var lawnchair = this;
             var thumb = drawing.makeThumbnail(THUMB_WIDTH, THUMB_HEIGHT);
             lawnchair.save({
@@ -38,8 +38,8 @@ define(['./drawing', './lzw', './lawnchair/lawnchair'], function(Drawing, LZW, L
             });
         });
     };
-    var removeFromIndex = function(uuid, callback) {
-        Lawnchair({name:'drawing_index'}, function() {
+    var removeFromIndex = function(uuid, adapter, callback) {
+        Lawnchair({name:'drawing_index', adapter:adapter}, function() {
             var lawnchair = this;
             lawnchair.remove(uuid, callback);
         });
@@ -71,15 +71,19 @@ define(['./drawing', './lzw', './lawnchair/lawnchair'], function(Drawing, LZW, L
         });
     };
 
-    Sync['delete'] = function(uuid, callback) {
-        removeFromIndex(uuid, function() {
-            Lawnchair({name:'drawing.'+uuid}, function() {
+    Sync['delete'] = function(uuid, where, callback) {
+        var lawnchairParams = { name: 'drawing.'+uuid };
+        if (where === 'remote') {
+            lawnchairParams.adapter = 'nell-colors-journal';
+        }
+        removeFromIndex(uuid, lawnchairParams.adapter, function() {
+            Lawnchair(lawnchairParams, function() {
                 this.nuke(callback, true);
             });
         });
     };
 
-    Sync.load = function(uuid, callback) {
+    Sync.load = function(uuid, where, callback) {
         var withLawnchair = function(lawnchair) {
             lawnchair.get(TOP, function(top) {
                 var i, done = 0, chunks = [];
@@ -97,24 +101,44 @@ define(['./drawing', './lzw', './lawnchair/lawnchair'], function(Drawing, LZW, L
                 }
             });
         };
-        Lawnchair({name:'drawing.'+uuid}, function() { withLawnchair(this); });
+        var lawnchairParams = { name: 'drawing.'+uuid };
+        if (where === 'remote') {
+            lawnchairParams.adapter = 'nell-colors-journal';
+            lawnchairParams.wildcard = true;
+        }
+        Lawnchair(lawnchairParams, function() { withLawnchair(this); });
     };
 
     Sync.exists = function(uuid, callback) {
-        var withLawnchair = function(lawnchair) {
-            lawnchair.exists(TOP, callback);
-        };
-        Lawnchair({name:'drawing.'+uuid}, function() { withLawnchair(this); });
+        var lawnchairParams = { name: 'drawing.'+uuid };
+        Lawnchair(lawnchairParams, function() {
+            var lawnchair = this;
+            lawnchair.exists(TOP, function(exists) {
+                if (exists) {
+                    callback(true, 'local');
+                } else if (window.navigator && window.navigator.onLine) {
+                    lawnchairParams.adapter = 'nell-colors-journal';
+                    lawnchairParams.wildcard = true;
+                    Lawnchair(lawnchairParams, function() {
+                        var lawnchair = this;
+                        lawnchair.exists(TOP, function(exists) {
+                            callback(exists, 'remote');
+                        });
+                    });
+                } else {
+                    callback(false, 'local');
+                }
+            });
+        });
     };
 
     Sync.save = function(drawing, callback, optForce) {
         console.assert(drawing.uuid);
-        var saveWithLawnchair = function(lawnchair) {
-            var dj = drawing.toJSON('use chunks');
+        var saveWithLawnchair = function(lawnchair, dj, callback) {
             var wrapUp = function() {
                 if (DEBUG) { console.log('writing', drawing.uuid); }
                 lawnchair.save({ key: TOP, data: dj }, function() {
-                    addToIndex(drawing, callback);
+                    addToIndex(drawing, lawnchair.adapter, callback);
                 });
             };
             var chunk = dj.nChunks;
@@ -140,15 +164,32 @@ define(['./drawing', './lzw', './lawnchair/lawnchair'], function(Drawing, LZW, L
             };
             saveChunk();
         };
-        Lawnchair({name:'drawing.'+drawing.uuid}, function() {
-            var s = function() { saveWithLawnchair(this); }.bind(this);
-            if (optForce) {
-                this.nuke(s);
+        var dj = drawing.toJSON('use chunks');
+        var withLawnchair = function(callback) {
+            return function() {
+                var lawnchair = this;
+                var s = function() {
+                    saveWithLawnchair(lawnchair, dj, callback);
+                };
+                if (optForce) {
+                    lawnchair.nuke(s);
+                } else {
+                    s();
+                }
+            };
+        };
+        var lawnchairParams = { name: 'drawing.'+drawing.uuid };
+        // save locally.
+        Lawnchair(lawnchairParams, withLawnchair(function() {
+            if (window.navigator && window.navigator.onLine) {
+                // try to save to cloud
+                if (DEBUG) { console.log('saving to cloud'); }
+                lawnchairParams.adapter = 'nell-colors-journal';
+                Lawnchair(lawnchairParams, withLawnchair(callback));
             } else {
-                s();
+                callback.call(drawing);
             }
-        });
-    };
-
+        }));
+    }
     return Sync;
 });

@@ -503,7 +503,7 @@ define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/
         console.log('saving', drawing.uuid);
         Sync.save(drawing, function() {
             console.log('saved!', drawing.uuid);
-            Sync.load(drawing.uuid, function(ndrawing) {
+            Sync.load(drawing.uuid, 'local', function(ndrawing) {
                 console.log('loaded', ndrawing.uuid);
                 replaceDrawing(ndrawing);
             });
@@ -764,14 +764,23 @@ define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/
             callback(nd);
             break;
         default:
-            Sync.exists(uuid, function(exists) {
-                if (exists) {
-                    Sync.load(uuid, callback);
-                } else {
-                    // XXX attempt to load from network?
+            Sync.exists(uuid, function(exists, where) {
+                if (!exists) {
                     nd = new Drawing();
                     nd.uuid = uuid;
                     callback(nd);
+                } else if (where==='local') {
+                    Sync.load(uuid, 'local', callback);
+                } else {
+                    // load from network, but rename & save locally
+                    Sync.load(uuid, 'remote', function(new_drawing) {
+                        new_drawing.uuid = prandom.uuid();
+                        if (window.history.replaceState) {
+                            window.history.replaceState(null, uuid, '#'+new_drawing.uuid);
+                            notifyParentHash('#'+new_drawing.uuid, true, uuid);
+                        }
+                        callback(new_drawing, true/* force initial save */);
+                    });
                 }
             });
             break;

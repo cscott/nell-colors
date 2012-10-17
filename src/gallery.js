@@ -155,7 +155,7 @@ define(['domReady!','./compat','./coords','../lib/hammer', './sync'], function(d
         addUUID('new', -1);
     };
     Gallery.prototype.trash = function(uuid) {
-        Sync['delete'].call(Sync, uuid, function() {
+        Sync['delete'].call(Sync, uuid, 'local', function() {
             var a = this.domElement.querySelector('a.UUID-'+uuid);
             this.domElement.removeChild(a);
         }.bind(this));
