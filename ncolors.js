@@ -4,7 +4,7 @@
  */
 /*global define:false, console:false, MessageChannel:false, window:false,
          setTimeout:false, clearTimeout:false, navigator:false */
-define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/brushdialog', './src/color', './src/compat', './src/dom', './src/drawcommand', './src/drawing', 'json!./src/fontmetrics.json', './src/funf', './src/gallery', './lib/hammer', './src/layer', './src/lzw', './src/nodefault', './src/postmessage', './src/prandom!', './src/recog', './src/sound', './src/sync', './src/version', './lib/BlobBuilder', './lib/canvas-toBlob', './lib/FileSaver', 'font!custom,families:[Delius,DejaVu LGC Sans Book],urls:[fonts/style.css]'], function(require, document, /*audioMap,*/ Brush, BrushDialog, Color, Compat, Dom, DrawCommand, Drawing, FontMetrics, Funf, Gallery, Hammer, Layer, LZW, noDefault, postMessage, prandom, Recog, Sound, Sync, version, BlobBuilder, canvasToBlob, saveAs) {
+define(['domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/brushdialog', './src/color', './src/compat', './src/dom', './src/drawcommand', './src/drawing', 'json!./src/fontmetrics.json', './src/funf', './src/gallery', './lib/hammer', './src/layer', './src/lzw', './src/nodefault', './src/postmessage', './src/prandom!', './src/recog', './src/sound', './src/sync', './src/version', './lib/BlobBuilder', './lib/canvas-toBlob', './lib/FileSaver', 'font!custom,families:[Delius,DejaVu LGC Sans Book],urls:[fonts/style.css]'], function(document, /*audioMap,*/ Brush, BrushDialog, Color, Compat, Dom, DrawCommand, Drawing, FontMetrics, Funf, Gallery, Hammer, Layer, LZW, noDefault, postMessage, prandom, Recog, Sound, Sync, version, BlobBuilder, canvasToBlob, saveAs) {
     'use strict';
     // Android browser doesn't support MessageChannel
     // -- however, it also has a losing canvas. so don't worry too much.
@@ -717,21 +717,6 @@ define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/
             mode: 'loading'
         }));
         switch(uuid) {
-        case 'castle':
-        case 'intro':
-        case 'lounge':
-        case 'r':
-        case 'roger':
-            // special built-in drawings.
-            require(['drw!samples/'+uuid+'.json'], function(new_drawing) {
-                new_drawing.uuid = prandom.uuid();
-                if (window.history.replaceState) {
-                    window.history.replaceState(null, uuid, '#'+new_drawing.uuid);
-                    notifyParentHash('#'+new_drawing.uuid, true, uuid);
-                }
-                callback(new_drawing, true/* force initial save */);
-            });
-            break;
         case '':
         case 'gallery':
             gallery = new Gallery(funf, toolbarPort);
@@ -772,8 +757,8 @@ define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/
                 } else if (where==='local') {
                     Sync.load(uuid, 'local', callback);
                 } else {
-                    // load from network, but rename & save locally
-                    Sync.load(uuid, 'remote', function(new_drawing) {
+                    // load from sample or network, but rename & save locally
+                    Sync.load(uuid, where, function(new_drawing) {
                         new_drawing.uuid = prandom.uuid();
                         if (window.history.replaceState) {
                             window.history.replaceState(null, uuid, '#'+new_drawing.uuid);

@@ -3,7 +3,7 @@
   trailing:true, es5:true
  */
 /*global define:false, console:false, document:false, window:false */
-define(['./drawing', './lzw', './lawnchair/lawnchair'], function(Drawing, LZW, Lawnchair) {
+define(['./drawing', './lzw', './lawnchair/lawnchair', './samples'], function(Drawing, LZW, Lawnchair, Samples) {
     var DEBUG = false;
     var TOP = 'top';
     // keep these constants in sync with .gallery rule in ncolors.css
@@ -84,6 +84,9 @@ define(['./drawing', './lzw', './lawnchair/lawnchair'], function(Drawing, LZW, L
     };
 
     Sync.load = function(uuid, where, callback) {
+        if (where==='sample') {
+            return Samples.load(uuid, callback);
+        }
         var withLawnchair = function(lawnchair) {
             lawnchair.get(TOP, function(top) {
                 var i, done = 0, chunks = [];
@@ -110,6 +113,9 @@ define(['./drawing', './lzw', './lawnchair/lawnchair'], function(Drawing, LZW, L
     };
 
     Sync.exists = function(uuid, callback) {
+        if (Samples.exists(uuid)) {
+            return callback(true, 'sample');
+        }
         var lawnchairParams = { name: 'drawing.'+uuid };
         Lawnchair(lawnchairParams, function() {
             var lawnchair = this;

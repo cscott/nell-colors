@@ -12,7 +12,7 @@ build/index.js: index.js # and other stuff
 	node r.js -o name=index out=$@ baseUrl=. $(foreach p,$(PLUGINS),paths.$(p)=plugins/$(p))
 build/ncolors.js: ncolors.js src/audio-map.js # and other stuff
 	mkdir -p build
-	node r.js -o name=ncolors out=$@ baseUrl=. $(OPT) include=drw!samples/r.json $(foreach p,$(PLUGINS),paths.$(p)=plugins/$(p))
+	node r.js -o name=ncolors out=$@ baseUrl=. $(OPT) $(foreach p,$(PLUGINS),paths.$(p)=plugins/$(p))
 build/brushdemo.js: brushdemo.js # and other stuff
 	mkdir -p build
 	node r.js -o name=brushdemo out=$@ baseUrl=. $(OPT) $(foreach p,$(PLUGINS),paths.$(p)=plugins/$(p))
