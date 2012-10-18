@@ -760,6 +760,7 @@ define(['domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/brushdialog
                     // load from sample or network, but rename & save locally
                     Sync.load(uuid, where, function(new_drawing) {
                         new_drawing.uuid = prandom.uuid();
+                        new_drawing.ctime = Date.now();
                         if (window.history.replaceState) {
                             window.history.replaceState(null, uuid, '#'+new_drawing.uuid);
                             notifyParentHash('#'+new_drawing.uuid, true, uuid);
