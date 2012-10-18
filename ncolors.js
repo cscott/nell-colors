@@ -52,7 +52,7 @@ define(['domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/brushdialog
     var updateToolbarBrush, replaceDrawing, maybeSyncDrawing;
     var doTrash = null;
 
-    var recog_timer_id = null;
+    var recog_timer_id = null, recog_stroke_count = 0;
     // cancel any running recog timer (ie, if stroke in progress)
     var recog_timer_cancel = function() {
         if (recog_timer_id) {
@@ -63,6 +63,7 @@ define(['domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/brushdialog
     // ignore all strokes to date; start recognition with next stroke.
     var recog_reset = function() {
         drawing.commands.recog = drawing.commands.end;
+        recog_stroke_count = 0;
         recog_timer_cancel();
     };
     // timeout function to call recog_reset automatically after a delay
@@ -215,7 +216,11 @@ define(['domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/brushdialog
         drawing.addCmd(DrawCommand.create_draw_end());
         maybeRequestAnim();
         if (ev) {
-            funf.record('stroke', {});
+            funf.record('stroke', {
+                recog_start:drawing.commands.recog,
+                recog_end: drawing.commands.end,
+                recog_strokes: ++recog_stroke_count
+            });
             //console.log("Attempt recog from", commands.recog,
             //            "to", commands.length);
             Recog.attemptRecognition(drawing.commands,
@@ -781,6 +786,27 @@ define(['domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/brushdialog
         loadDrawing(uuid, replaceDrawing);
     };
     window.addEventListener('hashchange', onHashChange, false);
+
+    // Set the name of the hidden property and the change event for visibility
+    var hidden="hidden", visibilityChange="visibilitychange";
+    ['moz','webkit','o','ms',''].forEach(function(prefix) {
+        var h = prefix ? (prefix + 'Hidden') : 'hidden';
+        if (typeof document[h] !== "undefined") {
+            hidden = h;
+            visibilityChange = prefix + 'visibilitychange';
+        }
+    });
+    var onVisibilityChange = function() {
+        var wasHidden = true;
+        return function(e) {
+            var isHidden = document[hidden] || false;
+            if (wasHidden === isHidden) { return; }
+            wasHidden = isHidden;
+            funf.record('status', isHidden ? 'pause' : 'resume');
+        };
+    }();
+    document.addEventListener(visibilityChange, onVisibilityChange, false);
+    onVisibilityChange();
 
     // load the requested doc (based on URL hash)
     loadDrawing(document.location.hash.replace(/^#/,''), replaceDrawing);

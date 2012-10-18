@@ -14,9 +14,9 @@ Highest priority:
       So distinguish "unopened samples" from user art (maybe even visually)
       Alternatively: two tab journal? Second tab is samples?
  - update firefox? slowness, crashes =(
- - funf pause/resume events
- - funf Gallery delete Events
- - funf # of strokes in letter (so we can match up undo)
+ x funf pause/resume events
+ x funf Gallery delete Events
+ x funf # of strokes in letter (so we can match up undo)
    maybe just record "stroke #" at various points
 Polish:
  - set undo/redo buttons active appropriately
