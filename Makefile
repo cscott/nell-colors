@@ -59,7 +59,9 @@ build-colors: build/index.js build/ncolors.js build/src/recogworker.js brushes/b
 	    fgrep -v install.html | sort | xargs md5sum -b | md5sum; echo ; \
 	  echo "CACHE:" ; \
 	  cd build ; find . -type f -print | fgrep -v manifest | \
-	    fgrep -v install.html | sort ) > build/manifest.appcache
+	    fgrep -v install.html | sort ; echo ; \
+	  echo "NETWORK:" ; \
+	  echo "*" ) > build/manifest.appcache
 	# domain name for github pages
 	echo nell-colors.github.cscott.net > build/CNAME
 	# turn off jekyll for github pages
