@@ -5684,7 +5684,7 @@ Lawnchair.adapter('indexed-db', (function(){
   var STORE_VERSION = 2;
 
   var getIDB = function() {
-    return window.indexedDB || window.webkitIndexedDB || /*window.mozIndexedDB ||*/ window.oIndexedDB || window.msIndexedDB;
+    return window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.oIndexedDB || window.msIndexedDB;
   };
   var getIDBTransaction = function() {
       return window.IDBTransaction || window.webkitIDBTransaction ||
@@ -8544,7 +8544,6 @@ define('src/gallery',['domReady!','./compat','./coords','../lib/hammer', './sync
         addUUID('new', -1);
     };
     Gallery.prototype.trash = function(uuid) {
-        console.log('starting to trash');
         Sync['delete'].call(Sync, uuid, 'local', function() {
             var a = this.domElement.querySelector('a.UUID-'+uuid);
             this.domElement.removeChild(a);
@@ -10812,6 +10811,7 @@ define('ncolors',['domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/b
                     // load from sample or network, but rename & save locally
                     Sync.load(uuid, where, function(new_drawing) {
                         new_drawing.uuid = prandom.uuid();
+                        new_drawing.ctime = Date.now();
                         if (window.history.replaceState) {
                             window.history.replaceState(null, uuid, '#'+new_drawing.uuid);
                             notifyParentHash('#'+new_drawing.uuid, true, uuid);
