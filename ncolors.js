@@ -450,11 +450,11 @@ define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/
         recog_reset();
         maybeSyncDrawing();
     };
-    var doSave = function(asPlainText) {
+    var doSave = function(asJson) {
         var json = JSON.stringify(drawing, null, 1);
         var mimetype, filename;
         var blob, blobUrl;
-        if (asPlainText) {
+        if (asJson) {
             mimetype = "text/plain;charset=ascii";
             filename = 'drawing.json';
             try {
@@ -613,7 +613,7 @@ define(['require', 'domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/
             }
             break;
         case 'saveButton':
-            doSave();
+            doSave('json');
             break;
         case 'trashButton':
             /* ignore; this button is meant to be dropped not clicked */
