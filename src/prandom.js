@@ -35,7 +35,8 @@ define(['./alea','./lawnchair/lawnchair'], function(Alea, Lawnchair) {
                             rand8(), rand8(), rand8(),
                             rand8(), rand8(), rand8(),
                             rand8(), rand8(), rand8());
-                        return window.btoa(s).replace('+','-').replace('/','_');
+                        return window.btoa(s).
+                            replace(/\+/g,'-').replace(/\//g,'_');
                     }
                     var S4 = function () {
                         return (((1+random())*0x10000)|0).toString(16)
