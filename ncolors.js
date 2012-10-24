@@ -49,7 +49,7 @@ define(['domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/brushdialog
                                       true /* hide pane selector */);
 
     var maybeRequestAnim, removeRecogCanvas;
-    var updateToolbarBrush, replaceDrawing, maybeSyncDrawing;
+    var updateToolbarBrush, replaceDrawing, maybeSyncDrawing, syncWhenCaughtUp;
     var doTrash = null;
 
     var recog_timer_id = null, recog_stroke_count = 0;
@@ -100,6 +100,17 @@ define(['domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/brushdialog
             };
         })();
     }
+
+    var _syncWhenCaughtUp = false;
+    syncWhenCaughtUp = function() {
+        if (drawing.commands.last === drawing.commands.end) {
+            // caught up!
+            _syncWhenCaughtUp = false;
+            maybeSyncDrawing();
+        } else {
+            _syncWhenCaughtUp = true;
+        }
+    };
 
     var animRequested = false;
     var INSTANTANEOUS = 0; // special speed value
@@ -170,6 +181,7 @@ define(['domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/brushdialog
             }
             animRequested = false;
             updateToolbarBrush();
+            if (_syncWhenCaughtUp) { syncWhenCaughtUp(); }
         }
     };
     maybeRequestAnim = function() {
@@ -207,6 +219,7 @@ define(['domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/brushdialog
         lastpos.y = ev.position.y;
         lastpos.time = now;
         drawing.addCmd(DrawCommand.create_draw(ev.position));
+        _syncWhenCaughtUp = false; // cancel pending save if not started yet
         maybeRequestAnim();
         // stroke in progress, don't try to recognize
         recog_timer_cancel();
@@ -214,6 +227,7 @@ define(['domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/brushdialog
     hammer.ondragend = function(ev) {
         isDragging = false;
         drawing.addCmd(DrawCommand.create_draw_end());
+        syncWhenCaughtUp(); // save
         maybeRequestAnim();
         if (ev) {
             funf.record('stroke', {
@@ -229,8 +243,6 @@ define(['domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/brushdialog
         }
         // start recog reset timer
         recog_timer_reset();
-        // save
-        maybeSyncDrawing();
     };
 
     // generate <audio> elements for various snippets we might want to play
@@ -438,9 +450,9 @@ define(['domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/brushdialog
             // update the toolbar opacity/size to match
             updateToolbarBrush();
         }
+        syncWhenCaughtUp();
         // stop recognition and cancel timer
         recog_reset();
-        maybeSyncDrawing();
     };
     var doRedo = function() {
         console.assert(!isDragging);
@@ -451,9 +463,9 @@ define(['domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/brushdialog
             // update the toolbar opacity/size to match
             updateToolbarBrush();
         }
+        syncWhenCaughtUp();
         // don't repeat recognition (and cancel timer)
         recog_reset();
-        maybeSyncDrawing();
     };
     var doSave = function(asJson) {
         var json = JSON.stringify(drawing, null, 1);
@@ -696,6 +708,7 @@ define(['domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/brushdialog
         if (drawing.initial_playback_speed) {
             playbackInfo.speed = drawing.initial_playback_speed;
         }
+        _syncWhenCaughtUp = false; // cancel pending save
         // finally, update the toolbar opacity/size to match
         updateToolbarBrush();
         onWindowResize();
@@ -711,7 +724,7 @@ define(['domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/brushdialog
         });
         // newly loaded sample drawings need to be saved w/ their new UUID
         if (optForceSave) {
-            maybeSyncDrawing();
+            syncWhenCaughtUp();
         }
     };
 
