@@ -132,6 +132,12 @@ Lawnchair.adapter('indexed-db', (function(){
             }
             console.error('Failed to open database');
         };
+        // a little addendum to the lawnchair API.
+        self.close = function() {
+            if (this.db) { this.db.close(); }
+            delete this.store;
+            delete this.waiting;
+        };
     },
 
     save:function(obj, callback) {
@@ -370,6 +376,7 @@ Lawnchair.adapter('indexed-db', (function(){
         if (optDeleteOutright) {
             // can't use this lawnchair for anything after this completes
             if (this.waiting.length) fail();
+            this.db.close();
             this.idb.deleteDatabase(this.name);
             delete this.store;
             delete this.waiting;

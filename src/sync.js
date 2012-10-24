@@ -34,6 +34,7 @@ define(['./drawing', './lzw', './lawnchair/lawnchair', './samples'], function(Dr
                 ctime: drawing.ctime,
                 mtime: Date.now()
             }, function() {
+                if (this.close) { this.close(); } // XXX IDB HACK
                 callback.call(drawing);
             });
         });
@@ -41,7 +42,10 @@ define(['./drawing', './lzw', './lawnchair/lawnchair', './samples'], function(Dr
     var removeFromIndex = function(uuid, adapter, callback) {
         Lawnchair({name:'drawing_index', adapter:adapter}, function() {
             var lawnchair = this;
-            lawnchair.remove(uuid, callback);
+            lawnchair.remove(uuid, function() {
+                if (this.close) { this.close(); } // XXX IDB HACK
+                callback();
+            });
         });
     };
 
@@ -49,6 +53,7 @@ define(['./drawing', './lzw', './lawnchair/lawnchair', './samples'], function(Dr
         Lawnchair({name:'drawing_index'}, function() {
             var lawnchair = this;
             lawnchair.all(function(results) {
+                if (this.close) { this.close(); } // XXX IDB HACK
                 results.sort(function(a, b) {
                     // oldest first
                     return a.ctime - b.ctime;
@@ -95,6 +100,7 @@ define(['./drawing', './lzw', './lawnchair/lawnchair', './samples'], function(Dr
                         chunks[i] = JSON.parse(LZW.decode(achunk.data));
                         done++;
                         if (done===top.data.nChunks) {
+                            if (this.close) { this.close(); } // XXX IDB HACK
                             Drawing.fromChunks(top.data, chunks, callback);
                         }
                     });
@@ -120,6 +126,7 @@ define(['./drawing', './lzw', './lawnchair/lawnchair', './samples'], function(Dr
         Lawnchair(lawnchairParams, function() {
             var lawnchair = this;
             lawnchair.exists(TOP, function(exists) {
+                if (this.close) { this.close(); } // XXX IDB HACK
                 if (exists) {
                     callback(true, 'local');
                 } else if (window.navigator && window.navigator.onLine) {
@@ -128,6 +135,7 @@ define(['./drawing', './lzw', './lawnchair/lawnchair', './samples'], function(Dr
                     Lawnchair(lawnchairParams, function() {
                         var lawnchair = this;
                         lawnchair.exists(TOP, function(exists) {
+                            if (this.close) { this.close(); } // XXX IDB HACK
                             callback(exists, 'remote');
                         });
                     });
@@ -144,6 +152,7 @@ define(['./drawing', './lzw', './lawnchair/lawnchair', './samples'], function(Dr
             var wrapUp = function() {
                 if (DEBUG) { console.log('writing', drawing.uuid); }
                 lawnchair.save({ key: TOP, data: dj }, function() {
+                    if (this.close) { this.close(); } // XXX IDB HACK
                     addToIndex(drawing, lawnchair.adapter, function() {
                         return callback.call(drawing, true/*success*/);
                     });
