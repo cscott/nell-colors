@@ -3,7 +3,7 @@
   trailing:true, es5:true
  */
 /*global define:false, console:false, document:false, window:false */
-define(['domReady!','./compat','./coords','../lib/hammer', './sync'], function(document, Compat, Coords, Hammer, Sync) {
+define(['domReady!','./compat','./coords','../lib/hammer', './nodefault', './sync'], function(document, Compat, Coords, Hammer, noDefault, Sync) {
     var firstGallery = true;
 
     var useNativeDnD = ('ondragstart' in document.createElement('a'));
@@ -34,13 +34,12 @@ define(['domReady!','./compat','./coords','../lib/hammer', './sync'], function(d
             a.className = 'UUID-' + uuid; // class must start with [_a-zA-Z]
             a.textContent = uuid; // hidden by thumbnail (if present)
             this.domElement.appendChild(a);
-            a.addEventListener('click', function(event) {
-                event.preventDefault();
+            a.addEventListener('click', noDefault(function() {
                 this._callback(uuid);
-            }.bind(this), false);
-            a.addEventListener('contextmenu', function(event) {
-                event.preventDefault();
-            }, false);
+            }.bind(this)), false);
+            if (!document.body.classList.contains('dev')) {
+                a.addEventListener('contextmenu', noDefault(), false);
+            }
 
             // make bookmarkable URL for this document
             var url = document.URL.

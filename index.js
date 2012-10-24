@@ -281,9 +281,10 @@ define(['domReady!', './src/coords', './src/dom', './lib/hammer', './src/nodefau
             sendToolbarEvent({ type: className+'Button' });
         }), false);
         // disable the context menu and other default handlers for href anchors
-        ['dblclick','contextmenu'].forEach(function(evname) {
-            a.addEventListener(evname, noDefault(), false);
-        });
+        a.addEventListener('dblclick', noDefault(), false);
+        if (!document.body.classList.contains('dev')) {
+            a.addEventListener('contextmenu', noDefault(), false);
+        }
         return a;
     };
     var undo = addButton('undo', 'left', 'drawing');
@@ -311,8 +312,10 @@ define(['domReady!', './src/coords', './src/dom', './lib/hammer', './src/nodefau
         cb.addEventListener('click', noDefault(function(event) {
             sendToolbarEvent({ type:'swatchButton', color: colorName });
         }), false);
-        cb.addEventListener('contextmenu', noDefault(), false);
         cb.addEventListener('dblclick', noDefault(), false);
+        if (!document.body.classList.contains('dev')) {
+            cb.addEventListener('contextmenu', noDefault(), false);
+        }
     });
 
     updateSwatchOpacity = function(opacityValue) {

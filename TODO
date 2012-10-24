@@ -3,7 +3,7 @@ Highest priority:
    pictures of nell?
     Blockers:
     - appengine journal support to get drawings off android
-    - enable contextmenu events if dev class is present on body
+    x enable contextmenu events if dev class is present on body
     - toggle dev mode persistently if you write 'devel' on canvas
     - primitive layer support (samples are layer background image?)
     - some mechanism to prefill gallery with samples (versioned, so we can add
