@@ -5,6 +5,7 @@
   display: block;
   position: absolute;
   top: 0; bottom: 0; right: 0; left: 0;
+  @include box-sizing(border-box);
   content: "";
 }
 %toolbar-shadowed {
@@ -38,6 +39,9 @@ body.dev #framerate {
 .gallery {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+
+  padding: 0 20px 20px 20px;
+
   & > a {
     @include inline-block;
     /* This width/height should match THUMB_WIDTH/THUMB_HEIGHT in drawing.js */
@@ -45,9 +49,7 @@ body.dev #framerate {
     border: 2px solid #ccc;
     margin: 10px;
     vertical-align: middle;
-    @include box-shadow(3px 3px 10px rgba(0,0,0,0.5));
     &:hover, &.hover {
-      @include box-shadow(2px 2px 5px rgba(0,0,0,0.5));
       left: 1px; top: 1px;
     }
     &.dragging {
@@ -61,9 +63,6 @@ body.dev #framerate {
     }
     &:after {
       @extend %maxed;
-      // a bit of a 3d button effect
-      @include box-shadow(inset  5px  5px 30px rgba(255,255,255,0.25),
-                          inset -5px -5px 20px rgba(  0,  0,  0,0.15));
     }
     &.UUID-new:after {
       @extend %maxed;
@@ -76,6 +75,20 @@ body.dev #framerate {
     }
   }
 }
+/* don't enable box shadows on all platforms, because they are very slow on
+ * firefox/android. */
+body.boxshadows .gallery > a {
+  @include box-shadow(3px 3px 10px rgba(0,0,0,0.5));
+  &:hover, &.hover {
+    @include box-shadow(2px 2px 5px rgba(0,0,0,0.5));
+  }
+  &:after {
+    // a bit of a 3d button effect
+    @include box-shadow(inset  5px  5px 30px rgba(255,255,255,0.25),
+                        inset -5px -5px 20px rgba(  0,  0,  0,0.15));
+  }
+}
+
 #brushdialog {
   @import "brushdialog";
 }

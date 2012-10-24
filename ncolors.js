@@ -23,6 +23,13 @@ define(['domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/brushdialog
     if (/(iPhone|iPad).*Safari/.test(navigator.userAgent)) {
         TOUCH_EVENT_INTERVAL_MS = 0;
     }
+    // enable cute box shadow effects on everything except firefox/android,
+    // where they are just too slow
+    if (window.navigator) {
+        if (!(/android;.*firefox/i.test(window.navigator.userAgent))) {
+            document.body.classList.add('boxshadows');
+        }
+    }
 
     // start up Funf logger
     var funf = new Funf('NellColors'+version);
