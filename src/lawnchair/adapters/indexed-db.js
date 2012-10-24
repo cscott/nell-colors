@@ -120,6 +120,9 @@ Lawnchair.adapter('indexed-db', (function(){
                 win();
             }
         }
+        request.onblocked = function(ev) {
+            console.error("Failed to open database: blocked");
+        };
         request.onerror = function(ev) {
             if (request.errorCode === getIDBDatabaseException().VERSION_ERR) {
                 // xxx blow it away
@@ -283,7 +286,7 @@ Lawnchair.adapter('indexed-db', (function(){
           var cursor = event.target.result;
           if (cursor) {
                toReturn.push(cursor.value);
-               cursor['continue']();
+               cursor['continue'].call(cursor);
           }
           else {
               if (cb) cb.call(self, toReturn);
