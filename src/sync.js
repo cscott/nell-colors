@@ -144,7 +144,9 @@ define(['./drawing', './lzw', './lawnchair/lawnchair', './samples'], function(Dr
             var wrapUp = function() {
                 if (DEBUG) { console.log('writing', drawing.uuid); }
                 lawnchair.save({ key: TOP, data: dj }, function() {
-                    addToIndex(drawing, lawnchair.adapter, callback);
+                    addToIndex(drawing, lawnchair.adapter, function() {
+                        return callback.call(drawing, true/*success*/);
+                    });
                 });
             };
             var chunk = dj.nChunks;
@@ -158,7 +160,7 @@ define(['./drawing', './lzw', './lawnchair/lawnchair', './samples'], function(Dr
                             // whoops, we're stale!
                             // XXX clean up written chunks
                             // bail
-                            callback.call(drawing);
+                            return callback.call(drawing, false);
                         }
                         // XXX we should check to be sure this chunk's UUID
                         // still matches what we expect it to be.
@@ -194,14 +196,14 @@ define(['./drawing', './lzw', './lawnchair/lawnchair', './samples'], function(Dr
         };
         var lawnchairParams = { name: 'drawing.'+drawing.uuid };
         // save locally.
-        Lawnchair(lawnchairParams, withLawnchair(function() {
-            if (window.navigator && window.navigator.onLine) {
+        Lawnchair(lawnchairParams, withLawnchair(function(success) {
+            if (success && window.navigator && window.navigator.onLine) {
                 // try to save to cloud
                 if (DEBUG) { console.log('saving to cloud'); }
                 lawnchairParams.adapter = 'nell-colors-journal';
                 Lawnchair(lawnchairParams, withLawnchair(callback));
             } else {
-                callback.call(drawing);
+                callback.call(drawing, success);
             }
         }));
     }

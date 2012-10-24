@@ -506,7 +506,8 @@ define(['domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/brushdialog
     };
     var doSave1 = function() {
         console.log('saving', drawing.uuid);
-        Sync.save(drawing, function() {
+        Sync.save(drawing, function(success) {
+            if (!success) { console.error("failed to save"); return; }
             console.log('saved!', drawing.uuid);
             Sync.load(drawing.uuid, 'local', function(ndrawing) {
                 console.log('loaded', ndrawing.uuid);
@@ -526,8 +527,8 @@ define(['domReady!', /*'./src/audio-map.js',*/ './src/brush', './src/brushdialog
             isSaving = true;
             isDirty = true;
             var drawing_copy = drawing;
-            var afterSave = function() {
-                if (isDirty) {
+            var afterSave = function(success) {
+                if (isDirty || !success) {
                     // someone requested another save while we were busy, do it
                     isDirty = false;
                     Sync.save(drawing_copy, afterSave);
