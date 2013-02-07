@@ -3,7 +3,7 @@
   trailing:true, es5:true
  */
 /*global define:false, console:false, document:false, window:false */
-define(['require'], function(require) {
+define(['require','drw','json','text'], function(require) {
 
     /* A list of samples currently included with nell-colors, and
      * a method to load them. */
